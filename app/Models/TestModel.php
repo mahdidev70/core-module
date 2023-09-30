@@ -10,5 +10,4 @@ class Test2 extends Model
     use HasFactory;
 
 
-
 }
