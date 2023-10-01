@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('core_taggable', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('tag_id')->constrained()->cascadeOnDelete();
-            $table->morphs('taggable');
-            $table->unique(['tag_id', 'taggable_id', 'taggable_type']);
+            $table->integer('tag_id');
+            $table->string('taggable_type');
+            $table->string('taggable_id');
             $table->timestamps();
         });
     }
