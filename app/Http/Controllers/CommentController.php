@@ -115,62 +115,62 @@ class CommentController extends Controller
 //     }
 
 
-    public function getArticleCommentsListData(Request $request)
-    {
+    // public function getArticleCommentsListData(Request $request)
+    // {
 
-        $article = new Article();
+    //     $article = new Article();
 
-        $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
+    //     $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
 
-        if ($request->filled('search')) {
-            $txt = $request->get('search');
+    //     if ($request->filled('search')) {
+    //         $txt = $request->get('search');
 
-            $query->where(function ($q) use ($txt) {
-                $q->where('text', 'like', '%' . $txt . '%');
-            });
-        }
+    //         $query->where(function ($q) use ($txt) {
+    //             $q->where('text', 'like', '%' . $txt . '%');
+    //         });
+    //     }
 
-        if ($request->filled('status')) {
-            if ($request->status == 'deleted'){
-                $query->where('status', 'deleted');
-            }elseif ($request->status == 'rejected') {
-                $query->where('status', 'rejected');
-            }elseif ($request->status == 'waiting_for_approval') {
-                $query->where('status' == 'waiting_for_approval');
-            }elseif ($request->status == 'approved') {
-                $query->where('status', 'approved');
-            }
-        }
+    //     if ($request->filled('status')) {
+    //         if ($request->status == 'deleted'){
+    //             $query->where('status', 'deleted');
+    //         }elseif ($request->status == 'rejected') {
+    //             $query->where('status', 'rejected');
+    //         }elseif ($request->status == 'waiting_for_approval') {
+    //             $query->where('status' == 'waiting_for_approval');
+    //         }elseif ($request->status == 'approved') {
+    //             $query->where('status', 'approved');
+    //         }
+    //     }
 
-        $comments = $query->paginate(10);
+    //     $comments = $query->paginate(10);
 
-        $data = $comments->map(function ($comment) {
-            return [
-                'author' => [
-                    'displayName' => $comment->user->getDisplayName(),
-                    'id' => $comment->user->id,
-                ],
-                'text' => $comment->text,
-                'relatedArticle' => [
-                    'title' => $comment->article->title,
-                    'slug' => $comment->article->slug,
-                ],
-                'date' => $comment->created_at,
-                'ip' => $comment->ip,
-                'status' => $comment->status,
-                'id'=> $comment->id
-            ];
-        });
+    //     $data = $comments->map(function ($comment) {
+    //         return [
+    //             'author' => [
+    //                 'displayName' => $comment->user->getDisplayName(),
+    //                 'id' => $comment->user->id,
+    //             ],
+    //             'text' => $comment->text,
+    //             'relatedArticle' => [
+    //                 'title' => $comment->article->title,
+    //                 'slug' => $comment->article->slug,
+    //             ],
+    //             'date' => $comment->created_at,
+    //             'ip' => $comment->ip,
+    //             'status' => $comment->status,
+    //             'id'=> $comment->id
+    //         ];
+    //     });
 
-        return [
-            'total' => $comments->total(),
-            'current_page' => $comments->currentPage(),
-            'per_page' => $comments->perPage(),
-            'last_page' => $comments->lastPage(),
-            'data' => $data
-        ];
+    //     return [
+    //         'total' => $comments->total(),
+    //         'current_page' => $comments->currentPage(),
+    //         'per_page' => $comments->perPage(),
+    //         'last_page' => $comments->lastPage(),
+    //         'data' => $data
+    //     ];
 
-    }
+    // }
 
     public function getArticleCommentsListCommon()
     {
@@ -187,97 +187,98 @@ class CommentController extends Controller
             ];
     }
 
-//     public function updateArticleCommentsStatus(Request $request, Comment $comment): array
-//     {
-//         $validatedData = $request->validate([
-//             'status' => 'required|in:approved,deleted,rejected',
-//             'ids' => 'required|array',
-//             'reason' => 'required_if:status,rejected'
-//         ]);
-
-//         $mapping = array(
-//             "apple" => "star",
-//             'approved' =>  "approved",
-//             'deleted'=>'deleted',
-//             'rejected' => 'rejected'
-//         );
-
-//         $data = [];
-//         $data['status'] =$mapping[$validatedData['status']];
-
-//         if ($mapping[$validatedData['status']] == 'rejected') {
-//             $data['rejection_reason'] = $validatedData['reason'];
-//         }
-
-//         Comment::whereIn('id', $validatedData['ids'])
-//             ->update($data);
-
-//         return [
-//             'updatedComments' => $validatedData['ids'],
-//         ];
-//     }
-
-//     public function editArticleCommentText(Request $request, Comment $comment_id)
-//     {
-//         $comment_id->update(['text' => $request->text]);
-//         return ['id'=> $comment_id->id ];
-//     }
-
-
-    public function getCourseCommnetsList(Request $request)
+    public function updateArticleCommentsStatus(Request $request, Comment $comment): array
     {
-        $query = Comment::where('commentable_type', 'App\Models\Course');
-    
-        if ($request->filled('search')) {
-            $txt = $request->get('search');
-        
-            $query->where(function ($q) use ($txt) {
-                $q->where('text', 'like', '%' . $txt . '%');
-            });
+        $validatedData = $request->validate([
+            'status' => 'required|in:approved,deleted,rejected',
+            'ids' => 'required|array',
+            'reason' => 'required_if:status,rejected'
+        ]);
+
+        $mapping = array(
+            "apple" => "star",
+            'approved' =>  "approved",
+            'deleted'=>'deleted',
+            'rejected' => 'rejected'
+        );
+
+        $data = [];
+        $data['status'] =$mapping[$validatedData['status']];
+
+        if ($mapping[$validatedData['status']] == 'rejected') {
+            $data['rejection_reason'] = $validatedData['reason'];
         }
 
-        if ($request->filled('status')) {
-            if ($request->status == 'deleted'){
-                $query->where('status', 'deleted');
-            }elseif ($request->status == 'rejected') {
-                $query->where('status', 'rejected');
-            }elseif ($request->status == 'waiting_for_approval') {
-                $query->where('status' == 'waiting_for_approval');
-            }elseif ($request->status == 'approved') {
-                $query->where('status', 'approved');
-            }
-        }
-    
-        $comments = $query->with('commentable')->paginate(10);
-    
-        $commentData = $comments->map(function ($comment) {
-            return [
-                'id' => $comment->id,
-                'user' => [
-                    'id' => $comment->user->id,
-                    'displayName' => $comment->user->getDisplayName(),
-                ],
-                'course' => [
-                    'id' => $comment->commentable->id,
-                    'title' => $comment->commentable->title,
-                ],
-                'text' => $comment->text,
-                'status' => $comment->status,
-                'rate' => $comment->star,
-                'created_at' => $comment->created_at,
-            ];
-        });
-    
-        $response = [
-            'total' => $comments->total(),
-            'per_page' => $comments->perPage(),
-            'current_page' => $comments->currentPage(),
-            'last_page' => $comments->lastPage(),
-            'data' => $commentData,
+        Comment::whereIn('id', $validatedData['ids'])
+            ->update($data);
+
+        return [
+            'updatedComments' => $validatedData['ids'],
         ];
-    
-        return $response;
     }
+
+    // public function editArticleCommentText(Request $request, Comment $comment_id)
+    // {
+    //     return $comment_id;
+    //     $comment_id->update(['text' => $request->text]);
+    //     return ['id'=> $comment_id->id ];
+    // }
+
+
+    // public function getCourseCommnetsList(Request $request)
+    // {
+    //     $query = Comment::where('commentable_type', 'App\Models\Course');
+    
+    //     if ($request->filled('search')) {
+    //         $txt = $request->get('search');
+        
+    //         $query->where(function ($q) use ($txt) {
+    //             $q->where('text', 'like', '%' . $txt . '%');
+    //         });
+    //     }
+
+    //     if ($request->filled('status')) {
+    //         if ($request->status == 'deleted'){
+    //             $query->where('status', 'deleted');
+    //         }elseif ($request->status == 'rejected') {
+    //             $query->where('status', 'rejected');
+    //         }elseif ($request->status == 'waiting_for_approval') {
+    //             $query->where('status' == 'waiting_for_approval');
+    //         }elseif ($request->status == 'approved') {
+    //             $query->where('status', 'approved');
+    //         }
+    //     }
+    
+    //     $comments = $query->with('commentable')->paginate(10);
+    
+    //     $commentData = $comments->map(function ($comment) {
+    //         return [
+    //             'id' => $comment->id,
+    //             'user' => [
+    //                 'id' => $comment->user->id,
+    //                 'displayName' => $comment->user->getDisplayName(),
+    //             ],
+    //             'course' => [
+    //                 'id' => $comment->commentable->id,
+    //                 'title' => $comment->commentable->title,
+    //             ],
+    //             'text' => $comment->text,
+    //             'status' => $comment->status,
+    //             'rate' => $comment->star,
+    //             'created_at' => $comment->created_at,
+    //         ];
+    //     });
+    
+    //     $response = [
+    //         'total' => $comments->total(),
+    //         'per_page' => $comments->perPage(),
+    //         'current_page' => $comments->currentPage(),
+    //         'last_page' => $comments->lastPage(),
+    //         'data' => $commentData,
+    //     ];
+    
+    //     return $response;
+    // }
 
 //     public function editCreateCommentCourse(Request $request)
 //     {
