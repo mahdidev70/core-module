@@ -44,54 +44,54 @@ class CommentController extends Controller
 //         return response()->json($result,200);
 //     }
 
-//     public function getComments(Article $slug, Request $request)
-//     {
-//         $article = new Article();
+    // public function getComments(Article $slug, Request $request)
+    // {
+    //     $article = new Article();
 
-//         $parentId = $request->parentId;
-//         if ($parentId) {
-//             $commentsQuery = Comment::where('commentable_type', get_class($article))
-//             ->where('parent_id', $parentId)->where('status','approved');
-//         } else {
-//             $commentsQuery = $slug->comments();
-//         }
-//         $commentsQuery = $commentsQuery->withCount('replies');
+    //     $parentId = $request->parentId;
+    //     if ($parentId) {
+    //         $commentsQuery = Comment::where('commentable_type', get_class($article))
+    //         ->where('parent_id', $parentId)->where('status','approved');
+    //     } else {
+    //         $commentsQuery = $slug->comments();
+    //     }
+    //     $commentsQuery = $commentsQuery->withCount('replies');
 
-//         $comments = $commentsQuery->orderByDesc('created_at')->with('replies')->paginate(6)->through(
-//             fn($comment) => [
-//             "id" => $comment->id,
-//             "user" => [
-//                 "displayName" => $comment->user->getDisplayName(),
-//                 "id"=> $comment->user->id,
-//                 "avatarUrl" => $comment->user->avatar_url
-//             ],
-//             "creationDate" => $comment->created_at,
-//             "text" => $comment->text,
-//             "feedback" => [
-//                 'likesCount' => $comment->likes_count??0,
-//                 'dislikesCount' => $comment->dislikes_count??0,
-//                 'currentUserAction' => $comment->current_user_feedback()?? null,
-//             ],
-//             "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(fn($reply)=>[
-//                 "id" => $reply->id,
-//                 "user" => [
-//                     "displayName" => $reply->user->getDisplayName(),
-//                     "id"=> $reply->user->id,
-//                     "avatarUrl" => $reply->user->avatar_url
-//                 ],
-//                 "text" => $reply->text,
-//                 "creationDate" => $reply->created_at,
-//                 "feedback" => [
-//                     'likesCount' => $reply->likes_count??0,
-//                     'dislikesCount' => $reply->dislikes_count??0,
-//                     'currentUserAction' => $reply->current_user_feedback()?? null,
-//                 ],
-//             ])->toArray()),
-//             "replyCount" => $comment->replies_count,
-//             "replyLastPage" =>  floor(($comment->replies_count-1) / 6) + 1,
-//         ]);
-//         return $comments;
-//     }
+    //     $comments = $commentsQuery->orderByDesc('created_at')->with('replies')->paginate(6)->through(
+    //         fn($comment) => [
+    //         "id" => $comment->id,
+    //         "user" => [
+    //             "displayName" => $comment->user->getDisplayName(),
+    //             "id"=> $comment->user->id,
+    //             "avatarUrl" => $comment->user->avatar_url
+    //         ],
+    //         "creationDate" => $comment->created_at,
+    //         "text" => $comment->text,
+    //         "feedback" => [
+    //             'likesCount' => $comment->likes_count??0,
+    //             'dislikesCount' => $comment->dislikes_count??0,
+    //             'currentUserAction' => $comment->current_user_feedback()?? null,
+    //         ],
+    //         "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(fn($reply)=>[
+    //             "id" => $reply->id,
+    //             "user" => [
+    //                 "displayName" => $reply->user->getDisplayName(),
+    //                 "id"=> $reply->user->id,
+    //                 "avatarUrl" => $reply->user->avatar_url
+    //             ],
+    //             "text" => $reply->text,
+    //             "creationDate" => $reply->created_at,
+    //             "feedback" => [
+    //                 'likesCount' => $reply->likes_count??0,
+    //                 'dislikesCount' => $reply->dislikes_count??0,
+    //                 'currentUserAction' => $reply->current_user_feedback()?? null,
+    //             ],
+    //         ])->toArray()),
+    //         "replyCount" => $comment->replies_count,
+    //         "replyLastPage" =>  floor(($comment->replies_count-1) / 6) + 1,
+    //     ]);
+    //     return $comments;
+    // }
 
 //     public function storeFeedback($article_slug,$commentId,Request $request)
 //     {
@@ -172,50 +172,50 @@ class CommentController extends Controller
 
     // }
 
-    public function getArticleCommentsListCommon()
-    {
-        $article = new Article();
+    // public function getArticleCommentsListCommon()
+    // {
+    //     $article = new Article();
 
-        return ['counts' => [
-            'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
-            where('status', 'waiting_for_approval')->count(),
-            'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
-            'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
-            'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
-            'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
-        ]
-            ];
-    }
+    //     return ['counts' => [
+    //         'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
+    //         where('status', 'waiting_for_approval')->count(),
+    //         'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
+    //         'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
+    //         'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
+    //         'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
+    //     ]
+    //         ];
+    // }
 
-    public function updateArticleCommentsStatus(Request $request, Comment $comment): array
-    {
-        $validatedData = $request->validate([
-            'status' => 'required|in:approved,deleted,rejected',
-            'ids' => 'required|array',
-            'reason' => 'required_if:status,rejected'
-        ]);
+    // public function updateArticleCommentsStatus(Request $request, Comment $comment): array
+    // {
+    //     $validatedData = $request->validate([
+    //         'status' => 'required|in:approved,deleted,rejected',
+    //         'ids' => 'required|array',
+    //         'reason' => 'required_if:status,rejected'
+    //     ]);
 
-        $mapping = array(
-            "apple" => "star",
-            'approved' =>  "approved",
-            'deleted'=>'deleted',
-            'rejected' => 'rejected'
-        );
+    //     $mapping = array(
+    //         "apple" => "star",
+    //         'approved' =>  "approved",
+    //         'deleted'=>'deleted',
+    //         'rejected' => 'rejected'
+    //     );
 
-        $data = [];
-        $data['status'] =$mapping[$validatedData['status']];
+    //     $data = [];
+    //     $data['status'] =$mapping[$validatedData['status']];
 
-        if ($mapping[$validatedData['status']] == 'rejected') {
-            $data['rejection_reason'] = $validatedData['reason'];
-        }
+    //     if ($mapping[$validatedData['status']] == 'rejected') {
+    //         $data['rejection_reason'] = $validatedData['reason'];
+    //     }
 
-        Comment::whereIn('id', $validatedData['ids'])
-            ->update($data);
+    //     Comment::whereIn('id', $validatedData['ids'])
+    //         ->update($data);
 
-        return [
-            'updatedComments' => $validatedData['ids'],
-        ];
-    }
+    //     return [
+    //         'updatedComments' => $validatedData['ids'],
+    //     ];
+    // }
 
     // public function editArticleCommentText(Request $request, Comment $comment_id)
     // {
