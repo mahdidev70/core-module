@@ -2,6 +2,9 @@
 
 namespace TechStudio\Core\app\Models;
 
+use TechStudio\Blog\app\Models\Article;
+
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
