@@ -9,7 +9,7 @@ trait taggeable
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, 'taggable');
+        return $this->morphToMany(Tag::class, 'core_taggable');
     }
 
 }
