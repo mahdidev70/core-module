@@ -15,7 +15,7 @@ class Comment extends Model
 {
     // use HasFactory, SoftDeletes, Likeable;
 
-    protected $table = 'core_commetns';
+    protected $table = 'core_comments';
 
     protected $dates = ['deleted_at'];
 

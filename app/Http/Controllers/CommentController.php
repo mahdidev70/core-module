@@ -1,6 +1,6 @@
 <?php
 
-namespace TechStudio\Blog\app\Http\Controllers;
+namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
@@ -115,76 +115,77 @@ class CommentController extends Controller
 //     }
 
 
-//     public function getArticleCommentsListData(Request $request)
-//     {
+    public function getArticleCommentsListData(Request $request)
+    {
 
-//         $article = new Article();
+        $article = new Article();
 
-//         $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
+        $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
 
-//         if ($request->filled('search')) {
-//             $txt = $request->get('search');
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
 
-//             $query->where(function ($q) use ($txt) {
-//                 $q->where('text', 'like', '%' . $txt . '%');
-//             });
-//         }
+            $query->where(function ($q) use ($txt) {
+                $q->where('text', 'like', '%' . $txt . '%');
+            });
+        }
 
-//         if ($request->filled('status')) {
-//             if ($request->status == 'deleted'){
-//                 $query->where('status', 'deleted');
-//             }elseif ($request->status == 'rejected') {
-//                 $query->where('status', 'rejected');
-//             }elseif ($request->status == 'waiting_for_approval') {
-//                 $query->where('status' == 'waiting_for_approval');
-//             }elseif ($request->status == 'approved') {
-//                 $query->where('status', 'approved');
-//             }
-//         }
+        if ($request->filled('status')) {
+            if ($request->status == 'deleted'){
+                $query->where('status', 'deleted');
+            }elseif ($request->status == 'rejected') {
+                $query->where('status', 'rejected');
+            }elseif ($request->status == 'waiting_for_approval') {
+                $query->where('status' == 'waiting_for_approval');
+            }elseif ($request->status == 'approved') {
+                $query->where('status', 'approved');
+            }
+        }
 
-//         $comments = $query->paginate(10);
+        $comments = $query->paginate(10);
 
-//         $data = $comments->map(function ($comment) {
-//             return [
-//                 'author' => [
-//                     'displayName' => $comment->user->getDisplayName(),
-//                     'id' => $comment->user->id,
-//                 ],
-//                 'text' => $comment->text,
-//                 'relatedArticle' => [
-//                     'title' => $comment->article->title,
-//                     'slug' => $comment->article->slug,
-//                 ],
-//                 'date' => $comment->created_at,
-//                 'ip' => $comment->ip,
-//                 'status' => $comment->status,
-//                 'id'=> $comment->id
-//             ];
-//         });
+        $data = $comments->map(function ($comment) {
+            return [
+                'author' => [
+                    'displayName' => $comment->user->getDisplayName(),
+                    'id' => $comment->user->id,
+                ],
+                'text' => $comment->text,
+                'relatedArticle' => [
+                    'title' => $comment->article->title,
+                    'slug' => $comment->article->slug,
+                ],
+                'date' => $comment->created_at,
+                'ip' => $comment->ip,
+                'status' => $comment->status,
+                'id'=> $comment->id
+            ];
+        });
 
-//         return [
-//             'total' => $comments->total(),
-//             'current_page' => $comments->currentPage(),
-//             'per_page' => $comments->perPage(),
-//             'last_page' => $comments->lastPage(),
-//             'data' => $data
-//         ];
+        return [
+            'total' => $comments->total(),
+            'current_page' => $comments->currentPage(),
+            'per_page' => $comments->perPage(),
+            'last_page' => $comments->lastPage(),
+            'data' => $data
+        ];
 
-//     }
+    }
 
-//     public function getArticleCommentsListCommon()
-//     {
-//         $article = new Article();
-//         return ['counts' => [
-//             'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
-//             where('status', 'waiting_for_approval')->count(),
-//             'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
-//             'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
-//             'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
-//             'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
-//         ]
-//             ];
-//     }
+    public function getArticleCommentsListCommon()
+    {
+        $article = new Article();
+
+        return ['counts' => [
+            'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
+            where('status', 'waiting_for_approval')->count(),
+            'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
+            'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
+            'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
+            'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
+        ]
+            ];
+    }
 
 //     public function updateArticleCommentsStatus(Request $request, Comment $comment): array
 //     {
@@ -223,60 +224,60 @@ class CommentController extends Controller
 //     }
 
 
-//     public function getCourseCommnetsList(Request $request)
-//     {
-//         $query = Comment::where('commentable_type', 'App\Models\Course');
+    public function getCourseCommnetsList(Request $request)
+    {
+        $query = Comment::where('commentable_type', 'App\Models\Course');
     
-//         if ($request->filled('search')) {
-//             $txt = $request->get('search');
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
         
-//             $query->where(function ($q) use ($txt) {
-//                 $q->where('text', 'like', '%' . $txt . '%');
-//             });
-//         }
+            $query->where(function ($q) use ($txt) {
+                $q->where('text', 'like', '%' . $txt . '%');
+            });
+        }
 
-//         if ($request->filled('status')) {
-//             if ($request->status == 'deleted'){
-//                 $query->where('status', 'deleted');
-//             }elseif ($request->status == 'rejected') {
-//                 $query->where('status', 'rejected');
-//             }elseif ($request->status == 'waiting_for_approval') {
-//                 $query->where('status' == 'waiting_for_approval');
-//             }elseif ($request->status == 'approved') {
-//                 $query->where('status', 'approved');
-//             }
-//         }
+        if ($request->filled('status')) {
+            if ($request->status == 'deleted'){
+                $query->where('status', 'deleted');
+            }elseif ($request->status == 'rejected') {
+                $query->where('status', 'rejected');
+            }elseif ($request->status == 'waiting_for_approval') {
+                $query->where('status' == 'waiting_for_approval');
+            }elseif ($request->status == 'approved') {
+                $query->where('status', 'approved');
+            }
+        }
     
-//         $comments = $query->with('commentable')->paginate(10);
+        $comments = $query->with('commentable')->paginate(10);
     
-//         $commentData = $comments->map(function ($comment) {
-//             return [
-//                 'id' => $comment->id,
-//                 'user' => [
-//                     'id' => $comment->user->id,
-//                     'displayName' => $comment->user->getDisplayName(),
-//                 ],
-//                 'course' => [
-//                     'id' => $comment->commentable->id,
-//                     'title' => $comment->commentable->title,
-//                 ],
-//                 'text' => $comment->text,
-//                 'status' => $comment->status,
-//                 'rate' => $comment->star,
-//                 'created_at' => $comment->created_at,
-//             ];
-//         });
+        $commentData = $comments->map(function ($comment) {
+            return [
+                'id' => $comment->id,
+                'user' => [
+                    'id' => $comment->user->id,
+                    'displayName' => $comment->user->getDisplayName(),
+                ],
+                'course' => [
+                    'id' => $comment->commentable->id,
+                    'title' => $comment->commentable->title,
+                ],
+                'text' => $comment->text,
+                'status' => $comment->status,
+                'rate' => $comment->star,
+                'created_at' => $comment->created_at,
+            ];
+        });
     
-//         $response = [
-//             'total' => $comments->total(),
-//             'per_page' => $comments->perPage(),
-//             'current_page' => $comments->currentPage(),
-//             'last_page' => $comments->lastPage(),
-//             'data' => $commentData,
-//         ];
+        $response = [
+            'total' => $comments->total(),
+            'per_page' => $comments->perPage(),
+            'current_page' => $comments->currentPage(),
+            'last_page' => $comments->lastPage(),
+            'data' => $commentData,
+        ];
     
-//         return $response;
-//     }
+        return $response;
+    }
 
 //     public function editCreateCommentCourse(Request $request)
 //     {
