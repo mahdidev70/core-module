@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->unique();
             $table->string('slug');
             $table->string('description')->nullable();
-            $table->enum('status', ['active', 'hidden', 'deleted'])->after('slug')->default('active');;
+            $table->enum('status', ['active', 'hidden', 'deleted'])->default('active');;
             $table->timestamps();
             $table->softDeletes();
         });
