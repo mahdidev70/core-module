@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('core_taggable', function (Blueprint $table) {
+        Schema::create('core_taggables', function (Blueprint $table) {
             $table->id();
             $table->integer('tag_id');
             $table->string('taggable_type');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taggables');
+        Schema::dropIfExists('core_taggables');
     }
 };
