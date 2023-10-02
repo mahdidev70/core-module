@@ -2,7 +2,7 @@
 
 namespace TechStudio\Core\app\Models\Traits;
 
-use App\Models\Bookmark;
+use TechStudio\Core\app\Models\Bookmark;
 
 trait Bookmarkable
 {
