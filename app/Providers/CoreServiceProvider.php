@@ -12,6 +12,8 @@ class CoreServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../../routes/api.php');
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         
-        app('router')->aliasMiddleware('login_required', TechStudio\Core\app\Http\Middleware\LoginRequired::class);
+        // $router = $this->app['router'];
+        // $router->pushMiddlewareToGroup('web', MyPackage\Middleware\WebOne::class);
+        app('router')->aliasMiddleware('login_required', \TechStudio\Core\app\Http\Middleware\LoginRequired::class);
     }
 }
