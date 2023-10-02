@@ -2,13 +2,13 @@
 
 namespace TechStudio\Core\app\Http\Middleware;
 
-use App\Helper\AccessTokenDecoder;
+use TechStudio\Core\app\Helper\AccessTokenDecoder;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use App\Models\UserProfile;
+use TechStudio\Core\app\Models\UserProfile;
 use Illuminate\Support\Facades\Auth;
 
 class LoginRequired
