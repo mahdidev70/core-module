@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Nette\NotImplementedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class UserProfile extends Model
+class UserProfile extends Model implements Authenticatable
 {
     use HasFactory, Notifiable;
     protected $table = 'core_user_profiles';
