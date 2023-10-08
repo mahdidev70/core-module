@@ -129,114 +129,113 @@ return        $comment = Comment::create($input);
     }
 
 
-    // public function getArticleCommentsListData(Request $request)
-    // {
+    public function getArticleCommentsListData(Request $request)
+    {
 
-    //     $article = new Article();
+        $article = new Article();
 
-    //     $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
+        $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
 
-    //     if ($request->filled('search')) {
-    //         $txt = $request->get('search');
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
 
-    //         $query->where(function ($q) use ($txt) {
-    //             $q->where('text', 'like', '%' . $txt . '%');
-    //         });
-    //     }
+            $query->where(function ($q) use ($txt) {
+                $q->where('text', 'like', '%' . $txt . '%');
+            });
+        }
 
-    //     if ($request->filled('status')) {
-    //         if ($request->status == 'deleted'){
-    //             $query->where('status', 'deleted');
-    //         }elseif ($request->status == 'rejected') {
-    //             $query->where('status', 'rejected');
-    //         }elseif ($request->status == 'waiting_for_approval') {
-    //             $query->where('status' == 'waiting_for_approval');
-    //         }elseif ($request->status == 'approved') {
-    //             $query->where('status', 'approved');
-    //         }
-    //     }
+        if ($request->filled('status')) {
+            if ($request->status == 'deleted'){
+                $query->where('status', 'deleted');
+            }elseif ($request->status == 'rejected') {
+                $query->where('status', 'rejected');
+            }elseif ($request->status == 'waiting_for_approval') {
+                $query->where('status' == 'waiting_for_approval');
+            }elseif ($request->status == 'approved') {
+                $query->where('status', 'approved');
+            }
+        }
 
-    //     $comments = $query->paginate(10);
+        $comments = $query->paginate(10);
 
-    //     $data = $comments->map(function ($comment) {
-    //         return [
-    //             'author' => [
-    //                 'displayName' => $comment->user->getDisplayName(),
-    //                 'id' => $comment->user->id,
-    //             ],
-    //             'text' => $comment->text,
-    //             'relatedArticle' => [
-    //                 'title' => $comment->article->title,
-    //                 'slug' => $comment->article->slug,
-    //             ],
-    //             'date' => $comment->created_at,
-    //             'ip' => $comment->ip,
-    //             'status' => $comment->status,
-    //             'id'=> $comment->id
-    //         ];
-    //     });
+        $data = $comments->map(function ($comment) {
+            return [
+                'author' => [
+                    'displayName' => $comment->user->getDisplayName(),
+                    'id' => $comment->user->id,
+                ],
+                'text' => $comment->text,
+                'relatedArticle' => [
+                    'title' => $comment->article->title,
+                    'slug' => $comment->article->slug,
+                ],
+                'date' => $comment->created_at,
+                'ip' => $comment->ip,
+                'status' => $comment->status,
+                'id'=> $comment->id
+            ];
+        });
 
-    //     return [
-    //         'total' => $comments->total(),
-    //         'current_page' => $comments->currentPage(),
-    //         'per_page' => $comments->perPage(),
-    //         'last_page' => $comments->lastPage(),
-    //         'data' => $data
-    //     ];
+        return [
+            'total' => $comments->total(),
+            'current_page' => $comments->currentPage(),
+            'per_page' => $comments->perPage(),
+            'last_page' => $comments->lastPage(),
+            'data' => $data
+        ];
 
-    // }
+    }
 
-    // public function getArticleCommentsListCommon()
-    // {
-    //     $article = new Article();
+    public function getArticleCommentsListCommon()
+    {
+        $article = new Article();
 
-    //     return ['counts' => [
-    //         'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
-    //         where('status', 'waiting_for_approval')->count(),
-    //         'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
-    //         'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
-    //         'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
-    //         'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
-    //     ]
-    //         ];
-    // }
+        return ['counts' => [
+            'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
+            where('status', 'waiting_for_approval')->count(),
+            'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
+            'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
+            'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
+            'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
+        ]
+            ];
+    }
 
-    // public function updateArticleCommentsStatus(Request $request, Comment $comment): array
-    // {
-    //     $validatedData = $request->validate([
-    //         'status' => 'required|in:approved,deleted,rejected',
-    //         'ids' => 'required|array',
-    //         'reason' => 'required_if:status,rejected'
-    //     ]);
+    public function updateArticleCommentsStatus($local, Comment $comment, Request $request): array
+    {
+        $validatedData = $request->validate([
+            'status' => 'required|in:approved,deleted,rejected',
+            'ids' => 'required|array',
+            'reason' => 'required_if:status,rejected'
+        ]);
 
-    //     $mapping = array(
-    //         "apple" => "star",
-    //         'approved' =>  "approved",
-    //         'deleted'=>'deleted',
-    //         'rejected' => 'rejected'
-    //     );
+        $mapping = array(
+            "apple" => "star",
+            'approved' =>  "approved",
+            'deleted'=>'deleted',
+            'rejected' => 'rejected'
+        );
 
-    //     $data = [];
-    //     $data['status'] =$mapping[$validatedData['status']];
+        $data = [];
+        $data['status'] =$mapping[$validatedData['status']];
 
-    //     if ($mapping[$validatedData['status']] == 'rejected') {
-    //         $data['rejection_reason'] = $validatedData['reason'];
-    //     }
+        if ($mapping[$validatedData['status']] == 'rejected') {
+            $data['rejection_reason'] = $validatedData['reason'];
+        }
 
-    //     Comment::whereIn('id', $validatedData['ids'])
-    //         ->update($data);
+        Comment::whereIn('id', $validatedData['ids'])
+            ->update($data);
 
-    //     return [
-    //         'updatedComments' => $validatedData['ids'],
-    //     ];
-    // }
+        return [
+            'updatedComments' => $validatedData['ids'],
+        ];
+    }
 
-    // public function editArticleCommentText(Request $request, Comment $comment_id)
-    // {
-    //     return $comment_id;
-    //     $comment_id->update(['text' => $request->text]);
-    //     return ['id'=> $comment_id->id ];
-    // }
+    public function editArticleCommentText($local, Comment $comment_id, Request $request)
+    {
+        $comment_id->update(['text' => $request->text]);
+        return ['id'=> $comment_id->id ];
+    }
 
 
     // public function getCourseCommnetsList(Request $request)

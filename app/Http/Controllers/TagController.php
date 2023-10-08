@@ -15,163 +15,163 @@ use App\Helper\SlugGenerator;
 
 class TagController extends Controller
 {
-    // public function createTags(Tag $tag, Request $request)
-    // {
-    //     $checkTag = Tag::where('title', $request->title)->first();  
+    public function createTags($local, Tag $tag, Request $request)
+    {
+        $checkTag = Tag::where('title', $request->title)->first();  
+        if ($checkTag){
+            return response()->json(['message' => 'این عنوان قبلا انتخاب شده'], 409);
+        }else {
+            return 'asdf';
 
-    //     if ($checkTag){
-    //         return response()->json(['message' => 'این عنوان قبلا انتخاب شده'], 409);
-    //     }else {
+            $validatedData = $request->validate([
+                'title' => 'required|string',
+                'slug' => 'required|string',
+                'description' => 'nullable|string',
+            ]);
+    
+            $tag = new Tag();
+            $tag->title = $validatedData['title'];
+            // $tag->slug = SlugGenerator::transform($validatedData['title']);
+            $tag->slug = $validatedData['slug'];
+            $tag->description = $validatedData['description'];
+            $tag->save();
+    
+            $articleCount = $tag->articles()->count();
+    
+            $reponseData = [
+                'id' => $tag->id,
+                'title' => $tag->title,
+                'slug' => $tag->slug,
+                'description' => $tag->description,
+                'status' => 'active',
+                'articleCount' => $articleCount,
+                'bookmarksCount' => 0,
+                'commentsCount' => 0,
+                'viewsCount' => 0,
+            ];
+    
+            return response()->json($reponseData);
+        }
 
-    //         $validatedData = $request->validate([
-    //             'title' => 'required|string',
-    //             'slug' => 'required|string',
-    //             'description' => 'nullable|string',
-    //         ]);
-    
-    //         $tag = new Tag();
-    //         $tag->title = $validatedData['title'];
-    //         // $tag->slug = SlugGenerator::transform($validatedData['title']);
-    //         $tag->slug = $validatedData['slug'];
-    //         $tag->description = $validatedData['description'];
-    //         $tag->save();
-    
-    //         $articleCount = $tag->articles()->count();
-    
-    //         $reponseData = [
-    //             'id' => $tag->id,
-    //             'title' => $tag->title,
-    //             'slug' => $tag->slug,
-    //             'description' => $tag->description,
-    //             'status' => 'active',
-    //             'articleCount' => $articleCount,
-    //             'bookmarksCount' => 0,
-    //             'commentsCount' => 0,
-    //             'viewsCount' => 0,
-    //         ];
-    
-    //         return response()->json($reponseData);
-    //     }
+    }
 
-    // }
-
-    // public function listTags(Request $request) 
-    // {
-        // if ($request->filled('search')) {
-        //     $txt = $request->get('search');
+    public function listTags(Request $request) 
+    {
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
             
-        //     $query = Tag::where(function($q) use($txt) {
-        //         $q->where('title', 'like', '%'.$txt)
-        //             ->orWhere('title', 'like', '% '.$txt.'%')
-        //             ->orWhere('title', 'like', $txt.'%');
-        //     });
+            $query = Tag::where(function($q) use($txt) {
+                $q->where('title', 'like', '%'.$txt)
+                    ->orWhere('title', 'like', '% '.$txt.'%')
+                    ->orWhere('title', 'like', $txt.'%');
+            });
         
-        //     $tags = $query->take(10)->get(['title', 'slug']);
+            $tags = $query->take(10)->get(['title', 'slug']);
         
-        //     $tags = $query->paginate(10); 
+            $tags = $query->paginate(10); 
 
-        //     return $tags;
+            return $tags;
         
-        // }
+        }
 
-        // $tag = Tag::withCount('articles')->paginate(10);
+        $tag = Tag::withCount('articles')->paginate(10);
 
-        // $articles = Article::with('tags')->get();
+        $articles = Article::with('tags')->get();
 
-        // $data = [
-        //     'total' => $tag->total(),
-        //     'current_page' => $tag->currentPage(),
-        //     'per_page' => $tag->perPage(),
-        //     'last_page' => $tag->lastPage(),
+        $data = [
+            'total' => $tag->total(),
+            'current_page' => $tag->currentPage(),
+            'per_page' => $tag->perPage(),
+            'last_page' => $tag->lastPage(),
     
-        //     'data' => $tag->map(function ($tag) {
-        //         return [
-        //             'id' => $tag->id,
-        //             'title' => $tag->title,
-        //             'slug' => $tag->slug,
-        //             'description' => $tag->description,
-        //             'status' => $tag->status,
-        //             'articleCount' => $tag->articles_count, 
-        //             'bookmarksCount' => $tag->articles->map(function ($article) {
-        //                 return $article->bookmarks()->count();
-        //             })->sum(),
-        //             'commentsCount' => $tag->articles->map(function ($article){
-        //                 return $article->comments()->count();
-        //             })->sum(),
-        //             'viewsCount' => $tag->articles->pluck('viewsCount')->sum(),
-        //         ];
-        //     }),
-        // ];
+            'data' => $tag->map(function ($tag) {
+                return [
+                    'id' => $tag->id,
+                    'title' => $tag->title,
+                    'slug' => $tag->slug,
+                    'description' => $tag->description,
+                    'status' => $tag->status,
+                    'articleCount' => $tag->articles_count, 
+                    'bookmarksCount' => $tag->articles->map(function ($article) {
+                        return $article->bookmarks()->count();
+                    })->sum(),
+                    'commentsCount' => $tag->articles->map(function ($article){
+                        return $article->comments()->count();
+                    })->sum(),
+                    'viewsCount' => $tag->articles->pluck('viewsCount')->sum(),
+                ];
+            }),
+        ];
 
-        // return $data;
-        // $query = Tag::withCount('articles');
+        return $data;
+        $query = Tag::withCount('articles');
 
-    // if ($request->filled('search')) {
-    //     $txt = $request->input('search');
+    if ($request->filled('search')) {
+        $txt = $request->input('search');
 
-    //     $query->where(function($q) use($txt) {
-    //         $q->where('title', 'like', '%' . $txt)
-    //           ->orWhere('title', 'like', '% ' . $txt . '%')
-    //           ->orWhere('title', 'like', $txt . '%');
-    //     });
-    //     $tags = $query->take(10)->get(['title', 'slug']);
+        $query->where(function($q) use($txt) {
+            $q->where('title', 'like', '%' . $txt)
+              ->orWhere('title', 'like', '% ' . $txt . '%')
+              ->orWhere('title', 'like', $txt . '%');
+        });
+        $tags = $query->take(10)->get(['title', 'slug']);
         
-    //         $tags = $query->paginate(10); 
+            $tags = $query->paginate(10); 
 
-    //         return $tags;
-    // }
+            return $tags;
+    }
 
-    // $sortBy = $request->input('sort_by', 'title');
-    // $sortOrder = $request->input('sort_order', 'asc');
+    $sortBy = $request->input('sort_by', 'title');
+    $sortOrder = $request->input('sort_order', 'asc');
 
-    // $validSortColumns = ['title', 'viewsCount', 'commentsCount', 'bookmarksCount'];
+    $validSortColumns = ['title', 'viewsCount', 'commentsCount', 'bookmarksCount'];
 
-    // if (!in_array($sortBy, $validSortColumns)) {
-    //     $sortBy = 'title';
-    // }
+    if (!in_array($sortBy, $validSortColumns)) {
+        $sortBy = 'title';
+    }
 
-    // $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
+    $sortOrder = strtolower($sortOrder) === 'desc' ? 'desc' : 'asc';
 
-    // $query->orderBy($sortBy, $sortOrder);
-    // if ($request->has('sort')) {
-    //     if ($request->sort == 'bookmarks') {
-    //         $query->orderByDesc('bookmarks_count');
-    //     } elseif ($request->sort == 'views') {
-    //         $query->orderByDesc('viewsCount');
-    //     } elseif ($request->sort == 'comments') {
-    //         $query->withCount('comments')->orderByDesc('comments_count');
-    //     }
-    // } 
+    $query->orderBy($sortBy, $sortOrder);
+    if ($request->has('sort')) {
+        if ($request->sort == 'bookmarks') {
+            $query->orderByDesc('bookmarks_count');
+        } elseif ($request->sort == 'views') {
+            $query->orderByDesc('viewsCount');
+        } elseif ($request->sort == 'comments') {
+            $query->withCount('comments')->orderByDesc('comments_count');
+        }
+    } 
 
-    // $tags = $query->paginate(10);
+    $tags = $query->paginate(10);
 
-    // $data = [
-    //     'total' => $tags->total(),
-    //     'current_page' => $tags->currentPage(),
-    //     'per_page' => $tags->perPage(),
-    //     'last_page' => $tags->lastPage(),
-    //     'data' => $tags->map(function ($tag) {
-    //         return [
-    //             'id' => $tag->id,
-    //             'title' => $tag->title,
-    //             'slug' => $tag->slug,
-    //             'description' => $tag->description,
-    //             'status' => $tag->status,
-    //             'articleCount' => $tag->articles_count,
-    //             'bookmarksCount' => $tag->articles->map(function ($article) {
-    //                 return $article->bookmarks()->count();
-    //             })->sum(),
-    //             'commentsCount' => $tag->articles->map(function ($article){
-    //                 return $article->comments()->count();
-    //             })->sum(),
-    //             'viewsCount' => $tag->articles->pluck('viewsCount')->sum(),
-    //         ];
-    //     })
-    // ];
+    $data = [
+        'total' => $tags->total(),
+        'current_page' => $tags->currentPage(),
+        'per_page' => $tags->perPage(),
+        'last_page' => $tags->lastPage(),
+        'data' => $tags->map(function ($tag) {
+            return [
+                'id' => $tag->id,
+                'title' => $tag->title,
+                'slug' => $tag->slug,
+                'description' => $tag->description,
+                'status' => $tag->status,
+                'articleCount' => $tag->articles_count,
+                'bookmarksCount' => $tag->articles->map(function ($article) {
+                    return $article->bookmarks()->count();
+                })->sum(),
+                'commentsCount' => $tag->articles->map(function ($article){
+                    return $article->comments()->count();
+                })->sum(),
+                'viewsCount' => $tag->articles->pluck('viewsCount')->sum(),
+            ];
+        })
+    ];
 
-    // return $data;
+    return $data;
 
-    // }
+    }
 
     public function getCommonListTag()
     {
@@ -187,40 +187,40 @@ class TagController extends Controller
         return $data;
     }
 
-    public function updateTags(Tag $tag, Request $request) 
-    {
-        $validatedData = $request->validate([
-            'id' => 'required|integer',
-            'title' => 'required|string',
-            'slug' => 'required|string',
-            'description' => 'nullable|string',
-            'status' => 'required|in:active,hidden,deleted',
-        ]);
+    // public function updateTags($local, Tag $tag, Request $request) 
+    // {
+    //     $validatedData = $request->validate([
+    //         'id' => 'required|integer',
+    //         'title' => 'required|string',
+    //         'slug' => 'required|string',
+    //         'description' => 'nullable|string',
+    //         'status' => 'required|in:active,hidden,deleted',
+    //     ]);
 
-        $tag = Tag::where('id', $validatedData['id'])->firstOrFail();
+    //     $tag = Tag::where('id', $validatedData['id'])->firstOrFail();
 
-        $tag->title = $validatedData['title'];
-        // $tag->slug = SlugGenerator::transform($validatedData['newTitle']);.
-        $tag->slug = $validatedData['slug'];
-        $tag->description = $validatedData['description'];
-        $tag->status = $validatedData['status'];
-        $tag->save();
+    //     $tag->title = $validatedData['title'];
+    //     // $tag->slug = SlugGenerator::transform($validatedData['newTitle']);.
+    //     $tag->slug = $validatedData['slug'];
+    //     $tag->description = $validatedData['description'];
+    //     $tag->status = $validatedData['status'];
+    //     $tag->save();
     
-        $updatedTag = Tag::where('id', $validatedData['id'])->first();
+    //     $updatedTag = Tag::where('id', $validatedData['id'])->first();
     
-        $articleCount = $updatedTag->articles()->count();
+    //     $articleCount = $updatedTag->articles()->count();
     
-        $responseData = [
-            'id' => $tag->id,
-            'title' => $tag->title,
-            'slug' => $tag->slug,
-            'description' => $tag->description,
-            'status' => $tag->status,
-            'articleCount' => $articleCount,
-        ];
+    //     $responseData = [
+    //         'id' => $tag->id,
+    //         'title' => $tag->title,
+    //         'slug' => $tag->slug,
+    //         'description' => $tag->description,
+    //         'status' => $tag->status,
+    //         'articleCount' => $articleCount,
+    //     ];
     
-        return response()->json($responseData);
-    }
+    //     return response()->json($responseData);
+    // }
 
     public function updateTagsStatus(Request $request, Tag $tag)
     {

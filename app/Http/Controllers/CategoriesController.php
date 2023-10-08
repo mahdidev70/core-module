@@ -5,53 +5,54 @@ namespace TechStudio\Core\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
+use TechStudio\Core\app\Helper\SlugGenerator;
 
-use App\Helper\SlugGenerator;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
 class CategoriesController extends Controller
 {
-    // public function createCategory(Category $category, Request $request)
-    // {
-    //     $checkCategory = Category::where('title', $request->title)->first();
+    public function createCategory($local, Category $category, Request $request)
+    {
+        $checkCategory = Category::where('title', $request->title)->first();
 
-    //     if ($checkCategory) {
-    //         return response()->json(['message' => 'این عنوان قبلا انتخاب شده'], 409);
-    //     }else {
-    //         $validatedData = $request->validate([
-    //             'title' => 'required|string',
-    //             'slug' => 'required|string',
-    //             'description' => 'nullable|string',
-    //         ]);
+        if ($checkCategory) {
+            return response()->json(['message' => 'این عنوان قبلا انتخاب شده'], 409);
+        }else {
+            $validatedData = $request->validate([
+                'title' => 'required|string',
+                'slug' => 'required|string',
+                'description' => 'nullable|string',
+            ]);
         
-    //         $category = new Category();
-    //         $category->title = $validatedData['title'];
-    //         // $category->slug = SlugGenerator::transform($validatedData['title']);
-    //         $category->slug = $validatedData['slug'];
-    //         $category->description = $validatedData['description'];
-    //         $category->table_type = "App\Models\Article";
-    //         $category->save();
+            $category = new Category();
+            $category->title = $validatedData['title'];
+            // $category->slug = SlugGenerator::transform($validatedData['title']);
+            $category->slug = $validatedData['slug'];
+            $category->description = $validatedData['description'];
+            $category->table_type = "App\Models\Article";
+            $category->save();
         
-    //         $articleCount = $category->articles()->count();
+            $articleCount = $category->articles()->count();
         
-    //         $responseData = [
-    //             'id' => $category->id,
-    //             'title' => $category->title,
-    //             'slug' => $category->slug,
-    //             'description' => $category->description,
-    //             'status' => 'active',
-    //             'articleCount' => $articleCount,
-    //             'bookmarksCount' => 0,
-    //             'commentsCount' => 0,
-    //             'viewsCount' => 0,
-    //         ];
+            $responseData = [
+                'id' => $category->id,
+                'title' => $category->title,
+                'slug' => $category->slug,
+                'description' => $category->description,
+                'status' => 'active',
+                'articleCount' => $articleCount,
+                'bookmarksCount' => 0,
+                'commentsCount' => 0,
+                'viewsCount' => 0,
+            ];
         
-    //         return response()->json($responseData);
-    //     }
+            return response()->json($responseData);
+        }
         
-    // }
+    }
 
     public function listCategory(Request $request)
     {
@@ -73,7 +74,7 @@ class CategoriesController extends Controller
 
         }
 
-        $categories= Category::where('table_type', 'App\Models\Article')->withCount('articles')->paginate(10);
+        $categories= Category::where('table_type', 'TechStudio\Blog\app\Models\Article')->withCount('articles')->paginate(10);
 
         $articles = Article::with('categories');
 
@@ -91,13 +92,13 @@ class CategoriesController extends Controller
                     'description' => $category->description,
                     'articleCount' => $category->articles_count,
                     //ToDo Core
-                    // 'commentsCount' => $category->articles->map(function($article){
-                    //     return $article->bookmarks()->count();
-                    // })->sum(),
+                    'commentsCount' => $category->articles->map(function($article){
+                        return $article->bookmarks()->count();
+                    })->sum(),
 
-                    // 'bookmarksCount' => $category->articles->map(function($article){
-                    //     return $article->comments()->count();
-                    // })->sum(),
+                    'bookmarksCount' => $category->articles->map(function($article){
+                        return $article->comments()->count();
+                    })->sum(),
                     'viewsCount' => $category->articles->pluck('viewsCount')->sum(),
                 ];
             }),
@@ -120,7 +121,7 @@ class CategoriesController extends Controller
         return $data;
     }
 
-    public function updateCategory(Category $category, Request $request)
+    public function updateCategory($local, Category $category, Request $request)
     {
 
         $validatedData = $request->validate([
@@ -157,7 +158,7 @@ class CategoriesController extends Controller
 
     }
 
-    public function updateCategoryStatus(Request $request, Category $category) 
+    public function updateCategoryStatus($local, Category $category, Request $request) 
     {
         $validatedData = $request->validate([
             'status' => 'required|in:active,hidden,deleted',
@@ -228,22 +229,22 @@ class CategoriesController extends Controller
 
     // }
 
-    // public function editCreateCategoryCourse(Request $request)
-    // {
+    public function editCreateCategoryCourse(Request $request)
+    {
 
-    //     $category = Category::updateOrCreate(
-    //         ['id' => $request['id']],
-    //         [
-    //             'title' => $request['title'],
-    //             //ToDo Core
-    //             'slug' => SlugGenerator::transform($request['title']),
-    //             'description' => $request['description'],
-    //             'table_type' => "App\Models\Course",
-    //         ]
-    //     );
+        $category = Category::updateOrCreate(
+            ['id' => $request['id']],
+            [
+                'title' => $request['title'],
+                //ToDo Core
+                'slug' => SlugGenerator::transform($request['title']),
+                'description' => $request['description'],
+                'table_type' => "App\Models\Course",
+            ]
+        );
 
-    //     return $category->id;
-    // }
+        return $category->id;
+    }
 
     // public function getCourseCategoyCommon()
     // {
