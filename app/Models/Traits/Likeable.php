@@ -2,14 +2,14 @@
 
 namespace TechStudio\Core\app\Models\Traits;
 
-use App\Models\Like;
+use TechStudio\Core\app\Models\Like;
 use Illuminate\Support\Facades\Auth;
 
 trait Likeable
 {
     public function likes()
     {
-        return $this->morphMany(Like::class, 'likeable', 'core_likes');
+        return $this->morphMany(Like::class, 'likeable');
     }
 
     public function getLikesCountAttribute()
@@ -58,7 +58,8 @@ trait Likeable
 
     public function clearBy($user_id)
     {
-        $baseClass = 'App\Models\\'.class_basename($this);
+        return $user_id;
+        $baseClass = 'TechStudio\Core\app\Models\\'.class_basename($this);
 
         return $this->likes()
             ->where('user_id',$user_id)

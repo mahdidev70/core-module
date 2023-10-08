@@ -13,106 +13,120 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class CommentController extends Controller
 {
-//     public function store(Article $slug ,Request $request)
-//     {
-//         $validatedData = $request->validate([
-//             'text'=>['required', 'max:600'],
-//         ]);
-//         $ip = $request->header('X-Real-IP') ?? $request->ip();
-//         $input = $request->all();
-//         $input['user_id'] = Auth::user()->id;
-//         $input['user_type'] = get_class(Auth::user());
-//         $input['commentable_type'] = get_class($slug);
-//         $input['commentable_id'] = $slug->id;
-//         $input['ip'] =  $ip;
-//         $input['parent_id'] = (isset($request->replyTo) && $request->replyTo !=0 ) ?$request->replyTo : null;
+    public function store($slug ,Request $request)
+    {
+        $slug = request()->slug;
+        
+        $slug = Article::where('slug', $slug)->firstOrFail();
+        $validatedData = $request->validate([
+            'text'=>['required', 'max:600'],
+        ]);
+        $ip = $request->header('X-Real-IP') ?? $request->ip();
+        $input = $request->all();
+        $input['user_id'] = Auth::user()->id;
+        $input['user_type'] = get_class(Auth::user());
+        $input['commentable_type'] = get_class($slug);
+        $input['commentable_id'] = $slug->id;
+        $input['ip'] =  $ip;
+        $input['parent_id'] = (isset($request->replyTo) && $request->replyTo !=0 ) ?$request->replyTo : null;
 
-// return        $comment = Comment::create($input);
-//         $result['id'] = $comment->id;
-//         $result['text'] = $comment->text;
-//         $result['creationDate'] = $comment->created_at;
-//         $result['user'] =  [
-//         "displayName" =>  $comment->user->getDisplayName(),
-//         "id"=> $comment->user->id,
-//         "avatarUrl" => $comment->user->avatar_url
-//     ];
-//         $result['replies'] = [];
-//         $result['feedback'] = [
-//             'likesCount' => 0,"dislikesCount" => 0 , "currentUserAction" => null
-//         ];
+return        $comment = Comment::create($input);
+        $result['id'] = $comment->id;
+        $result['text'] = $comment->text;
+        $result['creationDate'] = $comment->created_at;
+        $result['user'] =  [
+        "displayName" =>  $comment->user->getDisplayName(),
+        "id"=> $comment->user->id,
+        "avatarUrl" => $comment->user->avatar_url
+    ];
+        $result['replies'] = [];
+        $result['feedback'] = [
+            'likesCount' => 0,"dislikesCount" => 0 , "currentUserAction" => null
+        ];
 
-//         return response()->json($result,200);
-//     }
+        return response()->json($result,200);
+    }
 
-    // public function getComments(Article $slug, Request $request)
-    // {
-    //     $article = new Article();
+    public function getComments($slug, Request $request)
+    {
 
-    //     $parentId = $request->parentId;
-    //     if ($parentId) {
-    //         $commentsQuery = Comment::where('commentable_type', get_class($article))
-    //         ->where('parent_id', $parentId)->where('status','approved');
-    //     } else {
-    //         $commentsQuery = $slug->comments();
-    //     }
-    //     $commentsQuery = $commentsQuery->withCount('replies');
+        $slug = request()->slug;
 
-    //     $comments = $commentsQuery->orderByDesc('created_at')->with('replies')->paginate(6)->through(
-    //         fn($comment) => [
-    //         "id" => $comment->id,
-    //         "user" => [
-    //             "displayName" => $comment->user->getDisplayName(),
-    //             "id"=> $comment->user->id,
-    //             "avatarUrl" => $comment->user->avatar_url
-    //         ],
-    //         "creationDate" => $comment->created_at,
-    //         "text" => $comment->text,
-    //         "feedback" => [
-    //             'likesCount' => $comment->likes_count??0,
-    //             'dislikesCount' => $comment->dislikes_count??0,
-    //             'currentUserAction' => $comment->current_user_feedback()?? null,
-    //         ],
-    //         "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(fn($reply)=>[
-    //             "id" => $reply->id,
-    //             "user" => [
-    //                 "displayName" => $reply->user->getDisplayName(),
-    //                 "id"=> $reply->user->id,
-    //                 "avatarUrl" => $reply->user->avatar_url
-    //             ],
-    //             "text" => $reply->text,
-    //             "creationDate" => $reply->created_at,
-    //             "feedback" => [
-    //                 'likesCount' => $reply->likes_count??0,
-    //                 'dislikesCount' => $reply->dislikes_count??0,
-    //                 'currentUserAction' => $reply->current_user_feedback()?? null,
-    //             ],
-    //         ])->toArray()),
-    //         "replyCount" => $comment->replies_count,
-    //         "replyLastPage" =>  floor(($comment->replies_count-1) / 6) + 1,
-    //     ]);
-    //     return $comments;
-    // }
+        $articleSlug = Article::where('slug', $slug)->firstOrFail();
 
-//     public function storeFeedback($article_slug,$commentId,Request $request)
-//     {
-//         if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
-//             throw new BadRequestException("'action' request data field must be either of [clear, like, dislike]."); // improve validation
-//         }
-//         $comment_query = Comment::where('id', $commentId)->firstOrFail();
-//         $currentUserAction = $request->action;
-//         // likeBy() or dislikeBy() or clearBy
-//         $functionName = strtolower($request->action).'By';
-//         $comment_query->$functionName(Auth::user()->id);
-//         return [
-//             'feedback' => [
-//                 'likesCount' => $comment_query->likes_count??0,
-//                 'dislikesCount' => $comment_query->dislikes_count??0,
-//                 'currentUserAction' => $currentUserAction,
-//             ],
-//         ];
+        $article = new Article();
 
+        $parentId = $request->parentId;
+        if ($parentId) {
+            $commentsQuery = Comment::where('commentable_type', get_class($article))
+            ->where('parent_id', $parentId)->where('status','approved');
+        } else {
+            $commentsQuery = $articleSlug->comments()->get();
+        }
+        $commentsQuery = $commentsQuery->withCount('replies');
 
-//     }
+        $comments = $commentsQuery->orderByDesc('created_at')->with('replies')->paginate(6)->through(
+            fn($comment) => [
+            "id" => $comment->id,
+            "user" => [
+                "displayName" => $comment->user->getDisplayName(),
+                "id"=> $comment->user->id,
+                "avatarUrl" => $comment->user->avatar_url
+            ],
+            "creationDate" => $comment->created_at,
+            "text" => $comment->text,
+            "feedback" => [
+                'likesCount' => $comment->likes_count??0,
+                'dislikesCount' => $comment->dislikes_count??0,
+                'currentUserAction' => $comment->current_user_feedback()?? null,
+            ],
+            "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(fn($reply)=>[
+                "id" => $reply->id,
+                "user" => [
+                    "displayName" => $reply->user->getDisplayName(),
+                    "id"=> $reply->user->id,
+                    "avatarUrl" => $reply->user->avatar_url
+                ],
+                "text" => $reply->text,
+                "creationDate" => $reply->created_at,
+                "feedback" => [
+                    'likesCount' => $reply->likes_count??0,
+                    'dislikesCount' => $reply->dislikes_count??0,
+                    'currentUserAction' => $reply->current_user_feedback()?? null,
+                ],
+            ])->toArray()),
+            "replyCount" => $comment->replies_count,
+            "replyLastPage" =>  floor(($comment->replies_count-1) / 6) + 1,
+        ]);
+        return $comments;
+    }
+
+    public function storeFeedback($slug,$commentId,Request $request)
+    {
+        $commentId = request()->id;
+
+        $slug = request()->slug;
+
+        $articleSlug = Article::where('slug', $slug)->firstOrFail();
+
+        if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
+            throw new BadRequestException("'action' request data field must be either of [clear, like, dislike]."); // improve validation
+        }
+        $comment_query = Comment::where('id', $commentId)->firstOrFail();
+        return $comment_query;
+        $currentUserAction = $request->action;
+        // likeBy() or dislikeBy() or clearBy
+        $functionName = strtolower($request->action).'By';
+        $comment_query->$functionName(Auth::user()->id);
+        return [
+            'feedback' => [
+                'likesCount' => $comment_query->likes_count??0,
+                'dislikesCount' => $comment_query->dislikes_count??0,
+                'currentUserAction' => $currentUserAction,
+            ],
+        ];
+
+    }
 
 
     // public function getArticleCommentsListData(Request $request)

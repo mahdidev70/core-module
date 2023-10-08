@@ -9,7 +9,7 @@ trait Bookmarkable
 
     public function bookmarks()
     {
-        return $this->morphMany(Bookmark::class, 'bookmarkable', 'core_bookmarks');
+        return $this->morphMany(Bookmark::class, 'bookmarkable');
     }
     public function clearBookmarkBy($user_id)
     {

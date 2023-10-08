@@ -17,6 +17,11 @@ class CoreServiceProvider extends ServiceProvider
             \TechStudio\Core\app\Http\Middleware\LoginRequired::class
         );
 
+        $this->app->make('router')->aliasMiddleware(
+            'login_optional',
+            \TechStudio\Core\app\Http\Middleware\LoginOptional::class
+        );
+
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/flags.php',
             'flags'
