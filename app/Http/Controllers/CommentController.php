@@ -5,6 +5,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Comment;
+use Illuminate\Support\Facades\App;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
@@ -15,9 +16,11 @@ class CommentController extends Controller
 {
     public function store($slug ,Request $request)
     {
+        $language = App::currentLocale();
+        
         $slug = request()->slug;
         
-        $slug = Article::where('slug', $slug)->firstOrFail();
+        $slug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
         $validatedData = $request->validate([
             'text'=>['required', 'max:600'],
         ]);
@@ -49,10 +52,12 @@ return        $comment = Comment::create($input);
 
     public function getComments($slug, Request $request)
     {
+        $language = App::currentLocale();
 
         $slug = request()->slug;
 
-        $articleSlug = Article::where('slug', $slug)->firstOrFail();
+        $articleSlug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
+
 
         $article = new Article();
 
