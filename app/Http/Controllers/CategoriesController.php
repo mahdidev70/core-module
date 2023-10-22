@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Helper\SlugGenerator;
+use TechStudio\Lms\app\Models\Course;
 
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 
 class CategoriesController extends Controller
 {
@@ -26,13 +26,15 @@ class CategoriesController extends Controller
                 'slug' => 'required|string',
                 'description' => 'nullable|string',
             ]);
+
+            $article = new Article();
         
             $category = new Category();
             $category->title = $validatedData['title'];
             // $category->slug = SlugGenerator::transform($validatedData['title']);
             $category->slug = $validatedData['slug'];
             $category->description = $validatedData['description'];
-            $category->table_type = "App\Models\Article";
+            $category->table_type = get_class($article);
             $category->save();
         
             $articleCount = $category->articles()->count();
@@ -74,7 +76,9 @@ class CategoriesController extends Controller
 
         }
 
-        $categories= Category::where('table_type', 'TechStudio\Blog\app\Models\Article')->withCount('articles')->paginate(10);
+        $article = new Article();
+
+        $categories= Category::where('table_type', get_class($article))->withCount('articles')->paginate(10);
 
         $articles = Article::with('categories');
 
@@ -191,7 +195,9 @@ class CategoriesController extends Controller
 
     // public function getCourseCategoryList(Request $request)
     // {
-    //     $query = Category::where('table_type', 'App\Models\Course');
+    //     $course = new Course();
+
+    //     $query = Category::where('table_type', get_class($course));
 
     //     if ($request->filled('search')) {
     //         $txt = $request->get('search');
@@ -226,11 +232,12 @@ class CategoriesController extends Controller
           
     //     ];
 
-
     // }
 
     public function editCreateCategoryCourse(Request $request)
     {
+
+        $course = new Course();
 
         $category = Category::updateOrCreate(
             ['id' => $request['id']],
@@ -239,7 +246,7 @@ class CategoriesController extends Controller
                 //ToDo Core
                 'slug' => SlugGenerator::transform($request['title']),
                 'description' => $request['description'],
-                'table_type' => "App\Models\Course",
+                'table_type' => get_class($course),
             ]
         );
 
@@ -248,7 +255,9 @@ class CategoriesController extends Controller
 
     // public function getCourseCategoyCommon()
     // {
-    //     $counts = Category::where('table_type', 'App\Models\Course');
+    //     $course = new Course();
+        
+    //     $counts = Category::where('table_type', get_class($course));
 
     //     $counts =[
     //         'all' => $counts->count(),
