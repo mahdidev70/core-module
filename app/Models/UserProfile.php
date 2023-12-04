@@ -8,35 +8,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Nette\NotImplementedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use TechStudio\Blog\app\Models\Article;
+use TechStudio\Lms\app\Models\Course;
+use TechStudio\Lms\app\Models\Student;
 
 class UserProfile extends Model implements Authenticatable
 {
     use HasFactory, Notifiable;
+
     protected $table = 'core_user_profiles';
 
-    protected $fillable = [
-        'first_name','last_name','username','email','avatar_url', 'password','email_verified','registration_phone_number'];
+    protected $guarded = ['id'];
 
-    protected $with = [
-        'roles_unresolved',
-    ];
+    protected $with = ['roles_unresolved'];
 
-    public function getDisplayName() {
+    public function getDisplayName() 
+    {
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    public function getUserType() {
+    public function getUserType() 
+    {
         return 'User';
     }
 
     public function articles()
     {
         return $this->hasMany(Article::class);
-    }
-
-    public function aliases()
-    {
-        return $this->belongsToMany(Alias::class,'alias_user_profile','user_id','alias_id')->withTimestamps();
     }
 
     public function comments()
@@ -58,38 +56,46 @@ class UserProfile extends Model implements Authenticatable
         return $this->hasMany(UserRole::class, 'user_id');
     }
 
-    public function getRoles() {
+    public function getRoles() 
+    {
         $initialRoles = array_map(fn($roleObject) => $roleObject['role'], $this->roles_unresolved->toArray());
         return Roles::getChildrenRoles($initialRoles);
     }
 
-    public function assertRole($role) {
+    public function assertRole($role) 
+    {
         if (!in_array($role, $this->getRoles())) {
             throw new AccessDeniedHttpException("'$role' role required.");
         };
     }
 
-    public function getAuthIdentifierName() {
+    public function getAuthIdentifierName() 
+    {
         throw new NotImplementedException;
     }
 
-    public function getAuthIdentifier() {
+    public function getAuthIdentifier() 
+    {
         throw new NotImplementedException;
     }
 
-    public function getAuthPassword() {
+    public function getAuthPassword() 
+    {
         throw new NotImplementedException;
     }
 
-    public function getRememberToken() {
+    public function getRememberToken() 
+    {
         throw new NotImplementedException;
     }
 
-    public function setRememberToken($value) {
+    public function setRememberToken($value) 
+    {
         throw new NotImplementedException;
     }
 
-    public function getRememberTokenName() {
+    public function getRememberTokenName() 
+    {
         throw new NotImplementedException;
     }
 
