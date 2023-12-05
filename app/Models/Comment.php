@@ -2,10 +2,8 @@
 
 namespace TechStudio\Core\app\Models;
 
-
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Traits\Likeable;
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -16,7 +14,6 @@ class Comment extends Model
     use HasFactory, SoftDeletes, Likeable;
 
     protected $table = 'core_comments';
-
     protected $dates = ['deleted_at'];
 
     /**
@@ -31,7 +28,7 @@ class Comment extends Model
 
     public function user()
     {
-        return $this->morphTo();
+        return $this->belongsTo(UserProfile::class);
     }
 
     /**

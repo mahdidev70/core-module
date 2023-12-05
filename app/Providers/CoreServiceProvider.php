@@ -12,15 +12,15 @@ class CoreServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../../routes/api.php');
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
-        $this->app->make('router')->aliasMiddleware(
-            'login_required',
-            \TechStudio\Core\app\Http\Middleware\LoginRequired::class
-        );
+        // $this->app->make('router')->aliasMiddleware(
+        //     'login_required',
+        //     \TechStudio\Core\app\Http\Middleware\LoginRequired::class
+        // );
 
-        $this->app->make('router')->aliasMiddleware(
-            'login_optional',
-            \TechStudio\Core\app\Http\Middleware\LoginOptional::class
-        );
+        // $this->app->make('router')->aliasMiddleware(
+        //     'login_optional',
+        //     \TechStudio\Core\app\Http\Middleware\LoginOptional::class
+        // );
 
         $this->mergeConfigFrom(
             __DIR__ . '/../../config/flags.php',
