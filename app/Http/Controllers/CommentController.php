@@ -5,22 +5,73 @@ namespace TechStudio\Core\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Comment;
+use TechStudio\Lms\app\Models\Course;
 use Illuminate\Support\Facades\App;
-
-use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use TechStudio\Core\app\Models\UserProfile;
 
 class CommentController extends Controller
 {
-    public function store($slug ,Request $request)
+    protected function getCommentsData($slug, $request, $modelClass)
     {
-        $language = App::currentLocale();
-        
-        $slug = request()->slug;
-        
-        $slug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
+        $parentId = $request->parentId;
+        if ($parentId) {
+            $commentsQuery = Comment::where('commentable_type', $modelClass)
+                ->where('parent_id', $parentId)
+                ->where('status', 'approved');
+        } else {
+            $commentsQuery = $slug->comments();
+        }
+
+        $commentsQuery = $commentsQuery->withCount('replies');
+
+        $comments = $commentsQuery->orderByDesc('created_at')
+                ->with('replies')
+                ->paginate(6)
+                ->through(function($comment) {
+                    return [
+                        "id" => $comment->id,
+                        "user" => [
+                            "displayName" => $comment->user->getDisplayName(),
+                            "id" => $comment->user->id,
+                            "avatarUrl" => $comment->user->avatar_url
+                        ],
+                        "creationDate" => $comment->created_at,
+                        "text" => $comment->text,
+                        "feedback" => [
+                            'likesCount' => $comment->likes_count ?? 0,
+                            'dislikesCount' => $comment->dislikes_count ?? 0,
+                            'currentUserAction' => $comment->current_user_feedback() ?? null,
+                        ],
+                        "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(function ($reply) {
+                            return [
+                                "id" => $reply->id,
+                                "user" => [
+                                    "displayName" => $reply->user->getDisplayName(),
+                                    "id" => $reply->user->id,
+                                    "avatarUrl" => $reply->user->avatar_url
+                                ],
+                                "text" => $reply->text,
+                                "creationDate" => $reply->created_at,
+                                "feedback" => [
+                                    'likesCount' => $reply->likes_count??0,
+                                    'dislikesCount' => $reply->dislikes_count??0,
+                                    'currentUserAction' => $reply->current_user_feedback()?? null,
+                                ],
+                            ];
+                        })->toArray()),
+                        "replyCount" => $comment->replies_count,
+                        "replyLastPage" => floor(($comment->replies_count - 1) / 6) + 1,
+                    ];
+                });
+
+        return $comments;
+    }
+    public function store($local, $slug ,Request $request)
+    {                
+        $slug = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
         $validatedData = $request->validate([
             'text'=>['required', 'max:600'],
         ]);
@@ -32,97 +83,30 @@ class CommentController extends Controller
         $input['commentable_id'] = $slug->id;
         $input['ip'] =  $ip;
         $input['parent_id'] = (isset($request->replyTo) && $request->replyTo !=0 ) ?$request->replyTo : null;
-
-return        $comment = Comment::create($input);
-        $result['id'] = $comment->id;
-        $result['text'] = $comment->text;
-        $result['creationDate'] = $comment->created_at;
-        $result['user'] =  [
-        "displayName" =>  $comment->user->getDisplayName(),
-        "id"=> $comment->user->id,
-        "avatarUrl" => $comment->user->avatar_url
-    ];
-        $result['replies'] = [];
-        $result['feedback'] = [
-            'likesCount' => 0,"dislikesCount" => 0 , "currentUserAction" => null
-        ];
-
-        return response()->json($result,200);
+        $comment = Comment::create($input);
+        return response()->json($comment,200);
     }
 
-    public function getComments($slug, Request $request)
+    public function getComments($local, $slug, Request $request)
     {
-        $language = App::currentLocale();
-
-        $slug = request()->slug;
-
-        $articleSlug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
-
-
-        $article = new Article();
-
-        $parentId = $request->parentId;
-        if ($parentId) {
-            $commentsQuery = Comment::where('commentable_type', get_class($article))
-            ->where('parent_id', $parentId)->where('status','approved');
-        } else {
-            $commentsQuery = $articleSlug->comments()->get();
-        }
-        $commentsQuery = $commentsQuery->withCount('replies');
-
-        $comments = $commentsQuery->orderByDesc('created_at')->with('replies')->paginate(6)->through(
-            fn($comment) => [
-            "id" => $comment->id,
-            "user" => [
-                "displayName" => $comment->user->getDisplayName(),
-                "id"=> $comment->user->id,
-                "avatarUrl" => $comment->user->avatar_url
-            ],
-            "creationDate" => $comment->created_at,
-            "text" => $comment->text,
-            "feedback" => [
-                'likesCount' => $comment->likes_count??0,
-                'dislikesCount' => $comment->dislikes_count??0,
-                'currentUserAction' => $comment->current_user_feedback()?? null,
-            ],
-            "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(fn($reply)=>[
-                "id" => $reply->id,
-                "user" => [
-                    "displayName" => $reply->user->getDisplayName(),
-                    "id"=> $reply->user->id,
-                    "avatarUrl" => $reply->user->avatar_url
-                ],
-                "text" => $reply->text,
-                "creationDate" => $reply->created_at,
-                "feedback" => [
-                    'likesCount' => $reply->likes_count??0,
-                    'dislikesCount' => $reply->dislikes_count??0,
-                    'currentUserAction' => $reply->current_user_feedback()?? null,
-                ],
-            ])->toArray()),
-            "replyCount" => $comment->replies_count,
-            "replyLastPage" =>  floor(($comment->replies_count-1) / 6) + 1,
-        ]);
+        $articleSlug = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
+        $comments = $this->getCommentsData($articleSlug, $request, Article::class);
         return $comments;
     }
 
-    public function storeFeedback($slug,$commentId,Request $request)
+    public function storeFeedback($local, $slug, $commentId,Request $request)
     {
-        $commentId = request()->id;
-
-        $slug = request()->slug;
-
         $articleSlug = Article::where('slug', $slug)->firstOrFail();
 
         if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
             throw new BadRequestException("'action' request data field must be either of [clear, like, dislike]."); // improve validation
         }
         $comment_query = Comment::where('id', $commentId)->firstOrFail();
-        return $comment_query;
         $currentUserAction = $request->action;
         // likeBy() or dislikeBy() or clearBy
         $functionName = strtolower($request->action).'By';
         $comment_query->$functionName(Auth::user()->id);
+        // return $comment_query;
         return [
             'feedback' => [
                 'likesCount' => $comment_query->likes_count??0,
@@ -130,35 +114,22 @@ return        $comment = Comment::create($input);
                 'currentUserAction' => $currentUserAction,
             ],
         ];
-
     }
-
 
     public function getArticleCommentsListData(Request $request)
     {
-
         $article = new Article();
-
         $query = Comment::where('commentable_type', get_class($article))->with('user', 'article');
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
-
             $query->where(function ($q) use ($txt) {
                 $q->where('text', 'like', '%' . $txt . '%');
             });
         }
 
-        if ($request->filled('status')) {
-            if ($request->status == 'deleted'){
-                $query->where('status', 'deleted');
-            }elseif ($request->status == 'rejected') {
-                $query->where('status', 'rejected');
-            }elseif ($request->status == 'waiting_for_approval') {
-                $query->where('status' == 'waiting_for_approval');
-            }elseif ($request->status == 'approved') {
-                $query->where('status', 'approved');
-            }
+        if (isset($request->status) && $request->status != null) {
+            $query->where('status', $request->input('status'));
         }
 
         $comments = $query->paginate(10);
@@ -195,18 +166,19 @@ return        $comment = Comment::create($input);
     {
         $article = new Article();
 
-        return ['counts' => [
-            'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
-            where('status', 'waiting_for_approval')->count(),
-            'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
-            'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
-            'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
-            'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
-        ]
-            ];
+        return [
+            'counts' => [
+                'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
+                where('status', 'waiting_for_approval')->count(),
+                'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
+                'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
+                'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
+                'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
+            ]
+        ];
     }
 
-    public function updateArticleCommentsStatus($local, Comment $comment, Request $request): array
+    public function updateArticleCommentsStatus($local, Comment $comment, Request $request)
     {
         $validatedData = $request->validate([
             'status' => 'required|in:approved,deleted,rejected',
@@ -245,48 +217,54 @@ return        $comment = Comment::create($input);
 
     public function getCourseCommnetsList(Request $request)
     {
-        $query = Comment::where('commentable_type', 'App\Models\Course');
-    
+        $courseModel = new Course();
+
+        $query = Comment::where('commentable_type', get_class($courseModel));
+
         if ($request->filled('search')) {
             $txt = $request->get('search');
-        
+
             $query->where(function ($q) use ($txt) {
                 $q->where('text', 'like', '%' . $txt . '%');
             });
         }
 
-        if ($request->filled('status')) {
-            if ($request->status == 'deleted'){
-                $query->where('status', 'deleted');
-            }elseif ($request->status == 'rejected') {
-                $query->where('status', 'rejected');
-            }elseif ($request->status == 'waiting_for_approval') {
-                $query->where('status' == 'waiting_for_approval');
-            }elseif ($request->status == 'approved') {
-                $query->where('status', 'approved');
+        if (isset($request->status) && $request->status != null) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'rate') {
+                $query->orderBy('star', $sortOrder);
             }
         }
-    
+
         $comments = $query->with('commentable')->paginate(10);
-    
+
         $commentData = $comments->map(function ($comment) {
             return [
                 'id' => $comment->id,
-                'user' => [
+                'author' => [
                     'id' => $comment->user->id,
                     'displayName' => $comment->user->getDisplayName(),
                 ],
-                'course' => [
-                    'id' => $comment->commentable->id,
+                'relatedCourse' => [
                     'title' => $comment->commentable->title,
+                    'slug' => $comment->commentable->slug,
                 ],
                 'text' => $comment->text,
                 'status' => $comment->status,
                 'rate' => $comment->star,
-                'created_at' => $comment->created_at,
+                'date' => $comment->created_at,
+                'ip' => $comment->ip,
             ];
         });
-    
+
         $response = [
             'total' => $comments->total(),
             'per_page' => $comments->perPage(),
@@ -294,19 +272,18 @@ return        $comment = Comment::create($input);
             'last_page' => $comments->lastPage(),
             'data' => $commentData,
         ];
-    
+
         return $response;
     }
 
     public function editCreateCommentCourse(Request $request)
     {
-
-        $userType = ''; 
+        $userType = '';
+        $userModel = new UserProfile();
+        $courseModel = new Course();
 
         if ($request['user'][0]['type'] == 'user') {
-            $userType = 'App\Models\UserProfile';
-        }elseif ($request['user'][0]['type'] == 'alias') {
-            $userType = 'App\Models\Alias';
+            $userType = get_class($userModel);
         }
 
         $comment = Comment::updateOrCreate(
@@ -314,7 +291,7 @@ return        $comment = Comment::create($input);
             [
                 'user_id' => $request['user'][0]['id'],
                 'user_type' => $userType,
-                'commentable_type' => 'App\Models\Course',
+                'commentable_type' => get_class($courseModel),
                 'commentable_id' => $request['courseId'],
                 'star' => $request['rate'],
                 'text' => $request['text'],
@@ -326,7 +303,9 @@ return        $comment = Comment::create($input);
 
     public function getCourseCommonList()
     {
-        $counts = Comment::where('commentable_type', 'App\Models\Course');
+        $courseModel = new Course();
+
+        $counts = Comment::where('commentable_type', get_class($courseModel));
 
         $counts = [
             'all' => $counts->count(),
@@ -336,6 +315,47 @@ return        $comment = Comment::create($input);
             'approved' => $counts->where('status', 'approved')->count(),
         ];
 
-        return $counts;
+        $status = ['approved','waiting_for_approval','deleted','rejected'];
+
+        return [
+            'counts' => $counts,
+            'status' => $status,
+        ];;
+    }
+
+
+    public function updateCommentsStatus(Request $request, Comment $comment): array
+    {
+        $validatedData = $request->validate([
+            'status' => 'required|in:approved,deleted,rejected',
+            'ids' => 'required|array',
+            'reportId' => 'required_if:status,rejected|exists:reports,id'
+        ]);
+
+        $mapping = array(
+            "apple" => "star",
+            'approved' =>  "approved",
+            'deleted'=>'deleted',
+            'rejected' => 'rejected'
+        );
+
+        $data = [];
+        $data['status'] =$mapping[$validatedData['status']];
+
+        if ($mapping[$validatedData['status']] == 'rejected') {
+            $data['report_id'] = $validatedData['reportId'];
+        }
+
+        Comment::whereIn('id', $validatedData['ids'])
+            ->update($data);
+
+        return [
+            'updatedComments' => $validatedData['ids'],
+        ];
+    }
+
+    public function exportExcel() 
+    {
+        
     }
 }

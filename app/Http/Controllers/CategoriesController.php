@@ -14,73 +14,51 @@ use Illuminate\Support\Facades\DB;
 
 class CategoriesController extends Controller
 {
-    public function createCategory($local, Category $category, Request $request)
-    {
-        $checkCategory = Category::where('title', $request->title)->first();
-
-        if ($checkCategory) {
-            return response()->json(['message' => 'این عنوان قبلا انتخاب شده'], 409);
-        }else {
-            $validatedData = $request->validate([
-                'title' => 'required|string',
-                'slug' => 'required|string',
-                'description' => 'nullable|string',
-            ]);
-
-            $article = new Article();
-        
-            $category = new Category();
-            $category->title = $validatedData['title'];
-            // $category->slug = SlugGenerator::transform($validatedData['title']);
-            $category->slug = $validatedData['slug'];
-            $category->description = $validatedData['description'];
-            $category->table_type = get_class($article);
-            $category->save();
-        
-            $articleCount = $category->articles()->count();
-        
-            $responseData = [
-                'id' => $category->id,
-                'title' => $category->title,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                'status' => 'active',
-                'articleCount' => $articleCount,
-                'bookmarksCount' => 0,
-                'commentsCount' => 0,
-                'viewsCount' => 0,
-            ];
-        
-            return response()->json($responseData);
-        }
-        
-    }
-
     public function listCategory(Request $request)
     {
-
+        $articleModel = new Article();
+        
+        $query= Category::where('table_type', get_class($articleModel))->withCount('articles');
+        
         if($request->filled('search')){
             $txt = $request->get('search');
-
-            $query = Category::where(function($q) use($txt){
+            $query->where(function($q) use($txt){
                 $q->where('title','like', '%'.$txt)
-                 ->orWhere('title', 'like', '% '.$txt.'%')
-                  ->orWhere('title','like',$txt.'%');
+                ->orWhere('title', 'like', '% '.$txt.'%')
+                ->orWhere('title','like',$txt.'%');
             });
-
-            $categories = $query->take(10)->get(['title', 'slug']);
-
-            $categories = $query->paginate(10);
-
-            return $categories;
-
+        }
+        
+        if (isset($request->status) && $request->status != null) {
+            $query->where('status', $request->input('status'));
         }
 
-        $article = new Article();
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
 
-        $categories= Category::where('table_type', get_class($article))->withCount('articles')->paginate(10);
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'views') {
+                $query->withCount(['articles as viewCount_sum' => function ($query) {
+                    $query->select(DB::raw('sum(viewsCount)'));
+                }])->orderBy('viewCount_sum', $sortOrder);
+            }elseif ($request->sortKey == 'bookmarks') {
+                    $query->leftJoin('articles', 'categories.id', '=', 'TechStudio\\Blog\\app\\Models\\Article')
+                    ->leftJoin('bookmarks', function ($join) {
+                        $join->on('articles.id', '=', 'bookmarks.bookmarkable_id')
+                            ->where('bookmarks.bookmarkable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    })->groupBy('categories.id')->orderBy(DB::raw('COUNT(bookmarks.id)'), $sortOrder);
+            }elseif ($request->sortKey == 'comments') {
+               $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
+                    ->leftJoin('comments', function ($join) {
+                        $join->on('articles.id', '=', 'comments.commentable_id')
+                            ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    }) ->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
+            }
+        }
 
-        $articles = Article::with('categories');
+        $categories = $query->paginate(10);
 
         $data = [
             'total' => $categories->total(),
@@ -95,102 +73,74 @@ class CategoriesController extends Controller
                     'status' => $category->status,
                     'description' => $category->description,
                     'articleCount' => $category->articles_count,
-                    //ToDo Core
                     'commentsCount' => $category->articles->map(function($article){
-                        return $article->bookmarks()->count();
-                    })->sum(),
-
-                    'bookmarksCount' => $category->articles->map(function($article){
                         return $article->comments()->count();
+                    })->sum(),
+                    'bookmarksCount' => $category->articles->map(function($article){
+                        return $article->bookmarks()->count();
                     })->sum(),
                     'viewsCount' => $category->articles->pluck('viewsCount')->sum(),
                 ];
             }),
         ];
-
+        
         return $data;
     }
 
     public function getCommonListCategory()
     {
-        $data = [
-            'counts' => [
-                'all' => Category::count(),
-                'active' =>Category::where('status', 'active')->count(),
-                'hidden' => Category::where('status', 'hidden')->count(),
-                'delete' =>Category::where('status', 'deleted')->count(),
-            ]
+        $articleModel = new Article();
+
+        $category = Category::where('table_type', get_class($articleModel));
+
+        $counts = [
+                'all' => $category->count(),
+                'active' =>$category->where('status', 'active')->count(),
+                'hidden' => $category->where('status', 'hidden')->count(),
+                'delete' =>$category->where('status', 'deleted')->count(),
         ];
 
-        return $data;
+        $status = ['active', 'hidden', 'delete'];
+
+        return [
+            'counts' => $counts,
+            'status' => $status,
+        ];
     }
 
-    public function updateCategory($local, Category $category, Request $request)
+    public function createUpdateCategory($local, Category $category, Request $request)
     {
+        $articleModel = new Article();
 
-        $validatedData = $request->validate([
-            'id' => 'required|integer',
-            'title' => 'required|string',
-            'slug' => 'required|string',
-            'description' => 'nullable|string',
-            'status' => 'required|in:active,hidden,deleted',
-        ]);
+        $category = Category::updateOrCreate(
+            ['id' => $request['id']],
+            [
+                'title' => $request['title'],
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
+                'description' => $request['description'],
+                'table_type' => get_class($articleModel),
+                'status' => $request['status'],
+            ]
+        );
 
-        $category = Category::where('id', $validatedData['id'])->firstOrFail();
-
-        $category->title = $validatedData['title'];
-        // $category->slug = SlugGenerator::transform($validatedData['newTitle']);
-        $category->slug = $validatedData['slug'];
-        $category->description = $validatedData['description'];
-        $category->status = $validatedData['status'];
-        $category->save();
-    
-        $updatedCategory = Category::where('id', $validatedData['id'])->first();
-    
-        $articleCount = $updatedCategory->articles()->count();
-    
-        $responseData = [
+        return [
             'id' => $category->id,
-            'slug' => $category->slug,
             'title' => $category->title,
+            'slug' => $category->slug,
             'description' => $category->description,
+            'articleCount' => $category->articles->count(),
             'status' => $category->status,
-            'articleCount' => $articleCount,
         ];
-    
-        return response()->json($responseData);
 
     }
 
     public function updateCategoryStatus($local, Category $category, Request $request) 
     {
-        $validatedData = $request->validate([
-            'status' => 'required|in:active,hidden,deleted',
-            'ids' => 'required|array',
-        ]);
-
-        $ids = collect($validatedData['ids']);
-
-        $category->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
+        $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
 
         return [
-            'updateCategory' => $ids,
+            'updateCategory' =>  $request['ids'],
         ];
-    }
-
-
-    public function deleteCategory(Request $request, Category $category)
-    {
-
-        $query = Category::whereIn('id', $request->ids);
-        $ids = $query->pluck('id');
-
-        $query->delete();
-
-        return [
-            'deletedCategories' => $ids,
-        ];
-
     }
 
     public function getCourseCategoryList(Request $request)
@@ -201,10 +151,22 @@ class CategoriesController extends Controller
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
-        
+
             $query->where(function ($q) use ($txt) {
                 $q->where('title', 'like', '%' . $txt . '%');
             });
+        }
+
+        if ($request->has('sort')) {
+            if ($request->sort == 'coursesCount') {
+                $query->withCount('courses')->orderBy('courses_count', 'desc');
+            }elseif ($request->sort == 'studentsCount') {
+                $query->with(['courses' => function ($q) {
+                    $q->withCount('students');
+                }])->get()->sortByDesc(function ($category) {
+                    return $category->courses->sum('students_count');
+                });
+            }
         }
 
         $categories = $query->paginate(10);
@@ -229,35 +191,44 @@ class CategoriesController extends Controller
             'per_page' => $categories->perPage(),
             'last_page' => $categories->lastPage(),
             'data' => $categoriesData,
-          
+
         ];
 
     }
 
     public function editCreateCategoryCourse(Request $request)
     {
-
         $course = new Course();
-
+        
         $category = Category::updateOrCreate(
             ['id' => $request['id']],
             [
                 'title' => $request['title'],
-                //ToDo Core
-                'slug' => SlugGenerator::transform($request['title']),
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
                 'description' => $request['description'],
                 'table_type' => get_class($course),
+                'status' => $request['status'] ? $request['status'] : 'active',
             ]
         );
 
-        return $category->id;
+        return [
+            'id' => $category->id,
+                'title' => $category->title,
+                'slug' => $category->slug,
+                'description' => $category->description,
+                'courseCount' => $category->courses->count(),
+                'studentsCount' => $category->courses->sum(function ($course) {
+                    return $course->students->count();
+                }),
+                'status' => $category->status,
+        ];
     }
 
     public function getCourseCategoyCommon()
     {
-        $course = new Course();
+        $courseModel = new Course();
         
-        $counts = Category::where('table_type', get_class($course));
+        $counts = Category::where('table_type', get_class($courseModel));
 
         $counts =[
             'all' => $counts->count(),

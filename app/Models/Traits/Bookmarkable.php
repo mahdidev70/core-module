@@ -13,7 +13,7 @@ trait Bookmarkable
     }
     public function clearBookmarkBy($user_id)
     {
-        $baseClass = 'App\Models\\'.class_basename($this);
+        $baseClass = 'app\Models\\'.class_basename($this);
         return $this->bookmarks()
                 ->where('user_id',$user_id)
             ->where('bookmarkable_type',$baseClass)
@@ -23,7 +23,7 @@ trait Bookmarkable
 
     public function saveBy($user_id)
     {
-        $baseClass = 'App\Models\\'.class_basename($this);
+        $baseClass = 'app\Models\\'.class_basename($this);
         return $this->bookmarks()->create([
             'bookmarkable_id' => $this->id,
             'bookmarkable_type' => $baseClass,

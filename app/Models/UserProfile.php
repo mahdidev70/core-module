@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Nette\NotImplementedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use TechStudio\Blog\app\Models\Article;
+use TechStudio\Community\app\Models\ChatRoom;
 use TechStudio\Lms\app\Models\Course;
 use TechStudio\Lms\app\Models\Student;
 
@@ -32,6 +33,10 @@ class UserProfile extends Model implements Authenticatable
         return 'User';
     }
 
+
+
+
+    
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -42,7 +47,8 @@ class UserProfile extends Model implements Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    public function chatRooms() {
+    public function chatRooms() 
+    {
         return $this->belongsToMany(ChatRoom::class, 'chat_room_memberships', 'user_id', 'chat_room_id')->withPivot('unread_count');
     }
 
