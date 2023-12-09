@@ -179,60 +179,60 @@ class CategoriesController extends Controller
     }
 
 
-    // // public function deleteCategory(Request $request, Category $category)
-    // // {
+    public function deleteCategory(Request $request, Category $category)
+    {
 
-    // //     $query = Category::whereIn('id', $request->ids);
-    // //     $ids = $query->pluck('id');
+        $query = Category::whereIn('id', $request->ids);
+        $ids = $query->pluck('id');
 
-    // //     $query->delete();
+        $query->delete();
 
-    // //     return [
-    // //         'deletedCategories' => $ids,
-    // //     ];
+        return [
+            'deletedCategories' => $ids,
+        ];
 
-    // // }
+    }
 
-    // public function getCourseCategoryList(Request $request)
-    // {
-    //     $course = new Course();
+    public function getCourseCategoryList(Request $request)
+    {
+        $course = new Course();
 
-    //     $query = Category::where('table_type', get_class($course));
+        $query = Category::where('table_type', get_class($course));
 
-    //     if ($request->filled('search')) {
-    //         $txt = $request->get('search');
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
         
-    //         $query->where(function ($q) use ($txt) {
-    //             $q->where('title', 'like', '%' . $txt . '%');
-    //         });
-    //     }
+            $query->where(function ($q) use ($txt) {
+                $q->where('title', 'like', '%' . $txt . '%');
+            });
+        }
 
-    //     $categories = $query->paginate(10);
+        $categories = $query->paginate(10);
 
-    //     $categoriesData = $categories->map(function ($category){
-    //         return [
-    //             'id' => $category->id,
-    //             'title' => $category->title,
-    //             'slug' => $category->slug,
-    //             'description' => $category->description,
-    //             'courseCount' => $category->courses->count(),
-    //             'studentsCount' => $category->courses->sum(function ($course) {
-    //                 return $course->students->count();
-    //             }),
-    //             'status' => $category->status,
-    //         ];
-    //     });
+        $categoriesData = $categories->map(function ($category){
+            return [
+                'id' => $category->id,
+                'title' => $category->title,
+                'slug' => $category->slug,
+                'description' => $category->description,
+                'courseCount' => $category->courses->count(),
+                'studentsCount' => $category->courses->sum(function ($course) {
+                    return $course->students->count();
+                }),
+                'status' => $category->status,
+            ];
+        });
 
-    //     return [
-    //         'total' => $categories->total(),
-    //         'current_page' => $categories->currentPage(),
-    //         'per_page' => $categories->perPage(),
-    //         'last_page' => $categories->lastPage(),
-    //         'data' => $categoriesData,
+        return [
+            'total' => $categories->total(),
+            'current_page' => $categories->currentPage(),
+            'per_page' => $categories->perPage(),
+            'last_page' => $categories->lastPage(),
+            'data' => $categoriesData,
           
-    //     ];
+        ];
 
-    // }
+    }
 
     public function editCreateCategoryCourse(Request $request)
     {
@@ -253,20 +253,20 @@ class CategoriesController extends Controller
         return $category->id;
     }
 
-    // public function getCourseCategoyCommon()
-    // {
-    //     $course = new Course();
+    public function getCourseCategoyCommon()
+    {
+        $course = new Course();
         
-    //     $counts = Category::where('table_type', get_class($course));
+        $counts = Category::where('table_type', get_class($course));
 
-    //     $counts =[
-    //         'all' => $counts->count(),
-    //         'delete' => $counts->where('status', 'deleted')->count(),
-    //         'active' => $counts->where('status', 'active')->count(),
-    //         'hidden' => $counts->where('status', 'hidden')->count(),
-    //     ];
+        $counts =[
+            'all' => $counts->count(),
+            'delete' => $counts->where('status', 'deleted')->count(),
+            'active' => $counts->where('status', 'active')->count(),
+            'hidden' => $counts->where('status', 'hidden')->count(),
+        ];
 
-    //     return $counts;
-    // }
+        return $counts;
+    }
 
 }
