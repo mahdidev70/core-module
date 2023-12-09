@@ -102,11 +102,11 @@ class CommentController extends Controller
             throw new BadRequestException("'action' request data field must be either of [clear, like, dislike]."); // improve validation
         }
         $comment_query = Comment::where('id', $commentId)->firstOrFail();
-        return $comment_query;
         $currentUserAction = $request->action;
         // likeBy() or dislikeBy() or clearBy
         $functionName = strtolower($request->action).'By';
         $comment_query->$functionName(Auth::user()->id);
+        // return $comment_query;
         return [
             'feedback' => [
                 'likesCount' => $comment_query->likes_count??0,
@@ -233,9 +233,14 @@ class CommentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        if ($request->has('sort')) {
-            if ($request->sort == 'rate') {
-                $query->orderBy('star', 'desc');
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'rate') {
+                $query->orderBy('star', $sortOrder);
             }
         }
 
