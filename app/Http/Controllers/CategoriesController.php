@@ -17,52 +17,49 @@ class CategoriesController extends Controller
     public function listCategory(Request $request)
     {
         $articleModel = new Article();
-
+        
         $query= Category::where('table_type', get_class($articleModel))->withCount('articles');
+        
         if($request->filled('search')){
             $txt = $request->get('search');
             $query->where(function($q) use($txt){
                 $q->where('title','like', '%'.$txt)
-                 ->orWhere('title', 'like', '% '.$txt.'%')
-                  ->orWhere('title','like',$txt.'%');
+                ->orWhere('title', 'like', '% '.$txt.'%')
+                ->orWhere('title','like',$txt.'%');
             });
         }
-
-        if ($request->has('sort')) {
-
-            if ($request->sort == 'views') {
-                $query->withCount(['articles as viewCount_sum' => function ($query) {
-                    $query->select(DB::raw('sum(viewsCount)'));
-                }])->orderByDesc('viewCount_sum');
-            }
-            elseif ($request->sort == 'bookmarks') {
-                     $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
-                    ->leftJoin('bookmarks', function ($join) {
-                        $join->on('articles.id', '=', 'bookmarks.bookmarkable_id')
-                            ->where('bookmarks.bookmarkable_type', '=', 'App\\Models\\Article');
-                    })
-                    ->groupBy('categories.id')
-                    ->orderBy(DB::raw('COUNT(bookmarks.id)'), 'desc');
-            }
-            elseif ($request->sort == 'comments') {
-               $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
-                    ->leftJoin('comments', function ($join) {
-                        $join->on('articles.id', '=', 'comments.commentable_id')
-                            ->where('comments.commentable_type', '=', 'App\\Models\\Article')
-                            ->where('comments.status','=','published');
-                    })
-                    ->groupBy('categories.id')
-                    ->orderBy(DB::raw('COUNT(articles_count)'), 'desc');
-                $categories = $query->paginate(10);
-               // return $categories;
-            }
-        }
-
+        
         if (isset($request->status) && $request->status != null) {
             $query->where('status', $request->input('status'));
         }
+
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'views') {
+                $query->withCount(['articles as viewCount_sum' => function ($query) {
+                    $query->select(DB::raw('sum(viewsCount)'));
+                }])->orderBy('viewCount_sum', $sortOrder);
+            }elseif ($request->sortKey == 'bookmarks') {
+                    $query->leftJoin('articles', 'categories.id', '=', 'TechStudio\\Blog\\app\\Models\\Article')
+                    ->leftJoin('bookmarks', function ($join) {
+                        $join->on('articles.id', '=', 'bookmarks.bookmarkable_id')
+                            ->where('bookmarks.bookmarkable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    })->groupBy('categories.id')->orderBy(DB::raw('COUNT(bookmarks.id)'), $sortOrder);
+            }elseif ($request->sortKey == 'comments') {
+               $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
+                    ->leftJoin('comments', function ($join) {
+                        $join->on('articles.id', '=', 'comments.commentable_id')
+                            ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    }) ->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
+            }
+        }
+
         $categories = $query->paginate(10);
-      //  return $categories;
+
         $data = [
             'total' => $categories->total(),
             'current_page' => $categories->currentPage(),
@@ -86,18 +83,7 @@ class CategoriesController extends Controller
                 ];
             }),
         ];
-        if ($request->filled('sort')) {
-
-            if ($request->sort == 'views') {
-                $data['data'] = collect($data['data'])->sortByDesc('viewsCount')->toArray();
-            }
-            elseif ($request->sort == 'bookmarks') {
-                $data['data'] = collect($data['data'])->sortByDesc('bookmarksCount')->toArray();
-            }
-            elseif ($request->sort == 'comments') {
-                $data['data'] = collect($data['data'])->sortByDesc('commentsCount')->toArray();
-            }
-        }
+        
         return $data;
     }
 
