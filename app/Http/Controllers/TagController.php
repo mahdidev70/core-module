@@ -7,6 +7,7 @@ use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article; 
 use TechStudio\Core\app\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use TechStudio\Core\app\Helper\SlugGenerator;
 
 class TagController extends Controller
@@ -26,6 +27,42 @@ class TagController extends Controller
 
         if (isset($request->status) && $request->status != null) {
             $query->where('status', $request->input('status'));
+        }
+
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'views') {
+                $query->withCount(['articles as viewCount_sum' => function ($query) {
+                    $query->select(DB::raw('sum(viewsCount)'));
+                }])->orderBy('viewCount_sum', $sortOrder);
+
+            }elseif ($request->sortKey == 'bookmars') {
+                $query->leftJoin('taggables', function ($join) {
+                $join->on('tags.id', '=', 'taggables.tag_id')
+                    ->where('taggables.taggable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+            })
+            ->leftJoin('articles', 'articles.id', '=', 'taggables.taggable_id')
+            ->leftJoin('bookmarks', function ($join) {
+                $join->on('articles.id', '=', 'bookmarks.bookmarkable_id')
+                    ->where('bookmarks.bookmarkable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+            })
+            ->groupBy('tags.id')
+            ->orderBy(DB::raw('COUNT(bookmarks.id)'), $sortOrder);
+            }elseif ($request->sortKey == 'comments') {
+                $query->leftJoin('taggables', function ($join) {
+                    $join->on('tags.id', '=', 'taggables.tag_id')
+                        ->where('taggables.taggable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    })
+                    ->leftJoin('articles', 'articles.id', '=', 'taggables.taggable_id')
+                    ->leftJoin('comments', function ($join) {
+                        $join->on('articles.id', '=', 'comments.commentable_id')
+                            ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
+                    })->groupBy('tags.id')->orderBy(DB::raw('COUNT(comments.id)'), $sortOrder);
+            }
         }
 
         $tag = $query->withCount('articles')->paginate(10);
@@ -54,18 +91,6 @@ class TagController extends Controller
                 ];
             }),
         ];
-        if ($request->filled('sort')) {
-            if ($request->sort == 'views') {
-                $data['data'] = collect($data['data'])->sortByDesc('viewsCount')->toArray();
-            }
-            elseif ($request->sort == 'bookmarks') {
-                $data['data'] = collect($data['data'])->sortByDesc('bookmarksCount')->toArray();
-            }
-            elseif ($request->sort == 'comments') {
-                $data['data'] = collect($data['data'])->sortByDesc('commentsCount')->toArray();
-            }
-        }
-
         return $data;
 
     }
@@ -136,16 +161,4 @@ class TagController extends Controller
             'updateTags' => $ids,
         ];
     }
-
-//     // public function deleteTags(Tag $tag, Request $request) 
-//     // {
-//     //     $query = Tag::whereIn('id', $request->ids);
-//     //     $ids = $query->pluck('id');
-
-//     //     $query->delete();
-
-//     //     return [
-//     //         'deletedTags' => $ids,
-//     //     ];
-//     // }
 }
