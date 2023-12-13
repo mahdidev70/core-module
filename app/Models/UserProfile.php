@@ -23,20 +23,17 @@ class UserProfile extends Model implements Authenticatable
 
     protected $with = ['roles_unresolved'];
 
-    public function getDisplayName() 
+    public function getDisplayName()
     {
         return trim($this->first_name . ' ' . $this->last_name);
     }
 
-    public function getUserType() 
+    public function getUserType()
     {
         return 'User';
     }
 
 
-
-
-    
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -47,7 +44,7 @@ class UserProfile extends Model implements Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    public function chatRooms() 
+    public function chatRooms()
     {
         return $this->belongsToMany(ChatRoom::class, 'chat_room_memberships', 'user_id', 'chat_room_id')->withPivot('unread_count');
     }
@@ -62,45 +59,45 @@ class UserProfile extends Model implements Authenticatable
         return $this->hasMany(UserRole::class, 'user_id');
     }
 
-    public function getRoles() 
+    public function getRoles()
     {
         $initialRoles = array_map(fn($roleObject) => $roleObject['role'], $this->roles_unresolved->toArray());
         return Roles::getChildrenRoles($initialRoles);
     }
 
-    public function assertRole($role) 
+    public function assertRole($role)
     {
         if (!in_array($role, $this->getRoles())) {
             throw new AccessDeniedHttpException("'$role' role required.");
         };
     }
 
-    public function getAuthIdentifierName() 
+    public function getAuthIdentifierName()
     {
         throw new NotImplementedException;
     }
 
-    public function getAuthIdentifier() 
+    public function getAuthIdentifier()
     {
         throw new NotImplementedException;
     }
 
-    public function getAuthPassword() 
+    public function getAuthPassword()
     {
         throw new NotImplementedException;
     }
 
-    public function getRememberToken() 
+    public function getRememberToken()
     {
         throw new NotImplementedException;
     }
 
-    public function setRememberToken($value) 
+    public function setRememberToken($value)
     {
         throw new NotImplementedException;
     }
 
-    public function getRememberTokenName() 
+    public function getRememberTokenName()
     {
         throw new NotImplementedException;
     }
