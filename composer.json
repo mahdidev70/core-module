@@ -1,0 +1,14 @@
+{
+    "name": "tech-studio/core-module",
+    "autoload": {
+        "psr-4": {
+            "TechStudio\\CoreModule\\": "tech-studio/blog-module/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mahdi Samian"
+        }
+    ],
+    "require": {}
+}
