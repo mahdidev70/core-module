@@ -70,7 +70,7 @@ class CommentController extends Controller
         return $comments;
     }
     public function store($local, $slug ,Request $request)
-    {                
+    {
         $slug = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
         $validatedData = $request->validate([
             'text'=>['required', 'max:600'],
@@ -254,8 +254,8 @@ class CommentController extends Controller
                     'displayName' => $comment->user->getDisplayName(),
                 ],
                 'relatedCourse' => [
-                    'title' => $comment->commentable->title,
-                    'slug' => $comment->commentable->slug,
+                    'title' => ($comment->commentable && sizeof($comment->commentable)) > 0? $comment->commentable->title:null,
+                    'slug' => ($comment->commentable && sizeof($comment->commentable)) ? $comment->commentable->slug:null,
                 ],
                 'text' => $comment->text,
                 'status' => $comment->status,
@@ -354,8 +354,8 @@ class CommentController extends Controller
         ];
     }
 
-    public function exportExcel() 
+    public function exportExcel()
     {
-        
+
     }
 }
