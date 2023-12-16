@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use TechStudio\Core\app\Exports\CommentsExport;
 use TechStudio\Core\app\Models\UserProfile;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CommentController extends Controller
 {
@@ -202,23 +204,23 @@ class CommentController extends Controller
 
         Comment::whereIn('id', $validatedData['ids'])
             ->update($data);
-
-        return [
-            'updatedComments' => $validatedData['ids'],
-        ];
-    }
-
-    public function editArticleCommentText($local, Comment $comment_id, Request $request)
-    {
-        $comment_id->update(['text' => $request->text]);
-        return ['id'=> $comment_id->id ];
-    }
-
-
-    public function getCourseCommnetsList(Request $request)
-    {
-        $courseModel = new Course();
-
+            
+            return [
+                'updatedComments' => $validatedData['ids'],
+            ];
+        }
+        
+        public function editArticleCommentText($local, Comment $comment_id, Request $request)
+        {
+            $comment_id->update(['text' => $request->text]);
+            return ['id'=> $comment_id->id ];
+        }
+        
+        
+        public function getCourseCommnetsList(Request $request)
+        {
+            $courseModel = new Course();
+            
         $query = Comment::where('commentable_type', get_class($courseModel));
 
         if ($request->filled('search')) {
@@ -353,9 +355,43 @@ class CommentController extends Controller
             'updatedComments' => $validatedData['ids'],
         ];
     }
-
-    public function exportExcel()
+ 
+    public function commentExport() 
     {
+        $courseModel = new Course();
 
+        $query = Comment::where('commentable_type', get_class($courseModel));
+
+        $comments = $query->with('commentable')->paginate(10);
+
+        $commentData = $comments->map(function ($comment) {
+            return [
+                'id' => $comment->id,
+                'displayName' => $comment->user->getDisplayName(),
+                'title' => $comment->commentable->title,
+                'text' => $comment->text,
+                'status' => $comment->status,
+                'rate' => $comment->star,
+                'date' => $comment->created_at,
+                'ip' => $comment->ip,
+            ];
+        });
+
+        $response = [
+            'total' => $comments->total(),
+            'per_page' => $comments->perPage(),
+            'current_page' => $comments->currentPage(),
+            'last_page' => $comments->lastPage(),
+            'data' => $commentData,
+        ];
+
+        return $response;
     }
+
+    public function exportExcel(Request $request) 
+    {
+        $comments = $this->commentExport($request);
+        return Excel::download(new CommentsExport($comments), 'comments.xlsx');
+    }
+
 }
