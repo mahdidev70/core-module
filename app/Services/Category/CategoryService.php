@@ -13,10 +13,17 @@ class CategoryService
     {
         $language = App::currentLocale();
 
-        $categories = Category::select('slug','title')->where('table_type',get_class($class))->where('language', $language)->get()->toArray();
+        $categories = Category::select('slug', 'title')
+        ->where('language', $language)
+        ->where('table_type', get_class($class))
+        ->whereHas('articles')
+        ->get()
+        ->toArray();
+
         $all = [
             "slug" => "all",
-            "title" => "همه"];
+            "title" => "همه"
+        ];
         array_unshift($categories, $all);
 
         return $categories;
