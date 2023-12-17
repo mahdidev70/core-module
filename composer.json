@@ -2,7 +2,7 @@
     "name": "tech-studio/core-module",
     "autoload": {
         "psr-4": {
-            "TechStudio\\Core\\": "vendor/tech-studio/core-module/"
+            "TechStudio\\Core\\": "/"
         }
     },
     "authors": [
