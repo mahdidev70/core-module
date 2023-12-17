@@ -10,5 +10,12 @@
             "name": "Mahdi Samian"
         }
     ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TechStudio\\Core\\app\\Providers\\CoreServiceProvider"
+            ]
+        }
+    },
     "require": {}
 }
