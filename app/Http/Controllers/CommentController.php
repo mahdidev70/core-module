@@ -256,8 +256,8 @@ class CommentController extends Controller
                     'displayName' => $comment->user->getDisplayName(),
                 ],
                 'relatedCourse' => [
-                    'title' => ($comment->commentable && sizeof($comment->commentable)) > 0? $comment->commentable->title:null,
-                    'slug' => ($comment->commentable && sizeof($comment->commentable)) ? $comment->commentable->slug:null,
+                    'title' => $comment->commentable ? $comment->commentable->title:null,
+                    'slug' => $comment->commentable ? $comment->commentable->slug:null,
                 ],
                 'text' => $comment->text,
                 'status' => $comment->status,
