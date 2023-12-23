@@ -204,23 +204,23 @@ class CommentController extends Controller
 
         Comment::whereIn('id', $validatedData['ids'])
             ->update($data);
-            
+
             return [
                 'updatedComments' => $validatedData['ids'],
             ];
         }
-        
+
         public function editArticleCommentText($local, Comment $comment_id, Request $request)
         {
             $comment_id->update(['text' => $request->text]);
             return ['id'=> $comment_id->id ];
         }
-        
-        
+
+
         public function getCourseCommnetsList(Request $request)
         {
             $courseModel = new Course();
-            
+
         $query = Comment::where('commentable_type', get_class($courseModel));
 
         if ($request->filled('search')) {
@@ -244,6 +244,8 @@ class CommentController extends Controller
             if ($request->sortKey == 'rate') {
                 $query->orderBy('star', $sortOrder);
             }
+        }else{
+            $query->orderBy('created_at', $sortOrder);
         }
 
         $comments = $query->with('commentable')->paginate(10);
@@ -355,8 +357,8 @@ class CommentController extends Controller
             'updatedComments' => $validatedData['ids'],
         ];
     }
- 
-    public function commentExport() 
+
+    public function commentExport()
     {
         $courseModel = new Course();
 
@@ -388,7 +390,7 @@ class CommentController extends Controller
         return $response;
     }
 
-    public function exportExcel(Request $request) 
+    public function exportExcel(Request $request)
     {
         $comments = $this->commentExport($request);
         return Excel::download(new CommentsExport($comments), 'comments.xlsx');

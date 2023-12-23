@@ -2,6 +2,7 @@
 
 namespace TechStudio\Core\app\Models;
 
+use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -116,5 +117,10 @@ class UserProfile extends Model implements Authenticatable
     public function students()
     {
         return $this->hasMany(Student::class, 'user_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -17,9 +17,9 @@ class CategoriesController extends Controller
     public function listCategory(Request $request)
     {
         $articleModel = new Article();
-        
+
         $query= Category::where('table_type', get_class($articleModel))->withCount('articles');
-        
+
         if($request->filled('search')){
             $txt = $request->get('search');
             $query->where(function($q) use($txt){
@@ -28,7 +28,7 @@ class CategoriesController extends Controller
                 ->orWhere('title','like',$txt.'%');
             });
         }
-        
+
         if (isset($request->status) && $request->status != null) {
             $query->where('status', $request->input('status'));
         }
@@ -83,7 +83,7 @@ class CategoriesController extends Controller
                 ];
             }),
         ];
-        
+
         return $data;
     }
 
@@ -134,7 +134,7 @@ class CategoriesController extends Controller
 
     }
 
-    public function updateCategoryStatus($local, Category $category, Request $request) 
+    public function updateCategoryStatus($local, Category $category, Request $request)
     {
         $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
 
@@ -167,6 +167,8 @@ class CategoriesController extends Controller
                     return $category->courses->sum('students_count');
                 });
             }
+        }else{
+            $query->orderBy('created_at', 'desc');
         }
 
         $categories = $query->paginate(10);
@@ -199,7 +201,7 @@ class CategoriesController extends Controller
     public function editCreateCategoryCourse(Request $request)
     {
         $course = new Course();
-        
+
         $category = Category::updateOrCreate(
             ['id' => $request['id']],
             [
@@ -227,7 +229,7 @@ class CategoriesController extends Controller
     public function getCourseCategoyCommon()
     {
         $courseModel = new Course();
-        
+
         $counts = Category::where('table_type', get_class($courseModel));
 
         $counts =[
