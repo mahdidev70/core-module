@@ -56,6 +56,8 @@ class CategoriesController extends Controller
                             ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
                     }) ->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
             }
+        }else{
+            $query->orderByDesc('created_at');
         }
 
         $categories = $query->paginate(10);

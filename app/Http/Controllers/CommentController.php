@@ -134,7 +134,7 @@ class CommentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $comments = $query->paginate(10);
+        $comments = $query->orderByDesc('created_at')->paginate(10);
 
         $data = $comments->map(function ($comment) {
             return [
@@ -144,8 +144,8 @@ class CommentController extends Controller
                 ],
                 'text' => $comment->text,
                 'relatedArticle' => [
-                    'title' => $comment->article->title,
-                    'slug' => $comment->article->slug,
+                    'title' => $comment->article? $comment->article->title:null,
+                    'slug' => $comment->article?$comment->article->slug:null,
                 ],
                 'date' => $comment->created_at,
                 'ip' => $comment->ip,

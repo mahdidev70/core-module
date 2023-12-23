@@ -4,7 +4,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use TechStudio\Core\app\Models\Tag;
-use TechStudio\Blog\app\Models\Article; 
+use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +12,7 @@ use TechStudio\Core\app\Helper\SlugGenerator;
 
 class TagController extends Controller
 {
-    public function listTags(Request $request) 
+    public function listTags(Request $request)
     {
         $query = Tag::with('articles');
 
@@ -63,6 +63,8 @@ class TagController extends Controller
                             ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
                     })->groupBy('tags.id')->orderBy(DB::raw('COUNT(comments.id)'), $sortOrder);
             }
+        }else{
+            $query->orderBy('created_at',$sortOrder);
         }
 
         $tag = $query->withCount('articles')->paginate(10);
@@ -112,7 +114,7 @@ class TagController extends Controller
     ];
     }
 
-    public function createUpdateTags($local, Tag $tag, Request $request) 
+    public function createUpdateTags($local, Tag $tag, Request $request)
     {
         $validatedData = $request->validate([
             'id' => 'required|integer',
