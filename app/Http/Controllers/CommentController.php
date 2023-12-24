@@ -42,6 +42,7 @@ class CommentController extends Controller
                         ],
                         "creationDate" => $comment->created_at,
                         "text" => $comment->text,
+                        "status" => $comment->status,
                         "feedback" => [
                             'likesCount' => $comment->likes_count ?? 0,
                             'dislikesCount' => $comment->dislikes_count ?? 0,
