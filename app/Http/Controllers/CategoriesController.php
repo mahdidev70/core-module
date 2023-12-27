@@ -99,10 +99,10 @@ class CategoriesController extends Controller
                 'all' => $category->count(),
                 'active' =>$category->where('status', 'active')->count(),
                 'hidden' => $category->where('status', 'hidden')->count(),
-                'delete' =>$category->where('status', 'deleted')->count(),
+                'deleted' =>$category->where('status', 'deleted')->count(),
         ];
 
-        $status = ['active', 'hidden', 'delete'];
+        $status = ['active', 'hidden', 'deleted'];
 
         return [
             'counts' => $counts,
