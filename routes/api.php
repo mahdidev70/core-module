@@ -25,9 +25,6 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 */
 
 Route::get('report/list', [ReportController::class,'list']);
-Route::middleware("auth:sanctum")->group(function () {
-    Route::get('/users/search', [SearchController::class, 'searchUser']);
-});
 
 Route::middleware("auth:sanctum")->group(function () {
 
