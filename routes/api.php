@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
 use TechStudio\Community\app\Http\Controllers\QuestionController;
-use TechStudio\Community\app\Http\Controllers\SearchController;
+// use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
 use TechStudio\Core\app\Http\Controllers\SearchController;
@@ -27,6 +27,7 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 Route::get('report/list', [ReportController::class,'list']);
 Route::middleware("auth:sanctum")->group(function () {
     Route::get('/users/search', [SearchController::class, 'searchUser']);
+});
 
 Route::middleware("auth:sanctum")->group(function () {
 
