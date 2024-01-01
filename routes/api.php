@@ -32,14 +32,14 @@ Route::middleware("auth:sanctum")->group(function () {
 
         Route::prefix('/users')->group(function() {
 
-            Route::get('general',[UserProfileController::class,'createUserCommon']);
-            Route::get('data', [UserProfileController::class,'getUsersListData'])/*->can('read_users')*/;
-            Route::get('common', [UserProfileController::class,'getUsersListCommon']);
-            Route::put('set_roles', [UserProfileController::class,'setRoles'])/*->can('set_user_roles')*/;
-            Route::put('set_status', [UserProfileController::class,'setStatus'])/*->can('set_user_status')*/;
-            Route::post('create',[UserProfileController::class,'createUser'])/*->can('add_user')*/;
-            Route::get('{user}/show',[UserProfileController::class,'editUser'])/*->can('show_user')*/;
-            Route::post('{user}/update',[UserProfileController::class,'updateUser'])/*->can('edit_user')*/;
+            // Route::get('general',[UserProfileController::class,'createUserCommon']);
+            // Route::get('data', [UserProfileController::class,'getUsersListData'])/*->can('read_users')*/;
+            // Route::get('common', [UserProfileController::class,'getUsersListCommon']);
+            // Route::put('set_roles', [UserProfileController::class,'setRoles'])/*->can('set_user_roles')*/;
+            // Route::put('set_status', [UserProfileController::class,'setStatus'])/*->can('set_user_status')*/;
+            // Route::post('create',[UserProfileController::class,'createUser'])/*->can('add_user')*/;
+            // Route::get('{user}/show',[UserProfileController::class,'editUser'])/*->can('show_user')*/;
+            // Route::post('{user}/update',[UserProfileController::class,'updateUser'])/*->can('edit_user')*/;
             // Route::post('generatePassword',[UserProfileController::class,'generatePassword']);
 
         });
