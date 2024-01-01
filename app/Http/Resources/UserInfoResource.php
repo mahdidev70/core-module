@@ -17,18 +17,14 @@ class UserInfoResource extends JsonResource
         return [
             'id' => $this->id,
             'displayName' => $this->getDisplayName(),
+            'firstName' => $this->first_name,
+            'lastName' => $this->last_name,
+            'phone' => $this->registration_phone_number,
             'avatarUrl' => $this->avatar_url,
             'email' => $this->email,
             'phone' => $this->registration_phone_number,
-            'birthday' => 'static',
-            'job' => 'static',
-            'category' => 'static',
-            'state' => $this->state,
-            'city' => $this->city,
-            'street' => $this->street,
-            'block' => $this->block,
-            'unit' => $this->unit,
-            'postalCode' => $this->postal_code,
+            'birthday' => $this->birthday,
+            'job' => $this->job,
             'shopLink' => $this->shop_website,
         ];
     }
