@@ -40,19 +40,19 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::post('create',[UserProfileController::class,'createUser'])/*->can('add_user')*/;
             Route::get('{user}/show',[UserProfileController::class,'editUser'])/*->can('show_user')*/;
             Route::post('{user}/update',[UserProfileController::class,'updateUser'])/*->can('edit_user')*/;
-            Route::post('generatePassword',[UserProfileController::class,'generatePassword']);
+            // Route::post('generatePassword',[UserProfileController::class,'generatePassword']);
 
         });
 
         Route::prefix('/user')->group(function () {
 
-            Route::get('/data', [UserProfileController::class, 'getUserData']);
-            Route::put('edit-data', [UserProfileController::class, 'editData']);
-            Route::get('/comments/list', [CommentController::class, 'getUserComment']);
-            Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
-            Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
-            Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
-            Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
+            // Route::get('/data', [UserProfileController::class, 'getUserData']);
+            // Route::put('edit-data', [UserProfileController::class, 'editData']);
+            // Route::get('/comments/list', [CommentController::class, 'getUserComment']);
+            // Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
+            // Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
+            // Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
+            // Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
 
         });
 
