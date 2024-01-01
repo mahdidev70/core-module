@@ -17,8 +17,5 @@
                 "TechStudio\\Core\\app\\Providers\\CoreRouteServiceProvider"
             ]
         }
-    },
-    "require": {
-        "league/flysystem-aws-s3-v3": "^3.22"
     }
 }

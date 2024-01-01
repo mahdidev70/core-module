@@ -2,6 +2,7 @@
 
 namespace TechStudio\Core\app\Services\File;
 
+use App\Services\FileService as ServicesFileService;
 use TechStudio\Core\app\Models\File;
 
 use Illuminate\Http\Request;
@@ -26,9 +27,10 @@ class FileService
         $createdFiles = [];
         foreach ($files as $key => $file) {
             $fileObject = new File();
-            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            Storage::disk($storage_key)->put('https://storage.sa-test.techstudio.diginext.ir/blog/', file_get_contents($file));
-            $url = Storage::disk($storage_key)->url($fileName);
+            // $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            // Storage::disk($storage_key)->put($fileName, file_get_contents($file));
+            // $url = Storage::disk($storage_key)->url($fileName);
+            $url = ServicesFileService::upload($file, $storage_key);
             $fileObject->file_url = $url;
             $fileObject->user_id = Auth::user()->id;
             $fileObject->save();
