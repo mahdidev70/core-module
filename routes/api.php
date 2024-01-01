@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use TechStudio\Core\app\Http\Controllers\ReportController;
+use TechStudio\Core\app\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,4 +18,6 @@ use TechStudio\Core\app\Http\Controllers\ReportController;
 */
 
 Route::get('report/list', [ReportController::class,'list']);
-
+Route::middleware("auth:sanctum")->group(function () {
+    Route::get('/users/search', [SearchController::class, 'searchUser']);
+});
