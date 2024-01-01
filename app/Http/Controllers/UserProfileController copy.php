@@ -1,14 +1,20 @@
 <?php
 
-namespace TechStudion\Core\app\Http\Controllers;
+namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use TechStudio\Blog\app\Http\Requests\User\CreateUserRequest;
+use TechStudio\Blog\app\Http\Requests\User\RolesRequest;
+use TechStudio\Blog\app\Http\Requests\User\StatusRequest;
+use TechStudio\Blog\app\Http\Requests\User\UpdateUserRequest;
+use TechStudio\Core\app\Http\Resources\UserAddressInfoResource;
+use TechStudio\Core\app\Http\Resources\UserInfoResource;
 use TechStudio\Core\app\Models\UserProfile;
-
 use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNull;
 
@@ -16,20 +22,19 @@ class UserProfileController extends Controller
 {
     public function createUser(CreateUserRequest $request)
     {
-       $user = UserProfile::create([
-           'first_name'=> $request->firstName,
-           'last_name'=>$request->lastName,
-           'email'=> $request->email??null,
-           'avatarUrl' => $request['avatarUrl'],
-           'registration_phone_number'=> $request->phoneNumber??null,
-           'password'=>Hash::make($request->password),
-           'email_verified'=> Carbon::now(),
-//           'alias' => $request->alias
-        ]);
+        $user = UserProfile::create([
+            'first_name'=> $request->firstName,
+            'last_name'=>$request->lastName,
+            'email'=> $request->email??null,
+            'avatarUrl' => $request['avatarUrl'],
+            'registration_phone_number'=> $request->phoneNumber??null,
+            'password'=>Hash::make($request->password),
+            'email_verified'=> Carbon::now(),
+            ]);
 
-       if (!is_null($request['role'])){
-           $user->giveRolesTo($request['role']);
-       }
+        if (!is_null($request['role'])){
+            $user->giveRolesTo($request['role']);
+        }
         $role =$user->roles->map(fn($role)=>[
             "key"=> $role['key'],
             "name"=> $role['name'],
@@ -152,7 +157,7 @@ class UserProfileController extends Controller
         ], 200);
     }
 
-    public function setStatus(StatusReques $request)
+    public function setStatus(StatusRequest $request)
     {
         UserProfile::whereIn('id', $request['ids'])
             ->update(['status'=>$request['status']]);
@@ -178,26 +183,26 @@ class UserProfileController extends Controller
 
         $data = $user->toArray();
 
-      return [
-           'id' => $data['id'],
-           'firstName' => $data['first_name'],
-           'lastName' => $data['last_name'],
-           'displayName' => $user->getDisplayName(),
-           'phoneNumber'=> $data['registration_phone_number'],
-           'email' => $data['email'],
-           'role' =>sizeof($role)?$role[0]:null,
-           'avatarUrl' => $user->avatarUrl,
-           'ip' => $user->ip,
-           'status' => $user->status,
-       ];
+        return [
+            'id' => $data['id'],
+            'firstName' => $data['first_name'],
+            'lastName' => $data['last_name'],
+            'displayName' => $user->getDisplayName(),
+            'phoneNumber'=> $data['registration_phone_number'],
+            'email' => $data['email'],
+            'role' =>sizeof($role)?$role[0]:null,
+            'avatarUrl' => $user->avatarUrl,
+            'ip' => $user->ip,
+            'status' => $user->status,
+        ];
     }
 
     public function updateUser(UserProfile $user,UpdateUserRequest $request)
     {
-       $userUnique =  UserProfile::where(function ($q) use($request){
-            $q->orWhere('registration_phone_number',$request['phoneNumber'])
-                ->orWhere('email','like',"%".$request['email']."%");
-        })->where('id','!=',96)->first();
+        $userUnique =  UserProfile::where(function ($q) use($request){
+                $q->orWhere('registration_phone_number',$request['phoneNumber'])
+                    ->orWhere('email','like',"%".$request['email']."%");
+            })->where('id','!=',96)->first();
 
         if ($request->filled('phoneNumber')){
             if ($userUnique){
@@ -215,17 +220,17 @@ class UserProfileController extends Controller
             'status' => $request['status'],
         ]);
 
-       if (is_null($request['role'])){
-           $user->withdrawRoles($user->roles->pluck('id'));
-       }else{
-           $user->refreshRoles($request->role);
-           $user->load('roles');
-           $role = collect($user->roles)->map(fn($role)=>[
-               "name"=> $role['key'],
-               "displayName"=> $role['name'],
-               "id"=> $role['id'],
-           ])->collect();
-       }
+        if (is_null($request['role'])){
+            $user->withdrawRoles($user->roles->pluck('id'));
+        }else{
+            $user->refreshRoles($request->role);
+            $user->load('roles');
+            $role = collect($user->roles)->map(fn($role)=>[
+                "name"=> $role['key'],
+                "displayName"=> $role['name'],
+                "id"=> $role['id'],
+            ])->collect();
+        }
 
         $data = $user->toArray();
         return [
@@ -248,7 +253,34 @@ class UserProfileController extends Controller
 
         return [
             'personalInfo' => new UserInfoResource($user),
-            'addressInfo' => new UserInfoResource($user),
+            'addressInfo' => new UserAddressInfoResource($user),
         ];
+    }
+    
+    public function editData(Request $request) 
+    {
+        $userId = Auth::user()->id;
+
+        $user = UserProfile::where('id', $userId)->update([
+            'first_name' => $request['firstName'],
+            'last_name' => $request['lastName'],
+            'registration_phone_number' => $request['phone'],
+            'description' => $request['description'],
+            'avatar_url' => $request['avatarUrl'],
+            'email' => $request['email'],
+            'birthday' => $request['birthday'],
+            'job' => $request['job'],
+            'shop_website' => $request['shopLink'],
+            'state' => $request['state'],
+            'city' => $request['city'],
+            'street' => $request['street'],
+            'block' => $request['block'],
+            'unit' => $request['unit'],
+            'postal_code' => $request['postalCode'],
+        ]);
+
+        $user = UserProfile::where('id', $userId)->firstOrFail();
+
+        return $user;
     }
 }
