@@ -27,7 +27,7 @@ class FileService
         foreach ($files as $key => $file) {
             $fileObject = new File();
             $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-            return Storage::disk($storage_key)->put($fileName, file_get_contents($file));
+            Storage::disk($storage_key)->put($fileName, file_get_contents($file));
             $url = Storage::disk($storage_key)->url($fileName);
             $fileObject->file_url = $url;
             $fileObject->user_id = Auth::user()->id;
