@@ -26,11 +26,6 @@ class Category extends Model
         return $this->hasMany(Article::class);
     }
 
-    public function videos()
-    {
-        return $this->hasMany(Video::class);
-    }
-
     public function courses()
     {
         return $this->hasMany(Course::class);
