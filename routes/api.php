@@ -46,13 +46,13 @@ Route::middleware("auth:sanctum")->group(function () {
 
         Route::prefix('/user')->group(function () {
 
-            // Route::get('/data', [UserProfileController::class, 'getUserData']);
-            // Route::put('edit-data', [UserProfileController::class, 'editData']);
-            // Route::get('/comments/list', [CommentController::class, 'getUserComment']);
-            // Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
-            // Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
-            // Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
-            // Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
+            Route::get('/data', [UserProfileController::class, 'getUserData']);
+            Route::put('edit-data', [UserProfileController::class, 'editData']);
+            Route::get('/comments/list', [CommentController::class, 'getUserComment']);
+            Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
+            Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
+            Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
+            Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
 
         });
 
