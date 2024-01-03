@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use TechStudio\Core\app\Exports\CommentsExport;
 use TechStudio\Core\app\Models\UserProfile;
 use Maatwebsite\Excel\Facades\Excel;
+use TechStudio\Core\app\Http\Resources\CommentsArticleResource;
 
 class CommentController extends Controller
 {
@@ -395,6 +396,26 @@ class CommentController extends Controller
     {
         $comments = $this->commentExport($request);
         return Excel::download(new CommentsExport($comments), 'comments.xlsx');
+    }
+
+    public function getUserComment(Request $request) 
+    {
+        $articleModel = new Article();
+        $comments = Comment::where('commentable_type', get_class($articleModel));
+
+        $user = Auth::user();
+
+        $articleIds = Article::where('author_id', $user->id)->orderBy('created_at', 'DESC')->pluck('id');
+        $theirCommets = $comments->whereIn('commentable_id', $articleIds)->paginate(10);
+
+        $myComments = $comments->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(10);
+
+        if ($request['data'] === 'their') {
+            return new CommentsArticleResource($theirCommets);
+        }elseif ($request['data'] === 'my') {
+            return new CommentsArticleResource($myComments);
+        }
+        
     }
 
 }
