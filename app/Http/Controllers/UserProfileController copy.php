@@ -20,7 +20,7 @@ use function PHPUnit\Framework\isNull;
 
 class UserProfileController extends Controller
 {
-    public function createUser(CreateUserRequest $request)
+    public function createUser($locale, CreateUserRequest $request)
     {
         $user = UserProfile::create([
             'first_name'=> $request->firstName,
@@ -68,7 +68,7 @@ class UserProfileController extends Controller
         ], 200);
     }
 
-    public function getUsersListData(Request $request)
+    public function getUsersListData($locale, Request $request)
     {
         $users = UserProfile::where('status','active')->with('roles');
         if ($request->filled('role')) {
@@ -141,7 +141,7 @@ class UserProfileController extends Controller
         ], 200);
     }
 
-    public function setRoles(RolesRequest $request)
+    public function setRoles($locale, RolesRequest $request)
     {
         foreach ($request['userIds'] as $userId) {
             $user = UserProfile::find($userId);
@@ -157,7 +157,7 @@ class UserProfileController extends Controller
         ], 200);
     }
 
-    public function setStatus(StatusRequest $request)
+    public function setStatus($locale, StatusRequest $request)
     {
         UserProfile::whereIn('id', $request['ids'])
             ->update(['status'=>$request['status']]);
@@ -167,7 +167,7 @@ class UserProfileController extends Controller
         ], 200);
     }
 
-    public function editUser(UserProfile $user)
+    public function editUser($locale, UserProfile $user)
     {
         //$user->load('roles');
         $role =$user->roles->map(fn($role)=>[
@@ -197,7 +197,7 @@ class UserProfileController extends Controller
         ];
     }
 
-    public function updateUser(UserProfile $user,UpdateUserRequest $request)
+    public function updateUser($locale, UserProfile $user,UpdateUserRequest $request)
     {
         $userUnique =  UserProfile::where(function ($q) use($request){
                 $q->orWhere('registration_phone_number',$request['phoneNumber'])
@@ -257,7 +257,7 @@ class UserProfileController extends Controller
         ];
     }
     
-    public function editData(Request $request) 
+    public function editData($locale, Request $request) 
     {
         $userId = Auth::user()->id;
 
