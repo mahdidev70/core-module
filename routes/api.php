@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
-// use TechStudio\Community\app\Http\Controllers\QuestionController;
+use TechStudio\Community\app\Http\Controllers\QuestionController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
@@ -51,7 +51,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('/comments/list', [CommentController::class, 'getUserComment']);
             Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
             Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
-            // Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
+            Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
             Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
 
         });
