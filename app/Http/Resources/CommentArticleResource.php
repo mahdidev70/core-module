@@ -26,6 +26,7 @@ class CommentArticleResource extends JsonResource
             'author' => new AthorResource($this->user),
             'status' => $this->status,
             'articleStatus' => $this->article->status,
+            'type' => $this->article->type,
         ];
     }
 }

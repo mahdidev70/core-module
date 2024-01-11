@@ -405,15 +405,17 @@ class CommentController extends Controller
 
         $user = Auth::user();
 
-        $articleIds = Article::where('author_id', $user->id)->orderBy('created_at', 'DESC')->pluck('id');
-        $theirCommets = $comments->whereIn('commentable_id', $articleIds)->paginate(10);
-
-        $myComments = $comments->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(10);
-
         if ($request['data'] === 'their') {
+
+            $articleIds = Article::where('author_id', $user->id)->orderBy('created_at', 'DESC')->pluck('id');
+            $theirCommets = $comments->whereIn('commentable_id', $articleIds)->paginate(10);
             return new CommentsArticleResource($theirCommets);
+
         }elseif ($request['data'] === 'my') {
+
+            $myComments = $comments->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(10);
             return new CommentsArticleResource($myComments);
+
         }
         
     }
