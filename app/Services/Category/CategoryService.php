@@ -16,7 +16,7 @@ class CategoryService
         $categories = Category::select('slug', 'title')
         ->where('language', $language)
         ->where('table_type', get_class($class))
-        ->whereHas('articles')
+        ->whereHas('articles')->orWhereHas('chatRoom')
         ->get()
         ->toArray();
 
