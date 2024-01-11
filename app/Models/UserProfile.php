@@ -111,7 +111,7 @@ class UserProfile extends Model implements Authenticatable
 
     public function courses()
     {
-        return $this->hasMany(Course::class,'instructor_id')->where('instructor_type',get_class($this));
+        return $this->hasMany(Course::class,'instructor_id', 'user_id');
     }
 
     public function students()
