@@ -257,27 +257,44 @@ class UserProfileController extends Controller
         ];
     }
     
-    public function editData($locale, Request $request) 
+    public function editData(Request $request) 
     {
         $userId = Auth::user()->id;
 
-        $user = UserProfile::where('id', $userId)->update([
-            'first_name' => $request['firstName'],
-            'last_name' => $request['lastName'],
-            'registration_phone_number' => $request['phone'],
-            'description' => $request['description'],
-            'avatar_url' => $request['avatarUrl'],
-            'email' => $request['email'],
-            'birthday' => $request['birthday'],
-            'job' => $request['job'],
-            'shop_website' => $request['shopLink'],
-            'state' => $request['state'],
-            'city' => $request['city'],
-            'street' => $request['street'],
-            'block' => $request['block'],
-            'unit' => $request['unit'],
-            'postal_code' => $request['postalCode'],
-        ]);
+        $keyRequest = [];
+
+        if ($request['firstName']) {
+            $keyRequest ['first_name'] = $request['firstName'];
+        }
+        if ($request['lastName']) {
+            $keyRequest ['last_name'] = $request['lastName'];
+        }
+        if ($request['phone']) {
+            $keyRequest ['registration_phone_number'] = $request['phone'];
+        }
+        if ($request['avatarUrl']) {
+            $keyRequest ['avatar_url'] = $request['avatarUrl'];
+        }
+        if ($request['shopLink']) {
+            $keyRequest ['shop_website'] = $request['shopLink'];
+        }
+        if ($request['postalCode']) {
+            $keyRequest ['postal_code'] = $request['postalCode'];
+        }
+
+        $user = UserProfile::where('id', $userId)->update(array_merge($request->only(
+            'description',
+            'email',
+            'birthday',
+            'job',
+            'state',
+            'city',
+            'street',
+            'block',
+            'unit',
+        ), 
+            $keyRequest
+        ));
 
         $user = UserProfile::where('id', $userId)->firstOrFail();
 
