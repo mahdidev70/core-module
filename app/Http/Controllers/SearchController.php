@@ -12,18 +12,18 @@ class SearchController extends Controller
     {
         $txt = $request->query->get('query');
         $res = [];
-       if ($txt){
-           $users = UserProfile::where('status','active')->where(function($q) use($txt){
-               $q->where('first_name','like', '%'.$txt)->orWhere('first_name', 'like', '% '.$txt.'%')->orWhere('first_name','like',$txt.'%')
-               ->orWhere('last_name','like', '%'.$txt)->orWhere('last_name', 'like', '% '.$txt.'%')->orWhere('last_name','like',$txt.'%');
-           })->take(10)->get(['first_name','last_name','id','avatar_url']);
+        if ($txt){
+            $users = UserProfile::where('status','active')->where(function($q) use($txt){
+                $q->Where('first_name', 'like', '% '.$txt.'%')
+                ->orWhere('last_name', 'like', '% '.$txt.'%');
+            })->take(10)->get(['first_name','last_name','id','avatar_url']);
 
-           $res = $users->map(fn($user) => [
-               'userId' => $user->id,
-               'userDisplayName' => $user->getDisplayName(),
-               'avatarUrl' => $user->avatar_url,
-           ]);
-       }
+            $res = $users->map(fn($user) => [
+                'id' => $user->id,
+                'displayName' => $user->getDisplayName(),
+                'avatarUrl' => $user->avatar_url,
+            ]);
+        }
 
         return response()->json($res);
      }
