@@ -56,11 +56,9 @@ class CategoriesController extends Controller
                             ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
                     }) ->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
             }
-        }else{
-            $query->orderByDesc('created_at');
         }
 
-        $categories = $query->paginate(10);
+        $categories = $query->orderBy('id', $sortOrder)->paginate(10);
 
         $data = [
             'total' => $categories->total(),
@@ -153,10 +151,14 @@ class CategoriesController extends Controller
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
-
             $query->where(function ($q) use ($txt) {
                 $q->where('title', 'like', '%' . $txt . '%');
             });
+        }
+
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
         }
 
         if ($request->has('sort')) {
@@ -169,12 +171,10 @@ class CategoriesController extends Controller
                     return $category->courses->sum('students_count');
                 });
             }
-        }else{
-            $query->orderBy('created_at', 'desc');
         }
 
-        $categories = $query->paginate(10);
-
+        $categories = $query->orderBy('id', $sortOrder)->paginate(10);
+        
         $categoriesData = $categories->map(function ($category){
             return [
                 'id' => $category->id,
