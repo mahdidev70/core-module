@@ -91,13 +91,11 @@ class CategoriesController extends Controller
     {
         $articleModel = new Article();
 
-        $category = Category::where('table_type', get_class($articleModel));
-
         $counts = [
-                'all' => $category->count(),
-                'active' =>$category->where('status', 'active')->count(),
-                'hidden' => $category->where('status', 'hidden')->count(),
-                'deleted' =>$category->where('status', 'deleted')->count(),
+                'all' => Category::where('table_type', get_class($articleModel))->count(),
+                'active' => Category::where('table_type', get_class($articleModel))->where('status', 'active')->count(),
+                'hidden' => Category::where('table_type', get_class($articleModel))->where('status', 'hidden')->count(),
+                'deleted' => Category::where('table_type', get_class($articleModel))->where('status', 'deleted')->count(),
         ];
 
         $status = ['active', 'hidden', 'deleted'];
@@ -230,18 +228,16 @@ class CategoriesController extends Controller
 
     public function getCourseCategoyCommon()
     {
-        $courseModel = new Course();
+        $course = new Course();
 
-        $counts = Category::where('table_type', get_class($courseModel));
-
-        $counts =[
-            'all' => $counts->count(),
-            'delete' => $counts->where('status', 'deleted')->count(),
-            'active' => $counts->where('status', 'active')->count(),
-            'hidden' => $counts->where('status', 'hidden')->count(),
+        return [
+            'counts' => [
+                'all' => Category::where('table_type', get_class($course))->count(),
+                'delete' => Category::where('table_type', get_class($course))->where('status', 'deleted')->count(),
+                'active' => Category::where('table_type', get_class($course))->where('status', 'active')->count(),
+                'hidden' => Category::where('table_type', get_class($course))->where('status', 'hidden')->count(),
+            ]
         ];
-
-        return $counts;
     }
 
 }
