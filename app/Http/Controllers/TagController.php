@@ -63,11 +63,9 @@ class TagController extends Controller
                             ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
                     })->groupBy('tags.id')->orderBy(DB::raw('COUNT(comments.id)'), $sortOrder);
             }
-        }else{
-            $query->orderBy('created_at',$sortOrder);
         }
 
-        $tag = $query->withCount('articles')->paginate(10);
+        $tag = $query->withCount('articles')->orderBy('id', $sortOrder)->paginate(10);
 
         $data = [
             'total' => $tag->total(),
