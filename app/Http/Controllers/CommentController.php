@@ -168,17 +168,22 @@ class CommentController extends Controller
 
     public function getArticleCommentsListCommon()
     {
-        $article = new Article();
+        $articleModel = new Article();
+
+        $counts = [
+            'waitingForApproval' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'waiting_for_approval')->count(),
+            'approved' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'approved')->count(),
+            'rejected' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'rejected')->count(),
+            'deleted' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'deleted')->count(),
+            'withReplies' => Comment::where('commentable_type', get_class($articleModel))->has('replies')->count(),
+            
+        ];
+
+        $status = ['waiting_for_approval', 'approved', 'rejected', 'deleted'];
 
         return [
-            'counts' => [
-                'waitingForApproval' => Comment::where('commentable_type', get_class($article))->
-                where('status', 'waiting_for_approval')->count(),
-                'approved' => Comment::where('commentable_type', get_class($article))->where('status', 'approved')->count(),
-                'rejected' => Comment::where('commentable_type', get_class($article))->where('status', 'rejected')->count(),
-                'deleted' => Comment::where('commentable_type', get_class($article))->where('status', 'deleted')->count(),
-                'withReplies' => Comment::where('commentable_type', get_class($article))->has('replies')->count(),
-            ]
+            'counts' => $counts,
+            'status' => $status,
         ];
     }
 
@@ -311,14 +316,12 @@ class CommentController extends Controller
     {
         $courseModel = new Course();
 
-        $counts = Comment::where('commentable_type', get_class($courseModel));
-
         $counts = [
-            'all' => $counts->count(),
-            'waiting_for_approval' => $counts->where('status', 'waiting_for_approval')->count(),
-            'delete' => $counts->where('status', 'deleted')->count(),
-            'rejected' => $counts->where('status', 'rejected')->count(),
-            'approved' => $counts->where('status', 'approved')->count(),
+            'all' => Comment::where('commentable_type', get_class($courseModel))->count(),
+            'waiting_for_approval' => Comment::where('commentable_type', get_class($courseModel))->where('status', 'waiting_for_approval')->count(),
+            'delete' => Comment::where('commentable_type', get_class($courseModel))->where('status', 'deleted')->count(),
+            'rejected' => Comment::where('commentable_type', get_class($courseModel))->where('status', 'rejected')->count(),
+            'approved' => Comment::where('commentable_type', get_class($courseModel))->where('status', 'approved')->count(),
         ];
 
         $status = ['approved','waiting_for_approval','deleted','rejected'];
