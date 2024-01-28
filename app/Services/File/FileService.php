@@ -4,7 +4,6 @@ namespace TechStudio\Core\app\Services\File;
 
 use App\Services\FileService as ServicesFileService;
 use TechStudio\Core\app\Models\File;
-use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -37,7 +36,7 @@ class FileService
             // Storage::disk($storage_key)->put($fileName, file_get_contents($file));
             // $url = Storage::disk($storage_key)->url($fileName);
             if($file->extension() == 'mp4'){
-                $url = FileService::uploadVideo($file);
+                $url = ServicesFileService::uploadVideo($file);
             }else{
                 $url = ServicesFileService::upload($file, $storage_key);
             }
