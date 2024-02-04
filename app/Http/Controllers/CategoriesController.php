@@ -11,6 +11,8 @@ use TechStudio\Lms\app\Models\Course;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use TechStudio\Core\app\Http\Resources\CategoriesResource;
+use TechStudio\Core\app\Http\Resources\CategoryResource;
 
 class CategoriesController extends Controller
 {
@@ -237,6 +239,55 @@ class CategoriesController extends Controller
                 'active' => Category::where('table_type', get_class($course))->where('status', 'active')->count(),
                 'hidden' => Category::where('table_type', get_class($course))->where('status', 'hidden')->count(),
             ]
+        ];
+    }
+
+    public function getModelClass($requestedType) 
+    {
+        $typeToModel = [
+            'course' => 'TechStudio\Lms\app\Models\Course',
+            'article' => 'TechStudio\Blog\app\Models\Article',
+            'chatRoom' => 'TechStudio\Community\app\Models\ChatRoom',
+            'faq' => 'TechStudio\Core\app\Models\Faq',
+            'question' => 'TechStudio\Community\app\Models\Question',
+        ];
+    
+        if (array_key_exists($requestedType, $typeToModel)) {
+            return $typeToModel[$requestedType];
+        }
+    }
+
+    public function categoryData(Request $request) 
+    {
+        $modelClass = $this->getModelClass($request['type']);
+
+        $categories = Category::where('table_type', $modelClass)->paginate(10);
+        return new CategoriesResource($categories);
+    }    
+
+    public function categoryEditData(Request $request) 
+    {
+        $modelClass = $this->getModelClass($request['type']);
+
+        $data = Category::updateOrCreate(
+            ['id' => $request['id']],
+            [
+                'title' => $request['title'],
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
+                'table_type' => $modelClass,
+                'description' => $request['description'],
+            ]
+        );
+        
+        return new CategoryResource($data);
+    }
+
+    public function categorySetStatus(Category $category, Request $request) 
+    {
+        $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
+
+        return [
+            'updateCategory' =>  $request['ids'],
         ];
     }
 
