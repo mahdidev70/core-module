@@ -8,6 +8,7 @@ use TechStudio\Community\app\Http\Controllers\ChatRoomController;
 use TechStudio\Community\app\Http\Controllers\QuestionController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
+use TechStudio\Core\app\Http\Controllers\FaqController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
 use TechStudio\Core\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\UserProfileController;
@@ -24,7 +25,14 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 |
 */
 
-Route::get('report/list', [ReportController::class,'list']);
+// Route::get('report/list', [ReportController::class,'list']);
+
+Route::prefix('faq')->group(function (){
+
+    Route::get('list', [FaqController::class, 'list']);
+    Route::get('common', [FaqController::class, 'common']);
+
+});
 
 Route::middleware("auth:sanctum")->group(function () {
 
@@ -56,9 +64,19 @@ Route::middleware("auth:sanctum")->group(function () {
 
         });
 
+        Route::prefix('faq')->group(function () {
+
+            Route::get('list', [FaqController::class, 'getFaqData']);
+            Route::put('edit-data', [FaqController::class, 'createUpdate']);
+            Route::put('set_status', [FaqController::class, 'setStatus']);
+
+        });
+
     });
     // ========== PANEL USERS ===============
 
     Route::get('/users/search', [SearchController::class,'searchUser']);
+
+
 
 });
