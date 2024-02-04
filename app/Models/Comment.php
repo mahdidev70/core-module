@@ -28,7 +28,7 @@ class Comment extends Model
 
     public function user()
     {
-        return $this->belongsTo(UserProfile::class);
+        return $this->belongsTo(UserProfile::class,'user_id','user_id');
     }
 
     /**

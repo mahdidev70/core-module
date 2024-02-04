@@ -30,10 +30,11 @@ class CommentController extends Controller
 
         $commentsQuery = $commentsQuery->withCount('replies');
 
-        $comments = $commentsQuery->orderByDesc('created_at')
+        $ArticleComments = $commentsQuery->orderByDesc('created_at')
                 ->with('replies')
                 ->paginate(6)
                 ->through(function($comment) {
+
                     return [
                         "id" => $comment->id,
                         "user" => [
@@ -70,7 +71,30 @@ class CommentController extends Controller
                         "replyLastPage" => floor(($comment->replies_count - 1) / 6) + 1,
                     ];
                 });
+        $userComments = null;
+        if (Auth::check()) {
+            $userComments = Comment::where('commentable_type', $modelClass)
+                ->where('user_id', Auth::user()->id)
+                ->where('status', 'waiting_for_approval')
+                ->with('replies')
+                ->latest('created_at')
+                ->paginate(10)
+                ->through(function ($comment) {
+                    return [
+                        "id" => $comment->id,
+                        "user" => [
+                            "displayName" => $comment->user->getDisplayName(),
+                            "id" => $comment->user->id,
+                            "avatarUrl" => $comment->user->avatar_url
+                        ],
+                        "creationDate" => $comment->created_at,
+                        "text" => $comment->text,
+                        "status" => $comment->status,
+                    ];
+                });
+        }
 
+        $comments = $ArticleComments->concat($userComments);
         return $comments;
     }
     public function store($local, $slug ,Request $request)
@@ -86,6 +110,7 @@ class CommentController extends Controller
         $input['commentable_type'] = get_class($slug);
         $input['commentable_id'] = $slug->id;
         $input['ip'] =  $ip;
+        $input['status'] = 'waiting_for_approval';
         $input['parent_id'] = (isset($request->replyTo) && $request->replyTo !=0 ) ?$request->replyTo : null;
         $comment = Comment::create($input);
         return response()->json($comment,200);
@@ -176,7 +201,7 @@ class CommentController extends Controller
             'rejected' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'rejected')->count(),
             'deleted' => Comment::where('commentable_type', get_class($articleModel))->where('status', 'deleted')->count(),
             'withReplies' => Comment::where('commentable_type', get_class($articleModel))->has('replies')->count(),
-            
+
         ];
 
         $status = ['waiting_for_approval', 'approved', 'rejected', 'deleted'];
@@ -401,7 +426,7 @@ class CommentController extends Controller
         return Excel::download(new CommentsExport($comments), 'comments.xlsx');
     }
 
-    public function getUserComment(Request $request) 
+    public function getUserComment(Request $request)
     {
         $articleModel = new Article();
         $comments = Comment::where('commentable_type', get_class($articleModel));
@@ -420,7 +445,7 @@ class CommentController extends Controller
             return new CommentsArticleResource($myComments);
 
         }
-        
+
     }
 
 }

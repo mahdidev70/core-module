@@ -40,7 +40,7 @@ class SearchController extends Controller
                 ->take(5)->get()->map(function ($item) {
                     $item['type'] = 'article';
                     return $item;
-                  });;
+                  });
             return response()->json(ArticleResource::collection($result));
         }
     }
