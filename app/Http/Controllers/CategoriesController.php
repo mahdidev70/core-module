@@ -311,6 +311,7 @@ class CategoriesController extends Controller
                 'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
                 'table_type' => $modelClass,
                 'description' => $request['description'],
+                'avatar_url' => $request['avatarUrl']
             ]
         );
 
