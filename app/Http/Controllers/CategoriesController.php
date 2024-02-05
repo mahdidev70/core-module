@@ -274,9 +274,31 @@ class CategoriesController extends Controller
             $sortOrder = $request->sortOrder;
         }
 
+        if (isset($request->status) && $request->status != null) {
+            $query->where('status', $request->input('status'));
+        }
+
         $categories = $query->orderBy('id', $sortOrder)->paginate(10);
         return new CategoriesResource($categories);
     }    
+
+    public function categoryCommon(Request $request) 
+    {
+        $modelClass = $this->getModelClass($request['type']);
+
+        $counts = [
+            'all' => Category::where('table_type', $modelClass)->count(),
+            'delete' => Category::where('table_type', $modelClass)->where('status', 'deleted')->count(),
+            'active' => Category::where('table_type', $modelClass)->where('status', 'active')->count(),
+            'hidden' => Category::where('table_type', $modelClass)->where('status', 'hidden')->count(),
+        ];
+        $status = ['active', 'deleted', 'hidden'];
+
+        return [
+            'counts' => $counts,
+            'status' => $status
+        ];
+    }
 
     public function categoryEditData(Request $request) 
     {
