@@ -70,6 +70,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('/list', [CategoriesController::class, 'categoryData']);
             Route::put('/edit-data', [CategoriesController::class, 'categoryEditData']);
             Route::put('/set-status', [CategoriesController::class, 'categorySetStatus']);
+            Route::get('common-data', [CategoriesController::class, 'categoryCommon']);
 
         });
 
