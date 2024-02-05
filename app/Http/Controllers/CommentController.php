@@ -94,7 +94,12 @@ class CommentController extends Controller
                 });
         }
 
-        $comments = $userComments->concat($ArticleComments);
+        if (!$userComments){
+            $comments = $ArticleComments;
+        }else{
+            $comments = $userComments->concat($ArticleComments);
+        }
+
         return $comments;
     }
     public function store($local, $slug ,Request $request)
