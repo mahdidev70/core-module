@@ -260,8 +260,21 @@ class CategoriesController extends Controller
     public function categoryData(Request $request) 
     {
         $modelClass = $this->getModelClass($request['type']);
+        $query = Category::where('table_type', $modelClass);
 
-        $categories = Category::where('table_type', $modelClass)->paginate(10);
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
+            $query->where(function ($q) use ($txt) {
+                $q->where('title', 'like', '%' . $txt . '%');
+            });
+        }
+
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        $categories = $query->orderBy('id', $sortOrder)->paginate(10);
         return new CategoriesResource($categories);
     }    
 
@@ -278,8 +291,9 @@ class CategoriesController extends Controller
                 'description' => $request['description'],
             ]
         );
-        
-        return new CategoryResource($data);
+
+        $category = Category::where('id', $data['id'])->first();
+        return new CategoryResource($category);
     }
 
     public function categorySetStatus(Category $category, Request $request) 
