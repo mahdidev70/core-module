@@ -79,6 +79,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('list', [FaqController::class, 'getFaqData']);
             Route::put('edit-data', [FaqController::class, 'createUpdate']);
             Route::put('set_status', [FaqController::class, 'setStatus']);
+            Route::get('common', [FaqController::class, 'panelCommon']);
 
         });
 

@@ -56,4 +56,20 @@ class FaqController extends Controller
             'updateStatus' => $request['ids']
         ];
     }
+
+    public function panelCommon() 
+    {
+        $counts = [
+            'all' => Faq::count(),
+            'active' => Faq::where('status', 'active')->count(),
+            'deactive' => Faq::where('status', 'deactive')->count(),
+        ];
+
+        $status = ['active', 'deactive'];
+
+        return [
+            'counts' => $counts,
+            'status' => $status
+        ];
+    }
 }
