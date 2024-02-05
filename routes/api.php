@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
 use TechStudio\Community\app\Http\Controllers\QuestionController;
+use TechStudio\Core\app\Http\Controllers\CategoriesController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use TechStudio\Core\app\Http\Controllers\FaqController;
@@ -25,7 +26,7 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 |
 */
 
-// Route::get('report/list', [ReportController::class,'list']);
+Route::get('report/list', [ReportController::class,'list']);
 
 Route::prefix('faq')->group(function (){
 
@@ -64,8 +65,16 @@ Route::middleware("auth:sanctum")->group(function () {
 
         });
 
-        Route::prefix('faq')->group(function () {
+        Route::prefix('category')->group(function () {
 
+            Route::get('/list', [CategoriesController::class, 'categoryData']);
+            Route::put('/edit-data', [CategoriesController::class, 'categoryEditData']);
+            Route::put('/set-status', [CategoriesController::class, 'categorySetStatus']);
+
+        });
+
+        Route::prefix('faq')->group(function () {
+            
             Route::get('list', [FaqController::class, 'getFaqData']);
             Route::put('edit-data', [FaqController::class, 'createUpdate']);
             Route::put('set_status', [FaqController::class, 'setStatus']);
