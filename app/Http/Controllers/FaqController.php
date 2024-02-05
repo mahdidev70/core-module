@@ -46,7 +46,7 @@ class FaqController extends Controller
             [
                 'question' => $request['question'],
                 'answer' => $request['answer'],
-                'category_id' => $request['category'],
+                'category_id' => $request['categoryId'],
                 'is_frequent' => $request['isFrequent'],
             ]
         );
