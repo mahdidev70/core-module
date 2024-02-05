@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use TechStudio\Core\app\Http\Resources\CategoryResource;
 use TechStudio\Core\app\Http\Resources\FaqResource;
 use TechStudio\Core\app\Http\Resources\FaqsResource;
 use TechStudio\Core\app\Models\Category;
@@ -11,10 +12,14 @@ use TechStudio\Core\app\Models\Faq;
 
 class FaqController extends Controller
 {
-    public function list($locale, Request $request) 
+    public function list(Request $request) 
     {
         $data = Faq::where('status', 'active')->get();
-        return FaqResource::collection($data);
+        $isFrequent =Faq::where('status', 'active')->where('is_frequent', 1)->get();
+        return [
+            'data' => FaqResource::collection($data),
+            'isFrequent' => FaqResource::collection($isFrequent)
+        ];
     }
 
     public function common() 
@@ -42,6 +47,7 @@ class FaqController extends Controller
                 'question' => $request['question'],
                 'answer' => $request['answer'],
                 'category_id' => $request['category'],
+                'is_frequent' => $request['isFrequent'],
             ]
         );
 
@@ -59,6 +65,7 @@ class FaqController extends Controller
 
     public function panelCommon() 
     {
+        $modelClass = new Faq();
         $counts = [
             'all' => Faq::count(),
             'active' => Faq::where('status', 'active')->count(),
@@ -67,9 +74,13 @@ class FaqController extends Controller
 
         $status = ['active', 'deactive'];
 
+        $categories = Category::where('table_type', get_class($modelClass))->get();
+        
+
         return [
             'counts' => $counts,
-            'status' => $status
+            'status' => $status,
+            'categories' => CategoryResource::collection($categories),
         ];
     }
 }
