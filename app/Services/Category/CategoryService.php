@@ -13,7 +13,7 @@ class CategoryService
     {
         $language = App::currentLocale();
 
-        $categories = Category::select('slug', 'title')
+        $categories = Category::select('id', 'slug', 'title')
         ->where('language', $language)
         ->where('table_type', get_class($class))
         ->whereHas('articles')->orWhereHas('chatRoom')
