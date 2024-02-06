@@ -174,7 +174,7 @@ class CategoriesController extends Controller
         }
 
         $categories = $query->orderBy('id', $sortOrder)->paginate(10);
-        
+
         $categoriesData = $categories->map(function ($category){
             return [
                 'id' => $category->id,
@@ -242,7 +242,7 @@ class CategoriesController extends Controller
         ];
     }
 
-    public function getModelClass($requestedType) 
+    public function getModelClass($requestedType)
     {
         $typeToModel = [
             'course' => 'TechStudio\Lms\app\Models\Course',
@@ -251,16 +251,16 @@ class CategoriesController extends Controller
             'faq' => 'TechStudio\Core\app\Models\Faq',
             'question' => 'TechStudio\Community\app\Models\Question',
         ];
-    
+
         if (array_key_exists($requestedType, $typeToModel)) {
             return $typeToModel[$requestedType];
         }
     }
 
-    public function categoryData(Request $request) 
+    public function categoryData(Request $request)
     {
         $modelClass = $this->getModelClass($request['type']);
-        $query = Category::where('table_type', $modelClass);
+        $query = Category::withCount(['questions', 'chatRoom','faq'])->where('table_type', $modelClass);
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
@@ -280,9 +280,9 @@ class CategoriesController extends Controller
 
         $categories = $query->orderBy('id', $sortOrder)->paginate(10);
         return new CategoriesResource($categories);
-    }    
+    }
 
-    public function categoryCommon(Request $request) 
+    public function categoryCommon(Request $request)
     {
         $modelClass = $this->getModelClass($request['type']);
 
@@ -300,7 +300,7 @@ class CategoriesController extends Controller
         ];
     }
 
-    public function categoryEditData(Request $request) 
+    public function categoryEditData(Request $request)
     {
         $modelClass = $this->getModelClass($request['type']);
 
@@ -319,7 +319,7 @@ class CategoriesController extends Controller
         return new CategoryResource($category);
     }
 
-    public function categorySetStatus(Category $category, Request $request) 
+    public function categorySetStatus(Category $category, Request $request)
     {
         $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
 
