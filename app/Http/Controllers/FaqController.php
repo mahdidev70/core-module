@@ -14,7 +14,17 @@ class FaqController extends Controller
 {
     public function list(Request $request) 
     {
-        $data = Faq::where('status', 'active')->get();
+        $query = Faq::where('status', 'active');
+
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
+            $query->where(function ($q) use ($txt) {
+                $q->where('question', 'like', '%' . $txt . '%')
+                ->orWhere('answer', 'like', '%' . $txt . '%');
+            });
+        }
+
+        $data = $query->get();
         $isFrequent =Faq::where('status', 'active')->where('is_frequent', 1)->get();
         return [
             'data' => FaqResource::collection($data),
@@ -33,9 +43,22 @@ class FaqController extends Controller
         return $categories;
     }
 
-    public function getFaqData()
+    public function getFaqData(Request $request)
     {
-        $data = Faq::paginate(10);
+        $query = Faq::with('category');
+
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
+            $query->where(function ($q) use ($txt) {
+                $q->where('question', 'like', '%' . $txt . '%');
+            });
+        }
+
+        if (isset($request->status) && $request->status != null) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $data = $query->paginate();
         return new FaqsResource($data);
     }
 
