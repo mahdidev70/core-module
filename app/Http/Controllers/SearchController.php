@@ -16,10 +16,10 @@ class SearchController extends Controller
         $res = [];
         if ($txt){
             $users = UserProfile::where('status','active')->where(function($q) use($txt){
-                $q->Where('first_name', 'like', '% '.$txt.'%')
-                ->orWhere('last_name', 'like', '% '.$txt.'%');
+                $q->Where('first_name', 'like', '%'.$txt.'%')
+                ->orWhere('last_name', 'like', '%'.$txt.'%');
             })->take(10)->get(['first_name','last_name','id','avatar_url']);
-
+            return $users;
             $res = $users->map(fn($user) => [
                 'id' => $user->id,
                 'displayName' => $user->getDisplayName(),
