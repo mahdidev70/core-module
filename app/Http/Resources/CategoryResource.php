@@ -23,6 +23,7 @@ class CategoryResource extends JsonResource
             'avatarUrl' => $this->avatar_url,
             'status' => $this->status,
             'creationDate' => $this->created_at,
+            'faqCount' => $this->faq->count(),
         ];
     }
 }

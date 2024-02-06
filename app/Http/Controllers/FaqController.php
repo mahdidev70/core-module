@@ -40,7 +40,7 @@ class FaqController extends Controller
         ->whereHas('faq')
         ->get();
 
-        return $categories;
+        return CategoryResource::collection($categories);
     }
 
     public function getFaqData(Request $request)
@@ -99,7 +99,6 @@ class FaqController extends Controller
 
         $categories = Category::where('table_type', get_class($modelClass))->get();
         
-
         return [
             'counts' => $counts,
             'status' => $status,
