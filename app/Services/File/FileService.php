@@ -41,7 +41,7 @@ class FileService
                 $url = ServicesFileService::upload($file, $storage_key);
             }
             $fileObject->file_url = $url;
-            $fileObject->user_id = Auth::user()->id;
+            $fileObject->user_id = auth()->id();
             $fileObject->save();
             if ($format_result_as_attachment) {
                 $createdFiles[] = [
