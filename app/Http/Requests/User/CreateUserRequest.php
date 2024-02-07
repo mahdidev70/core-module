@@ -1,6 +1,6 @@
 <?php
 
-namespace TechStudio\Blog\app\Http\Requests\User;
+namespace TechStudio\Core\app\Http\Requests\User;
 
 use App\Http\Requests\User\BaseUserValidationRequest;
 use Illuminate\Foundation\Http\FormRequest;
