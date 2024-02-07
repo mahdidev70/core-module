@@ -256,8 +256,8 @@ class UserProfileController extends Controller
             'addressInfo' => new UserAddressInfoResource($user),
         ];
     }
-    
-    public function editData(Request $request) 
+
+    public function editData(Request $request)
     {
         $userId = Auth::user()->id;
 
@@ -292,7 +292,7 @@ class UserProfileController extends Controller
             'street',
             'block',
             'unit',
-        ), 
+        ),
             $keyRequest
         ));
 

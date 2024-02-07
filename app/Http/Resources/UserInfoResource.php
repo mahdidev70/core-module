@@ -19,13 +19,12 @@ class UserInfoResource extends JsonResource
             'displayName' => $this->getDisplayName(),
             'firstName' => $this->first_name,
             'lastName' => $this->last_name,
-            'phone' => $this->registration_phone_number,
-            'avatarUrl' => $this->avatar_url,
-            'email' => $this->email,
-            'phone' => $this->registration_phone_number,
+            'phone' => $this->userProfile ? $this->userProfile->registration_phone_number: $this->username,
+            'avatarUrl' => $this->userProfile ? $this->userProfile->avatar_url:$this->avatar_url,
+            'email' => $this->userProfile ? $this->userProfile->email:$this->email,
             'birthday' => $this->birthday,
             'job' => $this->job,
-            'shopLink' => $this->shop_website,
+            'shopLink' =>$this->userProfile ? $this->userProfile?->shop_website:null,
         ];
     }
 }
