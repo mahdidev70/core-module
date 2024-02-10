@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -281,8 +282,35 @@ class UserProfileController extends Controller
         if ($request['postalCode']) {
             $keyRequest ['postal_code'] = $request['postalCode'];
         }
+        if ($request['birthday']) {
+            $keyRequest ['birthday'] = $request['birthday'];
+        }
+        if ($request['job']) {
+            $keyRequest ['job'] = $request['job'];
+        }
+        if ($request['email']) {
+            $keyRequest ['email'] = $request['email'];
+        }
 
-        $user = UserProfile::where('id', $userId)->update(array_merge($request->only(
+        $mainUser = new User();
+        if ($mainUser){
+           if ($mainUser->where('username', $request['phone'])->first()){
+               return response()->json([
+                   'message' => 'این شماره موبایل قبلا ثبت شده است.',
+               ], 400);
+           }
+            $sss = $mainUser->where('id', $userId)->update([
+                'first_name' => $request['firstName'],
+                'last_name' => $request['lastName'],
+                'birthday' => $request['birthday'],
+               /* 'email' => $request['email'],*/
+                'job' => $request['job'],
+                'username' => $request['phone'],
+                'avatar_url' => $request['avatarUrl'],
+
+            ]);
+        }
+        $user = UserProfile::where('user_id', $userId)->update(array_merge($request->only(
             'description',
             'email',
             'birthday',
@@ -296,7 +324,7 @@ class UserProfileController extends Controller
             $keyRequest
         ));
 
-        $user = UserProfile::where('id', $userId)->firstOrFail();
+        $user = UserProfile::where('user_id', $userId)->firstOrFail();
 
         return $user;
     }
