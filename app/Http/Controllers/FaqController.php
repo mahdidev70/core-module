@@ -36,7 +36,6 @@ class FaqController extends Controller
     {
         $faqModel = new Faq();
         $categories = Category::where('table_type', get_class($faqModel))
-        ->select('id', 'title', 'slug', 'description', 'status', 'language')
         ->whereHas('faq')
         ->get();
 
