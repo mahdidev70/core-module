@@ -263,18 +263,22 @@ class UserProfileController extends Controller
         $userId = Auth::user()->id;
 
         $keyRequest = [];
+        $keyMain = [];
 
         if ($request['firstName']) {
             $keyRequest ['first_name'] = $request['firstName'];
+            $keyMain ['first_name'] = $request['firstName'];
         }
         if ($request['lastName']) {
             $keyRequest ['last_name'] = $request['lastName'];
+            $keyMain ['last_name'] = $request['last_name'];
         }
         if ($request['phone']) {
             $keyRequest ['registration_phone_number'] = $request['phone'];
         }
         if ($request['avatarUrl']) {
             $keyRequest ['avatar_url'] = $request['avatarUrl'];
+            $keyMain ['avatar_url'] = $request['avatar_url'];
         }
         if ($request['shopLink']) {
             $keyRequest ['shop_website'] = $request['shopLink'];
@@ -284,9 +288,11 @@ class UserProfileController extends Controller
         }
         if ($request['birthday']) {
             $keyRequest ['birthday'] = $request['birthday'];
+            $keyMain ['birthday'] = $request['birthday'];
         }
         if ($request['job']) {
             $keyRequest ['job'] = $request['job'];
+            $keyMain ['job'] = $request['job'];
         }
         if ($request['email']) {
             $keyRequest ['email'] = $request['email'];
@@ -302,16 +308,22 @@ class UserProfileController extends Controller
                    'message' => 'این شماره موبایل قبلا ثبت شده است.',
                ], 400);
            }*/
-            $sss = $mainUser->where('id', $userId)->update([
+            /*$sss = $mainUser->where('id', $userId)->update([
                 'first_name' => $request['firstName'],
                 'last_name' => $request['lastName'],
                 'birthday' => $request['birthday'],
-               /* 'email' => $request['email'],*/
                 'job' => $request['job'],
                 'username' => Auth::user()->username,
                 'avatar_url' => $request['avatarUrl'],
 
-            ]);
+            ]);*/
+             $mainUser->where('id', $userId)->update(array_merge($request->only(
+                 'first_name',
+                 'last_name',
+                 'birthday',
+                 'job',
+                 'avatar_url'
+             ),$keyMain));
         }
         $user = UserProfile::where('user_id', $userId)->update(array_merge($request->only(
             'description',
