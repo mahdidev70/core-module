@@ -271,14 +271,14 @@ class UserProfileController extends Controller
         }
         if ($request['lastName']) {
             $keyRequest ['last_name'] = $request['lastName'];
-            $keyMain ['last_name'] = $request['last_name'];
+            $keyMain ['last_name'] = $request['lastName'];
         }
         if ($request['phone']) {
             $keyRequest ['registration_phone_number'] = $request['phone'];
         }
         if ($request['avatarUrl']) {
             $keyRequest ['avatar_url'] = $request['avatarUrl'];
-            $keyMain ['avatar_url'] = $request['avatar_url'];
+            $keyMain ['avatar_url'] = $request['avatarUrl'];
         }
         if ($request['shopLink']) {
             $keyRequest ['shop_website'] = $request['shopLink'];
@@ -335,6 +335,7 @@ class UserProfileController extends Controller
             'street',
             'block',
             'unit',
+            'postal_code'
         ),
             $keyRequest
         ));

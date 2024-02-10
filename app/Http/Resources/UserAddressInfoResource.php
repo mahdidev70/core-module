@@ -15,14 +15,14 @@ class UserAddressInfoResource extends JsonResource
     public function toArray(Request $request)
     {
         return [
-            'id' => $this->id,
-            'displayName' => $this->getDisplayName(),
-            'state' => $this->state,
-            'city' => $this->city,
-            'street' => $this->street,
-            'block' => $this->block,
-            'unit' => $this->unit,
-            'postalCode' => $this->postal_code,
+            'id' => $this->userProfile->user_id,
+            'displayName' => $this->userProfile->getDisplayName(),
+            'state' => $this->userProfile->state,
+            'city' => $this->userProfile->city,
+            'street' => $this->userProfile->street,
+            'block' => $this->userProfile->block,
+            'unit' => $this->userProfile->unit,
+            'postalCode' => $this->userProfile->postal_code,
         ];
     }
 }
