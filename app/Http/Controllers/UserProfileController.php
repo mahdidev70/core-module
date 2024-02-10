@@ -294,18 +294,21 @@ class UserProfileController extends Controller
 
         $mainUser = new User();
         if ($mainUser){
-           if ($mainUser->where('username', $request['phone'])->first()){
+           /*if ($mainUser->where('username', $request['phone'])->first()){
+               //age seller bod natone taghir bde
+
+               //age seller nabod natone taghir bde
                return response()->json([
                    'message' => 'این شماره موبایل قبلا ثبت شده است.',
                ], 400);
-           }
+           }*/
             $sss = $mainUser->where('id', $userId)->update([
                 'first_name' => $request['firstName'],
                 'last_name' => $request['lastName'],
                 'birthday' => $request['birthday'],
                /* 'email' => $request['email'],*/
                 'job' => $request['job'],
-                'username' => $request['phone'],
+                'username' => Auth::user()->username,
                 'avatar_url' => $request['avatarUrl'],
 
             ]);
