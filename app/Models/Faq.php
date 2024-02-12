@@ -17,7 +17,8 @@ class Faq extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id')
-            ->where('table_type', get_class($this))->select(['id', 'slug', 'title']);
+            ->where('table_type', get_class($this))
+            ->select(['id', 'slug', 'title', 'description', 'avatar_url', 'status', 'created_at', 'language']);
     }
 
 }

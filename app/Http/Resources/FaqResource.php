@@ -18,12 +18,7 @@ class FaqResource extends JsonResource
             'id' => $this->id,
             'question' => $this->question,
             'answers' => $this->answer,
-            'category' => [
-                'id' => $this->category->id ?? null,
-                'title' => $this->category->title ?? null,
-                'slug' => $this->category->slug ?? null,
-                'avatarUrl' => $this->category->avatar_url ?? null,
-            ],
+            'category' => new CategoryResource($this->category) ?? null,
             'categoryId' => $this->category->id ?? null,
             'isFrequent' => $this->is_frequent,
             'status' => $this->status,
