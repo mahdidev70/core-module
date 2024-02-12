@@ -2,6 +2,7 @@
 
 namespace TechStudio\Core\app\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,17 @@ class Category extends Model
     protected $guarded = ['id'];
 
     protected $table = 'core_categories';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        if (!request()->is(['*/api/article_editor/*', '*/panel/*'])) {
+            static::addGlobalScope('publiclyVisible', function (Builder $builder) {
+                $builder->where('status', 'active');
+            });
+        }
+    }
 
     public function getRouteKeyName()
     {
