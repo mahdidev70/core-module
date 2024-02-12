@@ -24,6 +24,12 @@ class FaqController extends Controller
             });
         }
 
+        if (isset($request->categorySlug) && $request->categorySlug != null) {
+            $query->whereHas('category', function ($categoryQuery) use ($request) {
+                $categoryQuery->where('slug', $request->input('categorySlug'));
+            });
+        }
+
         $data = $query->get();
         $isFrequent =Faq::where('status', 'active')->where('is_frequent', 1)->get();
         return [
@@ -67,7 +73,7 @@ class FaqController extends Controller
             ['id' => $request['id']],
             [
                 'question' => $request['question'],
-                'answer' => $request['answer'],
+                'answer' => $request['answers'],
                 'category_id' => $request['categoryId'],
                 'is_frequent' => $request['isFrequent'],
             ]
