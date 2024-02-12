@@ -28,6 +28,7 @@ class FileService
             throw new \Illuminate\Validation\ValidationException($validator);
         }
 
+        \Log::info("user upload: ".\auth()->user()->id);
         $files = $request->file('files');
         $createdFiles = [];
         foreach ($files as $key => $file) {
@@ -41,7 +42,7 @@ class FileService
                 $url = ServicesFileService::upload($file, $storage_key);
             }
             $fileObject->file_url = $url;
-            $fileObject->user_id = \auth()->id();
+            $fileObject->user_id = \auth()->user()->id;
             $fileObject->save();
             if ($format_result_as_attachment) {
                 $createdFiles[] = [
