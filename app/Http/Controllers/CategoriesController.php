@@ -139,11 +139,15 @@ class CategoriesController extends Controller
             $category = $category->whereIn('id', $request['ids']);
 
             if ($category->first()->articles()->exists()) {
-                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+                return [
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
+                ];
             }
 
             if ($category->first()->courses()->exists()) {
-                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+                return [
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
+                ];
             }
         }
 
@@ -336,13 +340,19 @@ class CategoriesController extends Controller
         if ($request['status'] != 'active') {
 
             if ($category->first()->chatRoom()->exists()) {
-                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+                return [
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
+                ];
             }
             if ($category->first()->questions()->exists()) {
-                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+                return [
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
+                ];
             }
             if ($category->first()->faq()->exists()) {
-                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+                return [
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
+                ];
             }
 
         }
