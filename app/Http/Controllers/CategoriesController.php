@@ -7,8 +7,6 @@ use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Helper\SlugGenerator;
 use TechStudio\Lms\app\Models\Course;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use TechStudio\Core\app\Http\Resources\CategoriesResource;
@@ -136,6 +134,19 @@ class CategoriesController extends Controller
 
     public function updateCategoryStatus($local, Category $category, Request $request)
     {
+        
+        if ($request['status'] != 'active') {
+            $category = $category->whereIn('id', $request['ids']);
+
+            if ($category->first()->articles()->exists()) {
+                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+            }
+
+            if ($category->first()->courses()->exists()) {
+                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+            }
+        }
+
         $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
 
         return [
@@ -321,6 +332,21 @@ class CategoriesController extends Controller
 
     public function categorySetStatus(Category $category, Request $request)
     {
+
+        if ($request['status'] != 'active') {
+
+            if ($category->first()->chatRoom()->exists()) {
+                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+            }
+            if ($category->first()->questions()->exists()) {
+                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+            }
+            if ($category->first()->faq()->exists()) {
+                return 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید';
+            }
+
+        }
+
         $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
 
         return [
