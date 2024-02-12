@@ -79,7 +79,9 @@ class FaqController extends Controller
             ]
         );
 
-        return new FaqResource($data);
+        $faq = Faq::where('id', $data->id)->first();
+
+        return new FaqResource($faq);
     }
 
     public function setStatus($locale, Request $request)
