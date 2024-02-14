@@ -25,6 +25,7 @@ class UserInfoResource extends JsonResource
             'birthday' => $this->birthday,
             'job' => $this->job,
             'shopLink' =>$this->userProfile ? $this->userProfile?->shop_website:null,
+            'category' => $this->category ? $this->category?->title:null
         ];
     }
 }
