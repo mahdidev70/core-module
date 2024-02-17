@@ -10,6 +10,7 @@ use TechStudio\Core\app\Http\Controllers\CategoriesController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use TechStudio\Core\app\Http\Controllers\FaqController;
+use TechStudio\Core\app\Http\Controllers\LandingController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
 use TechStudio\Core\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\UserProfileController;
@@ -25,7 +26,7 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+// =================== CLIENT =====================
 Route::get('report/list', [ReportController::class,'list']);
 
 Route::prefix('faq')->group(function (){
@@ -34,7 +35,12 @@ Route::prefix('faq')->group(function (){
     Route::get('common', [FaqController::class, 'common']);
 
 });
+    // ============== STATIC LANDING ==================
 
+Route::get('landing/first', [LandingController::class,'first']);
+
+
+// ===================== PANEL ====================
 Route::middleware("auth:sanctum")->group(function () {
 
     Route::prefix('panel')->group(function (){
@@ -87,7 +93,5 @@ Route::middleware("auth:sanctum")->group(function () {
     // ========== PANEL USERS ===============
 
     Route::get('/users/search', [SearchController::class,'searchUser']);
-
-
 
 });
