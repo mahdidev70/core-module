@@ -36,7 +36,7 @@ class SearchController extends Controller
             $keyword = $request->get('query');
             $result = Article::with('category', 'author')
                 ->where('title', 'like', '%' . $keyword . '%')
-                // ->orWhere('content', 'like', '%' . $keyword . '%')
+                ->orWhere('content', 'like', '%' . $keyword . '%')
                 ->take(5)->get()->map(function ($item) {
                     $item['type'] = 'article';
                     return $item;
