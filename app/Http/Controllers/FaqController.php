@@ -63,7 +63,7 @@ class FaqController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $data = $query->paginate();
+        $data = $query->paginate(10);
         return new FaqsResource($data);
     }
 
