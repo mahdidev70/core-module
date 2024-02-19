@@ -110,8 +110,8 @@ class CommentController extends Controller
         ]);
         $ip = $request->header('X-Real-IP') ?? $request->ip();
         $input = $request->all();
-        $input['user_id'] = Auth::user()->id;
-        $input['user_type'] = get_class(Auth::user());
+        $input['user_id'] = auth()->user()->id;
+        $input['user_type'] = get_class(auth()->user());
         $input['commentable_type'] = get_class($slug);
         $input['commentable_id'] = $slug->id;
         $input['ip'] =  $ip;
@@ -139,7 +139,7 @@ class CommentController extends Controller
         $currentUserAction = $request->action;
         // likeBy() or dislikeBy() or clearBy
         $functionName = strtolower($request->action).'By';
-        $comment_query->$functionName(Auth::user()->id);
+        $comment_query->$functionName(auth()->user()->id);
         // return $comment_query;
         return [
             'feedback' => [
@@ -436,7 +436,7 @@ class CommentController extends Controller
         $articleModel = new Article();
         $comments = Comment::where('commentable_type', get_class($articleModel));
 
-        $user = Auth::user();
+        $user = auth()->user();
 
         if ($request['data'] === 'their') {
 
