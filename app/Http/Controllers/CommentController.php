@@ -72,9 +72,9 @@ class CommentController extends Controller
                     ];
                 });
         $userComments = null;
-        if (Auth::check()) {
+        if (auth()->check()) {
             $userComments = Comment::where('commentable_type', $modelClass)
-                ->where('user_id', Auth::user()->id)
+                ->where('user_id', auth()->user()->id)
                 ->where('status', 'waiting_for_approval')
                 ->with('replies')
                 ->latest('created_at')
