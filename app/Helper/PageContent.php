@@ -17,8 +17,6 @@ class PageContent {
         $this->questionsCount = 0;
         $this->dominantType = 'text';
 
-        return 'just go';
-        // amirmahdi should be fix that!!!!!
         foreach ($this->blocks as $block) {
             if ($block['type'] == 'html') {
                 $t = HtmlContent::minutesToRead(json_encode($block['content']));
