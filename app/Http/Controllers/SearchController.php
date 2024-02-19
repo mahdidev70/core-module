@@ -17,8 +17,9 @@ class SearchController extends Controller
         if ($txt){
             $users = UserProfile::where('status','active')->where(function($q) use($txt){
                 $q->Where('first_name', 'like', '%'.$txt.'%')
-                ->orWhere('last_name', 'like', '%'.$txt.'%');
-            })->take(10)->get(['first_name','last_name','id','avatar_url']);
+                ->orWhere('last_name', 'like', '%'.$txt.'%')
+                ->orWhere('registration_phone_number', 'like', '%'.$txt.'%');
+            })->take(10)->get(['first_name','last_name','user_id','avatar_url']);
 
             $res = $users->map(fn($user) => [
                 'id' => $user->user_id,
