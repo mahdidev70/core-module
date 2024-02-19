@@ -59,11 +59,16 @@ class FaqController extends Controller
             });
         }
 
+        $sortOrder = 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
         if (isset($request->status) && $request->status != null) {
             $query->where('status', $request->input('status'));
         }
 
-        $data = $query->paginate(10);
+        $data = $query->orderBy('id', $sortOrder)->paginate(10);
         return new FaqsResource($data);
     }
 
