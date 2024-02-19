@@ -21,7 +21,7 @@ class SearchController extends Controller
             })->take(10)->get(['first_name','last_name','id','avatar_url']);
 
             $res = $users->map(fn($user) => [
-                'id' => $user->id,
+                'id' => $user->user_id,
                 'displayName' => $user->getDisplayName(),
                 'avatarUrl' => $user->avatar_url,
             ]);
