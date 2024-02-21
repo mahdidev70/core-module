@@ -64,6 +64,12 @@ class FaqController extends Controller
             $sortOrder = $request->sortOrder;
         }
 
+        if (isset($request->categorySlug) && $request->categorySlug != null) {
+            $query->whereHas('category', function ($categoryQuery) use ($request) {
+                $categoryQuery->where('slug', $request->input('categorySlug'));
+            });
+        }
+
         if (isset($request->status) && $request->status != null) {
             $query->where('status', $request->input('status'));
         }
