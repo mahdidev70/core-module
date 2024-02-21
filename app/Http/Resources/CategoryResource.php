@@ -23,7 +23,7 @@ class CategoryResource extends JsonResource
             'avatarUrl' => $this->avatar_url,
             'status' => $this->status,
             'creationDate' => $this->created_at,
-            'faqCount' => $this->faq->count(),
+            'faqCount' => $this->faq->where('status', 'active')->count(),
             'chatroomCount' => $this->chat_room_count,
             'questionCount' => $this->questions_count
         ];
