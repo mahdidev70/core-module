@@ -340,19 +340,21 @@ class CategoriesController extends Controller
         if ($request['status'] != 'active') {
 
             if ($category->first()->chatRoom()->exists()) {
-                return [
-                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
-                ];
+                return response()->json([
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید'
+                ], 409);
             }
+
             if ($category->first()->questions()->exists()) {
-                return [
-                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
-                ];
+                return response()->json([
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید'
+                ], 409);
             }
+
             if ($category->first()->faq()->exists()) {
-                return [
-                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید',
-                ];
+                return response()->json([
+                    'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید'
+                ], 409);
             }
 
         }
