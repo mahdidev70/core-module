@@ -13,6 +13,7 @@ use TechStudio\Core\app\Http\Controllers\FaqController;
 use TechStudio\Core\app\Http\Controllers\LandingController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
 use TechStudio\Core\app\Http\Controllers\SearchController;
+use TechStudio\Core\app\Http\Controllers\StaticController;
 use TechStudio\Core\app\Http\Controllers\UserProfileController;
 use TechStudio\Lms\app\Http\Controllers\CourseController;
 
@@ -27,6 +28,9 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 |
 */
 // =================== CLIENT =====================
+
+Route::get('static/index', [StaticController::class, 'index']);
+
 Route::get('report/list', [ReportController::class,'list']);
 
 Route::prefix('faq')->group(function (){
@@ -86,6 +90,14 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::put('edit-data', [FaqController::class, 'createUpdate']);
             Route::put('set_status', [FaqController::class, 'setStatus']);
             Route::get('common', [FaqController::class, 'panelCommon']);
+
+        });
+
+        Route::prefix('static')->group(function () {
+
+            Route::get('list', [StaticController::class, 'list']);
+            Route::put('edit-data',[StaticController::class, 'createUpdate']);
+            Route::delete('delete/{id}', [StaticController::class, 'delete']);
 
         });
 
