@@ -22,8 +22,8 @@ class StatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'userIds' => ['required','array'],
-            'userIds.*' => ['integer','exists:user_profiles,id'],
+            'ids' => ['required','array'],
+            'ids.*' => ['integer','exists:core_user_profiles,user_id'],
             'status' => ['required']
         ];
     }
