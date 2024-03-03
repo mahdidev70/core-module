@@ -160,8 +160,12 @@ class UserProfileController extends Controller
 
     public function setStatus($locale, StatusRequest $request)
     {
-        UserProfile::whereIn('id', $request['ids'])
+        UserProfile::whereIn('user_id', $request['ids'])
             ->update(['status'=>$request['status']]);
+
+        User::whereIn('id', $request['ids'])
+            ->update(['status'=>$request['status']]);
+
         return response()->json([
             'userIds'=> $request['ids'],
             'status' => $request['status']
