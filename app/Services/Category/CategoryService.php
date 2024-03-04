@@ -16,15 +16,16 @@ class CategoryService
         $categories = Category::select('id', 'slug', 'title')
         ->where('language', $language)
         ->where('table_type', get_class($class))
-        ->whereHas('articles')->orWhereHas('chatRoom')
+        ->where('status','active')
+        // ->whereHas('articles')->orWhereHas('chatRoom')
         ->get()
         ->toArray();
 
-        $all = [
-            "slug" => "all",
-            "title" => "همه"
-        ];
-        array_unshift($categories, $all);
+        // $all = [
+        //     "slug" => "all",
+        //     "title" => "همه"
+        // ];
+        // array_unshift($categories, $all);
 
         return $categories;
     }
