@@ -25,7 +25,7 @@ class CategoryService
             "slug" => "all",
             "title" => "همه"
         ];
-        // array_unshift($categories, $all);
+        array_unshift($categories, $all);
 
         return $categories;
     }
