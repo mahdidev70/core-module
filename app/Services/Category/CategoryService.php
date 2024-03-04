@@ -21,10 +21,10 @@ class CategoryService
         ->get()
         ->toArray();
 
-        // $all = [
-        //     "slug" => "all",
-        //     "title" => "همه"
-        // ];
+        $all = [
+            "slug" => "all",
+            "title" => "همه"
+        ];
         // array_unshift($categories, $all);
 
         return $categories;
