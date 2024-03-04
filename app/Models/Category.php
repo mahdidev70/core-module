@@ -28,6 +28,10 @@ class Category extends Model
                 $builder->where('status', 'active');
             });
         }
+
+        static::addGlobalScope('deletedCategory', function (Builder $builder) {
+            $builder->where('status', '!=', 'deleted');
+        });
     }
 
     public function getRouteKeyName()
