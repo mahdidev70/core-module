@@ -31,50 +31,50 @@ class CommentController extends Controller
         $commentsQuery = $commentsQuery->withCount('replies');
 
         $ArticleComments = $commentsQuery->orderByDesc('created_at')
-                ->with('replies')
-                ->paginate(6)
-                ->through(function($comment) {
-
-                    return [
-                        "id" => $comment->id,
-                        "user" => [
-                            "displayName" => $comment->user->getDisplayName(),
-                            "id" => $comment->user->id,
-                            "avatarUrl" => $comment->user->avatar_url
-                        ],
-                        "creationDate" => $comment->created_at,
-                        "text" => $comment->text,
-                        "status" => $comment->status,
-                        "feedback" => [
-                            'likesCount' => $comment->likes_count ?? 0,
-                            'dislikesCount' => $comment->dislikes_count ?? 0,
-                            'currentUserAction' => $comment->current_user_feedback() ?? null,
-                        ],
-                        "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(function ($reply) {
-                            return [
-                                "id" => $reply->id,
-                                "user" => [
-                                    "displayName" => $reply->user->getDisplayName(),
-                                    "id" => $reply->user->id,
-                                    "avatarUrl" => $reply->user->avatar_url
-                                ],
-                                "text" => $reply->text,
-                                "creationDate" => $reply->created_at,
-                                "feedback" => [
-                                    'likesCount' => $reply->likes_count??0,
-                                    'dislikesCount' => $reply->dislikes_count??0,
-                                    'currentUserAction' => $reply->current_user_feedback()?? null,
-                                ],
-                            ];
-                        })->toArray()),
-                        "replyCount" => $comment->replies_count,
-                        "replyLastPage" => floor(($comment->replies_count - 1) / 6) + 1,
-                    ];
-                });
+            ->with('replies')
+            ->paginate(6)
+            ->through(function($comment) {
+                return [
+                    "id" => $comment->id,
+                    "user" => [
+                        "displayName" => $comment->user->getDisplayName(),
+                        "id" => $comment->user->id,
+                        "avatarUrl" => $comment->user->avatar_url
+                    ],
+                    "creationDate" => $comment->created_at,
+                    "text" => $comment->text,
+                    "status" => $comment->status,
+                    "feedback" => [
+                    'likesCount' => $comment->likes_count ?? 0,
+                        'dislikesCount' => $comment->dislikes_count ?? 0,
+                        'currentUserAction' => $comment->current_user_feedback() ?? null,
+                    ],
+                    "replies" => array_values($comment->replies->sortByDesc('created_at')->take(6)->map(function ($reply) {
+                        return [
+                            "id" => $reply->id,
+                            "user" => [
+                                "displayName" => $reply->user->getDisplayName(),
+                                "id" => $reply->user->id,
+                                "avatarUrl" => $reply->user->avatar_url
+                            ],
+                            "text" => $reply->text,
+                            "creationDate" => $reply->created_at,
+                            "feedback" => [
+                                'likesCount' => $reply->likes_count??0,
+                                'dislikesCount' => $reply->dislikes_count??0,
+                                'currentUserAction' => $reply->current_user_feedback()?? null,
+                            ],
+                        ];
+                    })->toArray()),
+                    "replyCount" => $comment->replies_count,
+                    "replyLastPage" => floor(($comment->replies_count - 1) / 6) + 1,
+                ];
+            });
         $userComments = null;
-        if (auth()->check()) {
+        
+        if (Auth('sanctum')->user()) {
             $userComments = Comment::where('commentable_type', $modelClass)
-                ->where('user_id', auth()->user()->id)
+                ->where('user_id', Auth('sanctum')->user()->id)
                 ->where('status', 'waiting_for_approval')
                 ->with('replies')
                 ->latest('created_at')
