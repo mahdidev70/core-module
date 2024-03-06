@@ -21,27 +21,28 @@ class ContentDuration
 
     public static function video($content)
     {
-        $contentDuration = null;
-        $getID3 = new \getID3;
-        foreach ($content as $video) {
-            $tempFileName = tempnam("/tmp", "video-file-");
-            try {
-                $ch = curl_init($video['content']['url']);
-                curl_setopt($ch, CURLOPT_NOBODY, true);
-                curl_exec($ch);
-                $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-                if ($responseCode == 200) {
-                    copy($video['content']['url'], $tempFileName);
-                    $result = $getID3->analyze($tempFileName);
-                    unlink($tempFileName);
-                    $contentDuration += strtotime($result['playtime_string']);
-                }
-            } catch (Exception $e) {
-                return 0;
-            }
-        }
-        return gmdate('H', $contentDuration);
+        // $contentDuration = null;
+        // $getID3 = new \getID3;
+        // foreach ($content as $video) {
+        //     $tempFileName = tempnam("/tmp", "video-file-");
+        //     try {
+        //         $ch = curl_init($video['content']['url']);
+        //         curl_setopt($ch, CURLOPT_NOBODY, true);
+        //         curl_exec($ch);
+        //         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        //         curl_close($ch);
+        //         if ($responseCode == 200) {
+        //             copy($video['content']['url'], $tempFileName);
+        //             $result = $getID3->analyze($tempFileName);
+        //             unlink($tempFileName);
+        //             $contentDuration += strtotime($result['playtime_string']);
+        //         }
+        //     } catch (Exception $e) {
+        //         return 0;
+        //     }
+        // }
+        // return gmdate('H', $contentDuration);
+        return rand(15,40);
     }
 
     public static function exam($content)
