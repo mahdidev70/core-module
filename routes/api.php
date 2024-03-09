@@ -47,7 +47,7 @@ Route::get('landing/first', [LandingController::class,'first']);
 Route::prefix('kns')->group(function (){
 
     Route::get('user/posts', [ArticleController::class, 'knsPosts']);
-    // Route::get('user/data', [UserProfileController::class, 'knsUserData']);
+    Route::get('user/data', [UserProfileController::class, 'knsUserData']);
 
 });
 
