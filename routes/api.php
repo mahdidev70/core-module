@@ -10,6 +10,7 @@ use TechStudio\Core\app\Http\Controllers\CategoriesController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use TechStudio\Core\app\Http\Controllers\FaqController;
+use TechStudio\Core\app\Http\Controllers\FollowController;
 use TechStudio\Core\app\Http\Controllers\LandingController;
 use TechStudio\Core\app\Http\Controllers\ReportController;
 use TechStudio\Core\app\Http\Controllers\SearchController;
@@ -44,10 +45,11 @@ Route::prefix('faq')->group(function (){
 Route::get('landing/first', [LandingController::class,'first']);
 
 
-Route::prefix('kns')->group(function (){
+Route::prefix('kns/user')->group(function (){
 
-    Route::get('user/posts', [ArticleController::class, 'knsPosts']);
-    Route::get('user/data', [UserProfileController::class, 'knsUserData']);
+    Route::get('/posts', [ArticleController::class, 'knsPosts']);
+    Route::get('/data', [UserProfileController::class, 'knsUserData']);
+    Route::put('follow', [FollowController::class, 'storeRemove']);
 
 });
 
