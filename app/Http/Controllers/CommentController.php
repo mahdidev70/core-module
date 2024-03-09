@@ -41,6 +41,11 @@ class CommentController extends Controller
                         "id" => $comment->user->id,
                         "avatarUrl" => $comment->user->avatar_url
                     ],
+                    "article" => [
+                        "id" => $comment->article->id,
+                        "title" => $comment->article->title,
+                        "slug" => $comment->article->slug,
+                    ],
                     "creationDate" => $comment->created_at,
                     "text" => $comment->text,
                     "status" => $comment->status,
@@ -59,6 +64,11 @@ class CommentController extends Controller
                             ],
                             "text" => $reply->text,
                             "creationDate" => $reply->created_at,
+                            "article" => [
+                                "id" => $reply->article->id,
+                                "title" => $reply->article->title,
+                                "slug" => $reply->article->slug,
+                            ],
                             "feedback" => [
                                 'likesCount' => $reply->likes_count??0,
                                 'dislikesCount' => $reply->dislikes_count??0,
@@ -73,11 +83,11 @@ class CommentController extends Controller
         $userComments = null;
         
         if (Auth('sanctum')->user()) {
-            $userComments = Comment::where('commentable_type', $modelClass)
+            $userComments = Comment::where('commentable_id', $slug->id)
                 ->where('user_id', Auth('sanctum')->user()->id)
-                ->where('status', 'waiting_for_approval')
+                ->whereIn('status', ['approved', 'waiting_for_approval'])
                 ->with('replies')
-                ->latest('created_at')
+                ->orderBy('id', 'DESC')
                 ->paginate(10)
                 ->through(function ($comment) {
                     return [
@@ -86,6 +96,11 @@ class CommentController extends Controller
                             "displayName" => $comment->user->getDisplayName(),
                             "id" => $comment->user->id,
                             "avatarUrl" => $comment->user->avatar_url
+                        ],
+                        "article" =>[
+                            "id" => $comment->article->id,
+                            "title" => $comment->article->title,
+                            "slug" => $comment->article->slug,
                         ],
                         "creationDate" => $comment->created_at,
                         "text" => $comment->text,
@@ -97,7 +112,7 @@ class CommentController extends Controller
         if (!$userComments){
             $comments = $ArticleComments;
         }else{
-            $comments = $userComments->concat($ArticleComments);
+            $comments = $userComments;
         }
 
         return $comments;
