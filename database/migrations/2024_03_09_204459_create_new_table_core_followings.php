@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('core_follow', function (Blueprint $table) {
+        Schema::create('core_follows', function (Blueprint $table) {
             $table->id();
-            $table->integer('follower');
-            $table->integer('following');
+            $table->integer('follower_id');
+            $table->integer('following_id');
             $table->timestamps();
+            $table->index(['follower_id', 'following_id']);
         });
     }
 

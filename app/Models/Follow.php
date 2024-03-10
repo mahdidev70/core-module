@@ -18,7 +18,7 @@ class Follow extends Model
 
     protected $guarded = ['id'];
 
-    protected $table = 'core_follow';
+    protected $table = 'core_follows';
 
     public function follower()
     {
