@@ -39,9 +39,16 @@ class FollowRepository implements FollowRepositoryInterface
         }
     }
 
-    public function list($request) 
+    public function followersList($request) 
     {
-        // $data = Follow::where('')
+        $data = Follow::with('userFollower')->where('following_id', $request->followerId)->orderby('id', 'DESC')->paginate(10);
+        return $data;
+    }
+
+    public function followingList($request) 
+    {
+        $data = Follow::with('userFollowing')->where('follower_id', $request->followingId)->orderBy('id', 'DESC')->paginate(10);
+        return $data;
     }
     
 }

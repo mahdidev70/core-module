@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use TechStudio\Core\app\Http\Resources\FollowsResource;
 use TechStudio\Core\app\Repositories\Interfaces\FollowRepositoryInterface;
 
 class FollowController extends Controller
@@ -21,8 +22,15 @@ class FollowController extends Controller
       return $data;
    }
 
-   public function list(Request $request) 
+   public function followersList(Request $request) 
    {
-      
+      $data = $this->repository->followersList($request);
+      return new FollowsResource($data);
+   }
+
+   public function followingList(Request $request) 
+   {
+      $data = $this->repository->followingList($request);
+      return new FollowsResource($data);
    }
 }
