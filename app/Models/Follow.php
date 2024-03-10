@@ -20,13 +20,9 @@ class Follow extends Model
 
     protected $table = 'core_follows';
 
-    public function follower()
+    public function follow()
     {
-        return $this->belongsTo(User::class, 'follower');
+        return $this->belongsTo(UserProfile::class, 'follower_id', 'user_id');
     }
 
-    public function following()
-    {
-        return $this->belongsTo(User::class, 'following');
-    }
 }
