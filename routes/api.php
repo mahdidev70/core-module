@@ -49,7 +49,7 @@ Route::prefix('kns/user')->group(function (){
 
     Route::get('/posts', [ArticleController::class, 'knsPosts']);
     Route::get('/data', [UserProfileController::class, 'knsUserData']);
-    Route::put('follow', [FollowController::class, 'storeRemove']);
+    Route::put('follow', [FollowController::class, 'storeRemove'])->middleware("auth:sanctum");
 
 });
 

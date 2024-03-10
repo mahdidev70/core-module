@@ -1,9 +1,9 @@
 <?php
 
-namespace TechStudio\Lms\app\Repositories\Interfaces;
+namespace TechStudio\Core\app\Repositories\Interfaces;
 
 interface FollowRepositoryInterface
 {
     public function storeRemove($request);
-    // public function createUpdate($data);
+    public function list($request);
 }

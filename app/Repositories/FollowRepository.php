@@ -1,12 +1,10 @@
 <?php
 
-namespace TechStudio\Lms\app\Repositories;
+namespace TechStudio\Core\app\Repositories;
 
 use Illuminate\Support\Facades\Auth;
 use TechStudio\Core\app\Models\Follow;
-use TechStudio\Lms\app\Repositories\Interfaces\FollowRepositoryInterface;
-
-// use TechStduio\Lms\app\Repositories\Interface
+use TechStudio\Core\app\Repositories\Interfaces\FollowRepositoryInterface;
 
 class FollowRepository implements FollowRepositoryInterface
 {
@@ -17,8 +15,8 @@ class FollowRepository implements FollowRepositoryInterface
 
         if ($request->do == 'follow') {
             Follow::create([
-                'follower' => $user->id, 
-                'following' => $followId
+                'follower_id' => $user->id, 
+                'following_id' => $followId
             ]
         );
             return response()->json([
@@ -28,8 +26,8 @@ class FollowRepository implements FollowRepositoryInterface
         }
 
         if ($request->do == 'unFollow') {
-            $follow = Follow::where('follower', $user->id)
-            ->where('following', $followId)
+            $follow = Follow::where('follower_id', $user->id)
+            ->where('following_id', $followId)
             ->firstOrFail();
 
             $follow->delete();
@@ -41,5 +39,9 @@ class FollowRepository implements FollowRepositoryInterface
         }
     }
 
+    public function list($request) 
+    {
+        // $data = Follow::where('')
+    }
     
 }
