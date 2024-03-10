@@ -50,7 +50,8 @@ Route::prefix('kns/user')->group(function (){
     Route::get('/posts', [ArticleController::class, 'knsPosts']);
     Route::get('/data', [UserProfileController::class, 'knsUserData']);
     Route::put('follow', [FollowController::class, 'storeRemove'])->middleware("auth:sanctum");
-
+    Route::get('followers/list', [FollowController::class, 'followersList']);
+    Route::get('following/list', [FollowController::class, 'followingList']);
 });
 
 // ===================== PANEL ====================
