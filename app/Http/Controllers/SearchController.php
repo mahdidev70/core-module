@@ -14,14 +14,14 @@ class SearchController extends Controller
     {
         $txt = $request->query->get('query');
         $res = [];
-        if ($txt){
-            $users = UserProfile::where('status','active')->where(function($q) use($txt){
-                $q->Where('first_name', 'like', '%'.$txt.'%')
-                ->orWhere('last_name', 'like', '%'.$txt.'%')
-                ->orWhere('registration_phone_number', 'like', '%'.$txt.'%');
-            })->take(10)->get(['first_name','last_name','user_id','avatar_url']);
+        if ($txt) {
+            $users = UserProfile::where('status', 'active')->where(function ($q) use ($txt) {
+                $q->Where('first_name', 'like', '%' . $txt . '%')
+                    ->orWhere('last_name', 'like', '%' . $txt . '%')
+                    ->orWhere('registration_phone_number', 'like', '%' . $txt . '%');
+            })->take(10)->get(['first_name', 'last_name', 'user_id', 'avatar_url']);
 
-            $res = $users->map(fn($user) => [
+            $res = $users->map(fn ($user) => [
                 'id' => $user->user_id,
                 'displayName' => $user->getDisplayName(),
                 'avatarUrl' => $user->avatar_url,
@@ -41,8 +41,19 @@ class SearchController extends Controller
                 ->take(5)->get()->map(function ($item) {
                     $item['type'] = 'article';
                     return $item;
-                  });
+                });
             return response()->json(ArticleResource::collection($result));
         }
+    }
+
+    /**
+     * @LRDparam type string|in:article,user,tag
+     * // either space or pipe
+     * @LRDparam keyword string
+     */
+    public function searchData()
+    {
+        $data = SearchService::search(request()->type, request()->keyword);
+        return $data;
     }
 }
