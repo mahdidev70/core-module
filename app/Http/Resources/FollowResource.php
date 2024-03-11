@@ -3,6 +3,7 @@
 namespace TechStudio\Core\app\Http\Resources;
 
 use Illuminate\Http\Request;
+use TechStudio\Core\app\Models\Follow;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FollowResource extends JsonResource

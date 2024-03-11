@@ -25,10 +25,12 @@ class SearchService
         }
         if ($type == 'tag') {
             $data = Tag::where('title', 'like', '%' . $keyword . '%')
+            ->where('status','active')
             ->paginate();
         }
         if ($type == 'category') {
             $data = Category::where('title', 'like', '%' . $keyword . '%')
+            ->where('status', 'active')
             ->paginate();
         }
         return $data;
