@@ -9,13 +9,17 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Http\Requests\User\RolesRequest;
 use TechStudio\Core\app\Http\Requests\User\StatusRequest;
 use TechStudio\Core\app\Http\Requests\User\UpdateUserRequest;
 use TechStudio\Core\app\Http\Requests\User\CreateUserRequest;
+use TechStudio\Core\app\Http\Resources\FollowResource;
 use TechStudio\Core\app\Http\Resources\UserAddressInfoResource;
 use TechStudio\Core\app\Http\Resources\UserInfoResource;
 use TechStudio\Core\app\Http\Resources\UserKnsResource;
+use TechStudio\Core\app\Http\Resources\UserResource;
+use TechStudio\Core\app\Models\Follow;
 use TechStudio\Core\app\Models\UserProfile;
 use function PHPUnit\Framework\isEmpty;
 use function PHPUnit\Framework\isNull;
@@ -353,6 +357,13 @@ class UserProfileController extends Controller
     public function knsUserData(Request $request)
     {
         $user = UserProfile::where('user_id', $request->userId)->firstOrFail();
-        return new UserKnsResource($user);
+        $following = UserProfile::whereHas('following', function($query) use($request) {
+            $query->where('follower_id','=', $request->get('followingId'));
+        })->orderby('id', 'DESC')->get();
+            
+        return [
+            'info' => new UserResource($user),
+            'followers' => FollowResource::collection($following)
+        ];
     }
 }
