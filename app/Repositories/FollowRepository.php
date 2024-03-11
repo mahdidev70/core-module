@@ -25,7 +25,7 @@ class FollowRepository implements FollowRepositoryInterface
             ], 200);
         }
 
-        if ($request->do == 'unFollow') {
+        if ($request->do == 'unfollow') {
             $follow = Follow::where('follower_id', $user->id)
             ->where('following_id', $followId)
             ->firstOrFail();
