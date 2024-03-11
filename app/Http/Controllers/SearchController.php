@@ -48,7 +48,7 @@ class SearchController extends Controller
     }
 
     /**
-     * @LRDparam type string|in:article,user,tag
+     * @LRDparam type string|in:article,user,tag,category
      * // either space or pipe
      * @LRDparam keyword string
      */

@@ -2,8 +2,9 @@
 
 namespace TechStudio\Core\app\Services\Search;
 
-use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Tag;
+use TechStudio\Blog\app\Models\Article;
+use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\UserProfile;
 
 class SearchService
@@ -24,6 +25,10 @@ class SearchService
         }
         if ($type == 'tag') {
             $data = Tag::where('title', 'like', '%' . $keyword . '%')
+            ->paginate();
+        }
+        if ($type == 'category') {
+            $data = Category::where('title', 'like', '%' . $keyword . '%')
             ->paginate();
         }
         return $data;
