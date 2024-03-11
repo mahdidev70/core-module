@@ -37,7 +37,7 @@ class UserProfile extends Model implements Authenticatable
 
     public function articles()
     {
-        return $this->hasMany(Article::class);
+        return $this->hasMany(Article::class, 'author_id', 'user_id');
     }
 
     public function comments()
