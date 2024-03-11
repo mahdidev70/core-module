@@ -3,16 +3,17 @@
 namespace TechStudio\Core\app\Models;
 
 use App\Models\User;
+use Nette\NotImplementedException;
+use TechStudio\Lms\app\Models\Course;
+use TechStudio\Core\app\Models\Follow;
+use TechStudio\Lms\app\Models\Student;
+use Illuminate\Database\Eloquent\Model;
+use TechStudio\Blog\app\Models\Article;
+use Illuminate\Notifications\Notifiable;
+use TechStudio\Community\app\Models\ChatRoom;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Nette\NotImplementedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use TechStudio\Blog\app\Models\Article;
-use TechStudio\Community\app\Models\ChatRoom;
-use TechStudio\Lms\app\Models\Course;
-use TechStudio\Lms\app\Models\Student;
 
 class UserProfile extends Model implements Authenticatable
 {
@@ -122,5 +123,15 @@ class UserProfile extends Model implements Authenticatable
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function follower()
+    {
+        return $this->belongsto(Follow::class, 'user_id', 'follower_id');
+    }
+
+    public function following()
+    {
+        return $this->belongsto(Follow::class, 'user_id', 'following_id');
     }
 }

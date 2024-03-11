@@ -15,20 +15,28 @@ class FollowController extends Controller
    {
       $this->repository = $repository;
    }
-      
-   public function storeRemove(Request $request) 
+
+   public function storeRemove(Request $request)
    {
       $data = $this->repository->storeRemove($request);
       return $data;
    }
 
-   public function followersList(Request $request) 
+   /**
+    * @LRDparam followerId integer
+    * // either space or pipe
+    */
+   public function followersList(Request $request)
    {
       $data = $this->repository->followersList($request);
       return new FollowsResource($data);
    }
 
-   public function followingList(Request $request) 
+   /**
+    * @LRDparam followingId integer
+    * // either space or pipe
+    */
+   public function followingList(Request $request)
    {
       $data = $this->repository->followingList($request);
       return new FollowsResource($data);

@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Repositories;
 
 use Illuminate\Support\Facades\Auth;
 use TechStudio\Core\app\Models\Follow;
+use TechStudio\Core\app\Models\UserProfile;
 use TechStudio\Core\app\Repositories\Interfaces\FollowRepositoryInterface;
 
 class FollowRepository implements FollowRepositoryInterface
@@ -39,16 +40,19 @@ class FollowRepository implements FollowRepositoryInterface
         }
     }
 
+    
     public function followersList($request) 
     {
-        $data = Follow::with('userFollower')->where('following_id', $request->followerId)->orderby('id', 'DESC')->paginate(10);
-        return $data;
+        return UserProfile::whereHas('follower', function($query) use($request) {
+            $query->where('following_id','=', $request->get('followerId'));
+        })->orderby('id', 'DESC')->paginate(10);
     }
 
     public function followingList($request) 
     {
-        $data = Follow::with('userFollowing')->where('follower_id', $request->followingId)->orderBy('id', 'DESC')->paginate(10);
-        return $data;
+        return UserProfile::whereHas('following', function($query) use($request) {
+            $query->where('follower_id','=', $request->get('followingId'));
+        })->orderby('id', 'DESC')->paginate(10);
     }
     
 }

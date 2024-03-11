@@ -15,10 +15,10 @@ class FollowResource extends JsonResource
     public function toArray(Request $request)
     {
         return [
-            'id' => $this->userFollower->user_id ? $this->userFollowing->user_id : $this->userFollower->user_id,
-            'displayName' => $this->userFollower->getDisplayName() ? $this->userFollowing->getDisplayName() : $this->userFollower->getDisplayName(),
-            'avatarUrl' => $this->userFollower ? $this->userFollower->avatar_url:$this->avatar_url,
-            'description' => $this->userFollower->description ? $this->userFollowing->description : $this->userFollower->description,
+            'id' => $this->user_id,
+            'displayName' => $this->getDisplayName(),
+            'avatarUrl' => $this->avatar_url,
+            'description' => $this->description,
         ];
     }
 }
