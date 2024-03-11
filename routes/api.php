@@ -52,9 +52,9 @@ Route::prefix('kns/user')->group(function (){
     Route::put('follow', [FollowController::class, 'storeRemove'])->middleware("auth:sanctum");
     Route::get('followers/list', [FollowController::class, 'followersList']);
     Route::get('following/list', [FollowController::class, 'followingList']);
-    Route::get('search/{type}/{keyword}', [SearchController::class,'searchData']);
 
 });
+Route::get('kns/search/{type}/{keyword}', [SearchController::class,'searchData']);
 
 // ===================== PANEL ====================
 Route::middleware("auth:sanctum")->group(function () {
