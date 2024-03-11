@@ -2,11 +2,12 @@
 
 namespace TechStudio\Core\app\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use TechStudio\Blog\app\Http\Resources\ArticleResource;
+use App\Http\Controllers\Controller;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\UserProfile;
+use TechStudio\Core\app\Services\Search\SearchService;
+use TechStudio\Blog\app\Http\Resources\ArticleResource;
 
 class SearchController extends Controller
 {
