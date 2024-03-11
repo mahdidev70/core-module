@@ -18,9 +18,10 @@ class UserResource extends JsonResource
             'id' => $this->user_id,
             'displayName' => $this->getDisplayName(),
             'avatarUrl' => $this->userProfile ? $this->userProfile->avatar_url:$this->avatar_url,
-            'followersCount' => 10,
-            'followingCount' => 4,
+            'followersCount' => $this->follower->where('following_id', $this->user_id)->count() ?? 0,
+            'followingCount' => $this->following->where('follower_id', $this->user_id)->count() ?? 0,
             'description' => $this->descripiton,
+
         ];
     }
 }

@@ -356,7 +356,8 @@ class UserProfileController extends Controller
 
     public function knsUserData(Request $request)
     {
-        $user = UserProfile::where('user_id', $request->userId)->firstOrFail();
+        $user = UserProfile::with(['following', 'follower'])->where('user_id', $request->userId)->firstOrFail();
+
         $following = UserProfile::whereHas('following', function($query) use($request) {
             $query->where('follower_id','=', $request->get('followingId'));
         })->orderby('id', 'DESC')->get();
