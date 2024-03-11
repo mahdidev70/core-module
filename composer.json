@@ -14,7 +14,8 @@
         "laravel": {
             "providers": [
                 "TechStudio\\Core\\app\\Providers\\CoreServiceProvider",
-                "TechStudio\\Core\\app\\Providers\\CoreRouteServiceProvider"
+                "TechStudio\\Core\\app\\Providers\\CoreRouteServiceProvider",
+                "TechStudio\\Core\\app\\Providers\\CoreRepositoryServiceProvider"
             ]
         }
     }
