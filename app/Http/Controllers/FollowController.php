@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use TechStudio\Core\app\Http\Requests\StoreFollowRequest;
 use TechStudio\Core\app\Http\Resources\FollowsResource;
 use TechStudio\Core\app\Repositories\Interfaces\FollowRepositoryInterface;
 
@@ -16,8 +17,9 @@ class FollowController extends Controller
       $this->repository = $repository;
    }
 
-   public function storeRemove(Request $request)
+   public function storeRemove(StoreFollowRequest $request)
    {
+      // return $request;
       $data = $this->repository->storeRemove($request);
       return $data;
    }
