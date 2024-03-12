@@ -363,8 +363,10 @@ class UserProfileController extends Controller
         })->orderby('id', 'DESC')->get();
             
         return [
-            'info' => new UserResource($user),
-            'followers' => FollowResource::collection($following)
+            'data' => [
+                'info' => new UserResource($user),
+                'followers' => FollowResource::collection($following)
+            ]
         ];
     }
 }
