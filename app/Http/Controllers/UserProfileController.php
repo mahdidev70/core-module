@@ -3,6 +3,7 @@
 namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -269,7 +270,7 @@ class UserProfileController extends Controller
 
     public function editData(Request $request)
     {
-        $userId = Auth::user()->id;
+        $userId = auth()->user()->id;
 
         $keyRequest = [];
         $keyMain = [];
@@ -348,6 +349,23 @@ class UserProfileController extends Controller
         ),
             $keyRequest
         ));
+
+        if (class_exists(Profile::class)) {
+            Profile::where('user_id', $userId)->update(array_merge($request->only(
+                'description',
+                'email',
+                'birthday',
+                'job',
+                'state',
+                'city',
+                'street',
+                'block',
+                'unit',
+                'postal_code'
+            ),
+                $keyRequest
+            ));
+        }
 
         $user = UserProfile::where('user_id', $userId)->firstOrFail();
 
