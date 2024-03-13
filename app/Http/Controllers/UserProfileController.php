@@ -351,20 +351,16 @@ class UserProfileController extends Controller
         ));
 
         if (class_exists(Profile::class)) {
-            Profile::where('user_id', $userId)->update(array_merge($request->only(
-                'description',
-                'email',
-                'birthday',
-                'job',
-                'state',
-                'city',
-                'street',
-                'block',
-                'unit',
-                'postal_code'
-            ),
-                $keyRequest
-            ));
+            Profile::where('user_id', $userId)->update(
+                [
+                    'first_name' => $request['firstName'],
+                    'last_name' => $request['lastName'],
+                    'avatar_url' => $request['avatarUrl'],
+                    'job_title' => $request['job'],
+                    'email' => $request['email'],
+                    'description' => $request['description']
+                ]
+            );
         }
 
         $user = UserProfile::where('user_id', $userId)->firstOrFail();
