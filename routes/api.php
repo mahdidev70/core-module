@@ -31,7 +31,6 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 // =================== CLIENT =====================
 
 Route::get('static/index', [StaticController::class, 'index']);
-
 Route::get('report/list', [ReportController::class,'list']);
 
 Route::prefix('faq')->group(function (){
