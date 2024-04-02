@@ -16,6 +16,7 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->user_id,
+            'selfFollow' => (bool) (Auth('sanctum')->user()->id === $this->user_id),
             'isFollowed' => (bool) $this->where('following_id', $this->user_id)->where('follower_id', Auth('sanctum')->user()->id) ?? null,
             'displayName' => $this->getDisplayName(),
             'avatarUrl' => $this->userProfile ? $this->userProfile->avatar_url : $this->avatar_url,
