@@ -372,14 +372,14 @@ class UserProfileController extends Controller
     {
         $user = UserProfile::with(['following', 'follower'])->where('user_id', $request->userId)->firstOrFail();
 
-        $following = UserProfile::whereHas('follower', function($query) use($request) {
-            $query->where('following_id','=', $request->userId);
+        $following = UserProfile::whereHas('following', function($query) use($request) {
+            $query->where('follower_id','=', $request->userId);
         })->orderby('id', 'DESC')->get();
             
         return [
             'data' => [
                 'info' => new UserResource($user),
-                'followers' => FollowResource::collection($following)
+                'following' => FollowResource::collection($following)
             ]
         ];
     }
