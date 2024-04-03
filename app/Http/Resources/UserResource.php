@@ -19,7 +19,7 @@ class UserResource extends JsonResource
         $selfFollow = 0;
         if (Auth('sanctum')->user()) {
             $user = Auth('sanctum')->user();
-            
+
             if ($user->id === $this->user_id) {
                 $selfFollow = 1;
             }
@@ -34,8 +34,8 @@ class UserResource extends JsonResource
             'isFollowed' => (bool) $isFollowed,
             'displayName' => $this->getDisplayName(),
             'avatarUrl' => $this->userProfile ? $this->userProfile->avatar_url : $this->avatar_url,
-            'followersCount' => $this->follower ? $this->follower->where('following_id', $this->user_id)->count() : 0,
-            'followingCount' => $this->following ? $this->following->where('follower_id', $this->user_id)->count() : 0,
+            'followersCount' => Follow::where('following_id', $this->user_id)->count() ?? 0,
+            'followingCount' => Follow::where('follower_id', $this->user_id)->count() ?? 0,
             'description' => $this->description,
         ];
     }
