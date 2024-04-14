@@ -83,6 +83,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
             Route::get('/questions/list', [QuestionController::class, 'getUserQuestion']);
             Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
+            Route::get('/payment/list', [UserProfileController::class, 'getPaymentData']);
 
         });
 

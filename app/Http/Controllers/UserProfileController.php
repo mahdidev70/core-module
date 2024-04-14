@@ -3,6 +3,8 @@
 namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Payment\PaymentsListResource;
+use App\Models\Payment;
 use App\Models\Profile;
 use App\Models\Role;
 use App\Models\User;
@@ -382,5 +384,18 @@ class UserProfileController extends Controller
                 'following' => FollowResource::collection($following)
             ]
         ];
+    }
+
+    public function getPaymentData() 
+    {   
+        $user = auth()->user();
+        if (class_exists(Payment::class)) {
+
+            $payments = Payment::with('product')
+                ->where('user_id', $user->id)
+                ->orderBy('id', 'DESC')->paginate(10);
+            return new PaymentsListResource($payments);
+
+        }
     }
 }
