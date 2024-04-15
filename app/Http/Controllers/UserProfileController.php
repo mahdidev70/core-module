@@ -3,8 +3,13 @@
 namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Payment\InstallmentsResource;
 use App\Http\Resources\Payment\PaymentsListResource;
+use App\Http\Resources\Product\ProductsResource;
+use App\Http\Resources\Store\ProductResource;
+use App\Models\Installment;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Models\Profile;
 use App\Models\Role;
 use App\Models\User;
@@ -398,4 +403,13 @@ class UserProfileController extends Controller
 
         }
     }
+
+    public function getInstallmentPaymentData()
+    {
+        if (class_exists(Installment::class)) {
+            $installmentData = Product::with('installment')->whereHas('installment')->paginate(10);
+            return new ProductsResource($installmentData);
+        }
+    }
+    
 }
