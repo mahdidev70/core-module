@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use TechStudio\Core\app\Http\Controllers\VideoController;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
 use TechStudio\Community\app\Http\Controllers\QuestionController;
@@ -31,47 +32,50 @@ use TechStudio\Lms\app\Http\Controllers\CourseController;
 // =================== CLIENT =====================
 
 Route::get('static/index', [StaticController::class, 'index']);
-Route::get('report/list', [ReportController::class,'list']);
+Route::get('report/list', [ReportController::class, 'list']);
 
-Route::prefix('faq')->group(function (){
+Route::prefix('faq')->group(function () {
 
     Route::get('list', [FaqController::class, 'list']);
     Route::get('common', [FaqController::class, 'common']);
-
 });
-    // ============== STATIC LANDING ==================
+// ============== STATIC LANDING ==================
 
-Route::get('landing/first', [LandingController::class,'first']);
+Route::get('landing/first', [LandingController::class, 'first']);
 
 
-Route::prefix('kns/user')->group(function (){
+Route::prefix('kns/user')->group(function () {
 
     Route::get('/posts', [ArticleController::class, 'knsPosts']);
     Route::get('/data', [UserProfileController::class, 'knsUserData']);
     Route::put('follow', [FollowController::class, 'storeRemove'])->middleware("auth:sanctum");
     Route::get('followers/list', [FollowController::class, 'followersList']);
     Route::get('following/list', [FollowController::class, 'followingList']);
-
 });
-Route::get('kns/search/{type}/{keyword}', [SearchController::class,'searchData']);
+Route::get('kns/search/{type}/{keyword}', [SearchController::class, 'searchData']);
 
 // ===================== PANEL ====================
 Route::middleware("auth:sanctum")->group(function () {
 
-    Route::prefix('panel')->group(function (){
+    Route::prefix('panel')->group(function () {
 
-        Route::prefix('/users')->group(function() {
+        Route::prefix('/video')->group(function () {
+            Route::get('/{id}', [VideoController::class, 'show']);
+            Route::get('/list/{page}', [VideoController::class, 'list']);
+            Route::get('/search/{keyword}/{page}', [VideoController::class, 'search']);
+        });
 
-            Route::get('general',[UserProfileController::class,'createUserCommon']);
-            Route::get('data', [UserProfileController::class,'getUsersListData'])/*->can('read_users')*/;
-            Route::get('common', [UserProfileController::class,'getUsersListCommon']);
-            Route::put('set_roles', [UserProfileController::class,'setRoles'])/*->can('set_user_roles')*/;
-            Route::put('set_status', [UserProfileController::class,'setStatus'])/*->can('set_user_status')*/;
-            Route::post('create',[UserProfileController::class,'createUser'])/*->can('add_user')*/;
-            Route::get('{user}/show',[UserProfileController::class,'editUser'])/*->can('show_user')*/;
-            Route::post('{user}/update',[UserProfileController::class,'updateUser'])/*->can('edit_user')*/;
-            Route::post('generatePassword',[UserProfileController::class,'generatePassword']);
+        Route::prefix('/users')->group(function () {
 
+            Route::get('general', [UserProfileController::class, 'createUserCommon']);
+            Route::get('data', [UserProfileController::class, 'getUsersListData'])/*->can('read_users')*/;
+            Route::get('common', [UserProfileController::class, 'getUsersListCommon']);
+            Route::put('set_roles', [UserProfileController::class, 'setRoles'])/*->can('set_user_roles')*/;
+            Route::put('set_status', [UserProfileController::class, 'setStatus'])/*->can('set_user_status')*/;
+            Route::post('create', [UserProfileController::class, 'createUser'])/*->can('add_user')*/;
+            Route::get('{user}/show', [UserProfileController::class, 'editUser'])/*->can('show_user')*/;
+            Route::post('{user}/update', [UserProfileController::class, 'updateUser'])/*->can('edit_user')*/;
+            Route::post('generatePassword', [UserProfileController::class, 'generatePassword']);
         });
 
         Route::prefix('/user')->group(function () {
@@ -85,7 +89,6 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('/rooms/list', [ChatRoomController::class, 'getUserRoom']);
             Route::get('/payment/list', [UserProfileController::class, 'getPaymentData']);
             Route::get('payment/installment/list', [UserProfileController::class, 'getInstallmentPaymentData']);
-
         });
 
         Route::prefix('category')->group(function () {
@@ -94,28 +97,24 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::put('/edit-data', [CategoriesController::class, 'categoryEditData']);
             Route::put('/set-status', [CategoriesController::class, 'categorySetStatus']);
             Route::get('common-data', [CategoriesController::class, 'categoryCommon']);
-
         });
 
         Route::prefix('faq')->group(function () {
-            
+
             Route::get('list', [FaqController::class, 'getFaqData']);
             Route::put('edit-data', [FaqController::class, 'createUpdate']);
             Route::put('set_status', [FaqController::class, 'setStatus']);
             Route::get('common', [FaqController::class, 'panelCommon']);
-
         });
 
         Route::prefix('static')->group(function () {
 
             Route::get('list', [StaticController::class, 'list']);
-            Route::put('edit-data',[StaticController::class, 'createUpdate']);
+            Route::put('edit-data', [StaticController::class, 'createUpdate']);
             Route::delete('delete/{id}', [StaticController::class, 'delete']);
-
         });
-
     });
     // ========== PANEL USERS ===============
 
-    Route::get('/users/search', [SearchController::class,'searchUser']);
+    Route::get('/users/search', [SearchController::class, 'searchUser']);
 });
