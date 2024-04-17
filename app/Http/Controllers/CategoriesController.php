@@ -116,6 +116,7 @@ class CategoriesController extends Controller
                 'title' => $request['title'],
                 'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
                 'description' => $request['description'],
+                'order' => $request['order'],
                 'table_type' => get_class($articleModel),
                 'status' => $request['status'],
             ]
@@ -126,6 +127,7 @@ class CategoriesController extends Controller
             'title' => $category->title,
             'slug' => $category->slug,
             'description' => $category->description,
+            'order' => $category->order,
             'articleCount' => $category->articles->count(),
             'status' => $category->status,
         ];
@@ -225,6 +227,7 @@ class CategoriesController extends Controller
                 'title' => $request['title'],
                 'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
                 'description' => $request['description'],
+                'order' => $request['order'],
                 'table_type' => get_class($course),
                 'status' => $request['status'] ? $request['status'] : 'active',
             ]
@@ -235,6 +238,7 @@ class CategoriesController extends Controller
                 'title' => $category->title,
                 'slug' => $category->slug,
                 'description' => $category->description,
+                'order' => $category->order,
                 'courseCount' => $category->courses->count(),
                 'studentsCount' => $category->courses->sum(function ($course) {
                     return $course->students->count();
@@ -326,6 +330,7 @@ class CategoriesController extends Controller
                 'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
                 'table_type' => $modelClass,
                 'description' => $request['description'],
+                'order' => $request['order'],
                 'avatar_url' => $request['avatarUrl']
             ]
         );
