@@ -37,10 +37,10 @@ class VideoController extends Controller
                     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                     $response = curl_exec($ch);
                     curl_close($ch);
-                    return json_encode($response);
+                    return $response;
                 }
             );
-            return json_decode($result);
+            return json_encode($result);
         } catch (Exception $e) {
             return $e;
         }
