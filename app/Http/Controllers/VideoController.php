@@ -40,7 +40,7 @@ class VideoController extends Controller
                     return $response;
                 }
             );
-            return json_encode($result);
+            return json_decode($result);
         } catch (Exception $e) {
             return $e;
         }
