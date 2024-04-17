@@ -10,6 +10,9 @@ use App\Http\Controllers\Controller;
 class VideoController extends Controller
 {
 
+    /**
+     * @LRDparam page integer|nullable
+     */
     public function list(Request $request)
     {
         $channel = env('ARVAN_CHANNEL_ID');
@@ -29,6 +32,11 @@ class VideoController extends Controller
         return json_decode($res->getBody());
     }
 
+    /**
+     * @LRDparam keyword string|required|max:32
+     * // either space or pipe
+     * @LRDparam page integer|nullable|max:32
+     */
     public function search(Request $request)
     {
         $channel = env('ARVAN_CHANNEL_ID');
