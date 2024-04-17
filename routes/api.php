@@ -61,8 +61,8 @@ Route::middleware("auth:sanctum")->group(function () {
 
         Route::prefix('/video')->group(function () {
             Route::get('/{id}', [VideoController::class, 'show']);
-            Route::get('/list/{page}', [VideoController::class, 'list']);
-            Route::get('/search/{keyword}/{page}', [VideoController::class, 'search']);
+            Route::get('/list', [VideoController::class, 'list']);
+            Route::get('/search', [VideoController::class, 'search']);
         });
 
         Route::prefix('/users')->group(function () {
