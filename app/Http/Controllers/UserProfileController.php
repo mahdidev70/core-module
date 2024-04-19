@@ -407,8 +407,11 @@ class UserProfileController extends Controller
 
     public function getInstallmentPaymentData()
     {
+        $userId = auth()->user()->id;
+        $productIds = Installment::where('user_id', $userId)->pluck('product_id');
+
         if (class_exists(Installment::class)) {
-            $installmentData = Product::with('installment')->whereHas('installment')->paginate(10);
+            $installmentData = Product::whereIn('id', $productIds)->paginate(10);
             return new ProductInstallmentsResource($installmentData);
         }
     }
