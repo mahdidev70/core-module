@@ -198,6 +198,7 @@ class CategoriesController extends Controller
                 'title' => $category->title,
                 'slug' => $category->slug,
                 'description' => $category->description,
+                'order' => $category->order,
                 'courseCount' => $category->courses->count(),
                 'studentsCount' => $category->courses->sum(function ($course) {
                     return $course->students->count();
