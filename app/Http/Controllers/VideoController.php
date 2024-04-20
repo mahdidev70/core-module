@@ -29,7 +29,7 @@ class VideoController extends Controller
         try {
             $result = Cache::remember(
                 'arvan-video-' . $page,
-                env('SHORT_TIME', 30),
+                env('MID_TIME', 720),
                 function () use ($url, $headers) {
                     $ch = curl_init($url);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
