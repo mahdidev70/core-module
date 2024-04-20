@@ -72,6 +72,7 @@ class CategoriesController extends Controller
                     'title' => $category->title,
                     'status' => $category->status,
                     'description' => $category->description,
+                    'order' => $category->order,
                     'articleCount' => $category->articles_count,
                     'commentsCount' => $category->articles->map(function($article){
                         return $article->comments()->count();
