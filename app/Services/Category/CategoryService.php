@@ -19,6 +19,7 @@ class CategoryService
         ->where('status','active')
         // ->whereHas('articles')->orWhereHas('chatRoom')
         ->get()
+        ->orderBy('order', 'asc')
         ->toArray();
 
         $all = [
