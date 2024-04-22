@@ -18,8 +18,8 @@ class CategoryService
         ->where('table_type', get_class($class))
         ->where('status','active')
         // ->whereHas('articles')->orWhereHas('chatRoom')
-        ->get()
         ->orderBy('order', 'asc')
+        ->get()
         ->toArray();
 
         $all = [
