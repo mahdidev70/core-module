@@ -19,6 +19,7 @@ class UserInfoResource extends JsonResource
             'displayName' => $this->getDisplayName(),
             'firstName' => $this->first_name,
             'lastName' => $this->last_name,
+            'nationalCode' => $this->national_code ?? null,
             'phone' => $this->username,
             'avatarUrl' => $this->userProfile ? $this->userProfile->avatar_url:$this->avatar_url,
             'email' => $this->userProfile ? $this->userProfile->email:$this->email,
