@@ -233,6 +233,7 @@ class UserProfileController extends Controller
         $user->update([
             'first_name' => $request['firstName'],
             'last_name' => $request['lastName'],
+            'national_code' => $request['nationalCode'],
             'registration_phone_number'=> $request['phoneNumber'],
             'email' => $request['email'],
             'avatarUrl' => $request['avatarUrl'],
@@ -315,6 +316,10 @@ class UserProfileController extends Controller
         if ($request['email']) {
             $keyRequest ['email'] = $request['email'];
         }
+        if ($request['nationalCode']) {
+            $keyRequest ['national_code'] = $request['nationalCode'];
+            $keyMain ['national_code'] = $request ['nationalCode'];
+        }
 
         $mainUser = new User();
         if ($mainUser){
@@ -338,6 +343,7 @@ class UserProfileController extends Controller
              $mainUser->where('id', $userId)->update(array_merge($request->only(
                  'first_name',
                  'last_name',
+                 'national_code',
                  'birthday',
                  'job',
                  'avatar_url'
@@ -353,7 +359,7 @@ class UserProfileController extends Controller
             'street',
             'block',
             'unit',
-            'postal_code'
+            'postal_code',
         ),
             $keyRequest
         ));
@@ -366,7 +372,8 @@ class UserProfileController extends Controller
                     'avatar_url' => $request['avatarUrl'],
                     'job_title' => $request['job'],
                     'email' => $request['email'],
-                    'description' => $request['description']
+                    'description' => $request['description'],
+                    'national_code' => $request['nationalCode'],
                 ]
             );
         }
