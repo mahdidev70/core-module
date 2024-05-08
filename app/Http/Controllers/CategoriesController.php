@@ -18,14 +18,12 @@ class CategoriesController extends Controller
     {
         $articleModel = new Article();
 
-        $query= Category::where('table_type', get_class($articleModel))->withCount('articles');
+        $query = Category::where('table_type', get_class($articleModel))->withCount('articles');
 
-        if($request->filled('search')){
+        if ($request->filled('search')) {
             $txt = $request->get('search');
-            $query->where(function($q) use($txt){
-                $q->where('title','like', '%'.$txt)
-                ->orWhere('title', 'like', '% '.$txt.'%')
-                ->orWhere('title','like',$txt.'%');
+            $query->where(function ($q) use ($txt) {
+                $q->where('title', 'like', '%' . $txt . '%');
             });
         }
 
@@ -33,7 +31,7 @@ class CategoriesController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $sortOrder= 'desc';
+        $sortOrder = 'desc';
         if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
             $sortOrder = $request->sortOrder;
         }
@@ -43,22 +41,22 @@ class CategoriesController extends Controller
                 $query->withCount(['articles as viewCount_sum' => function ($query) {
                     $query->select(DB::raw('sum(viewsCount)'));
                 }])->orderBy('viewCount_sum', $sortOrder);
-            }elseif ($request->sortKey == 'bookmarks') {
-                    $query->leftJoin('articles', 'categories.id', '=', 'TechStudio\\Blog\\app\\Models\\Article')
+            } elseif ($request->sortKey == 'bookmarks') {
+                $query->leftJoin('articles', 'categories.id', '=', 'TechStudio\\Blog\\app\\Models\\Article')
                     ->leftJoin('bookmarks', function ($join) {
                         $join->on('articles.id', '=', 'bookmarks.bookmarkable_id')
                             ->where('bookmarks.bookmarkable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
                     })->groupBy('categories.id')->orderBy(DB::raw('COUNT(bookmarks.id)'), $sortOrder);
-            }elseif ($request->sortKey == 'comments') {
-               $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
+            } elseif ($request->sortKey == 'comments') {
+                $query->leftJoin('articles', 'categories.id', '=', 'articles.category_id')
                     ->leftJoin('comments', function ($join) {
                         $join->on('articles.id', '=', 'comments.commentable_id')
                             ->where('comments.commentable_type', '=', 'TechStudio\\Blog\\app\\Models\\Article');
-                    }) ->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
+                    })->groupBy('categories.id')->orderBy(DB::raw('COUNT(articles_count)'), $sortOrder);
             }
         }
 
-        $categories = $query->orderBy('id', $sortOrder)->paginate(10);
+        $categories = $query->orderBy('order', $sortOrder)->paginate(10);
 
         $data = [
             'total' => $categories->total(),
@@ -74,10 +72,10 @@ class CategoriesController extends Controller
                     'description' => $category->description,
                     'order' => $category->order,
                     'articleCount' => $category->articles_count,
-                    'commentsCount' => $category->articles->map(function($article){
+                    'commentsCount' => $category->articles->map(function ($article) {
                         return $article->comments()->count();
                     })->sum(),
-                    'bookmarksCount' => $category->articles->map(function($article){
+                    'bookmarksCount' => $category->articles->map(function ($article) {
                         return $article->bookmarks()->count();
                     })->sum(),
                     'viewsCount' => $category->articles->pluck('viewsCount')->sum(),
@@ -93,10 +91,10 @@ class CategoriesController extends Controller
         $articleModel = new Article();
 
         $counts = [
-                'all' => Category::where('table_type', get_class($articleModel))->count(),
-                'active' => Category::where('table_type', get_class($articleModel))->where('status', 'active')->count(),
-                'hidden' => Category::where('table_type', get_class($articleModel))->where('status', 'hidden')->count(),
-                'deleted' => Category::where('table_type', get_class($articleModel))->where('status', 'deleted')->count(),
+            'all' => Category::where('table_type', get_class($articleModel))->count(),
+            'active' => Category::where('table_type', get_class($articleModel))->where('status', 'active')->count(),
+            'hidden' => Category::where('table_type', get_class($articleModel))->where('status', 'hidden')->count(),
+            'deleted' => Category::where('table_type', get_class($articleModel))->where('status', 'deleted')->count(),
         ];
 
         $status = ['active', 'hidden', 'deleted'];
@@ -115,7 +113,7 @@ class CategoriesController extends Controller
             ['id' => $request['id']],
             [
                 'title' => $request['title'],
-                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']),
                 'description' => $request['description'],
                 'order' => $request['order'],
                 'table_type' => get_class($articleModel),
@@ -132,12 +130,11 @@ class CategoriesController extends Controller
             'articleCount' => $category->articles->count(),
             'status' => $category->status,
         ];
-
     }
 
     public function updateCategoryStatus($local, Category $category, Request $request)
     {
-        
+
         if ($request['status'] != 'active') {
             $category = $category->whereIn('id', $request['ids']);
 
@@ -174,7 +171,7 @@ class CategoriesController extends Controller
             });
         }
 
-        $sortOrder= 'desc';
+        $sortOrder = 'desc';
         if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
             $sortOrder = $request->sortOrder;
         }
@@ -182,7 +179,7 @@ class CategoriesController extends Controller
         if ($request->has('sort')) {
             if ($request->sort == 'coursesCount') {
                 $query->withCount('courses')->orderBy('courses_count', 'desc');
-            }elseif ($request->sort == 'studentsCount') {
+            } elseif ($request->sort == 'studentsCount') {
                 $query->with(['courses' => function ($q) {
                     $q->withCount('students');
                 }])->get()->sortByDesc(function ($category) {
@@ -193,7 +190,7 @@ class CategoriesController extends Controller
 
         $categories = $query->orderBy('id', $sortOrder)->paginate(10);
 
-        $categoriesData = $categories->map(function ($category){
+        $categoriesData = $categories->map(function ($category) {
             return [
                 'id' => $category->id,
                 'title' => $category->title,
@@ -216,7 +213,6 @@ class CategoriesController extends Controller
             'data' => $categoriesData,
 
         ];
-
     }
 
     public function editCreateCategoryCourse(Request $request)
@@ -227,7 +223,7 @@ class CategoriesController extends Controller
             ['id' => $request['id']],
             [
                 'title' => $request['title'],
-                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']),
                 'description' => $request['description'],
                 'order' => $request['order'],
                 'table_type' => get_class($course),
@@ -237,15 +233,15 @@ class CategoriesController extends Controller
 
         return [
             'id' => $category->id,
-                'title' => $category->title,
-                'slug' => $category->slug,
-                'description' => $category->description,
-                'order' => $category->order,
-                'courseCount' => $category->courses->count(),
-                'studentsCount' => $category->courses->sum(function ($course) {
-                    return $course->students->count();
-                }),
-                'status' => $category->status,
+            'title' => $category->title,
+            'slug' => $category->slug,
+            'description' => $category->description,
+            'order' => $category->order,
+            'courseCount' => $category->courses->count(),
+            'studentsCount' => $category->courses->sum(function ($course) {
+                return $course->students->count();
+            }),
+            'status' => $category->status,
         ];
     }
 
@@ -281,7 +277,7 @@ class CategoriesController extends Controller
     public function categoryData(Request $request)
     {
         $modelClass = $this->getModelClass($request['type']);
-        $query = Category::withCount(['questions', 'chatRoom','faq'])->where('table_type', $modelClass);
+        $query = Category::withCount(['questions', 'chatRoom', 'faq'])->where('table_type', $modelClass);
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
@@ -290,7 +286,7 @@ class CategoriesController extends Controller
             });
         }
 
-        $sortOrder= 'desc';
+        $sortOrder = 'desc';
         if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
             $sortOrder = $request->sortOrder;
         }
@@ -329,7 +325,7 @@ class CategoriesController extends Controller
             ['id' => $request['id']],
             [
                 'title' => $request['title'],
-                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']) ,
+                'slug' => $request['slug'] ? $request['slug'] : SlugGenerator::transform($request['title']),
                 'table_type' => $modelClass,
                 'description' => $request['description'],
                 'order' => $request['order'],
@@ -363,7 +359,6 @@ class CategoriesController extends Controller
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های آن را بردارید'
                 ], 409);
             }
-
         }
 
         $category->whereIn('id', $request['ids'])->update(['status' => $request['status']]);
@@ -372,5 +367,4 @@ class CategoriesController extends Controller
             'updateCategory' =>  $request['ids'],
         ];
     }
-
 }
