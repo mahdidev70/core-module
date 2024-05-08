@@ -6,9 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use TechStudio\Core\app\Rules\NationalCodeRule;
 
-class UpdateUserRequest extends CreateUserRequest
+class UpdateProfileRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,9 +23,11 @@ class UpdateUserRequest extends CreateUserRequest
      */
     public function rules(): array
     {
-        return array_merge(parent::rules(), [
+        return [
+            'firstName' => ['required'],
+            'lastName' => ['required'],
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
-            // 'phoneNumber' => [Rule::unique('user_profiles,','registration_phone_number')->ignore($this->registration_phone_number)],
-        ]);
+            'nationalCode' => [new NationalCodeRule],
+        ];
     }
 }

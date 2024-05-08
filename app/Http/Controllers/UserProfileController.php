@@ -23,6 +23,7 @@ use TechStudio\Core\app\Http\Requests\User\RolesRequest;
 use TechStudio\Core\app\Http\Requests\User\StatusRequest;
 use TechStudio\Core\app\Http\Requests\User\UpdateUserRequest;
 use TechStudio\Core\app\Http\Requests\User\CreateUserRequest;
+use TechStudio\Core\app\Http\Requests\User\UpdateProfileRequest;
 use TechStudio\Core\app\Http\Resources\FollowResource;
 use TechStudio\Core\app\Http\Resources\UserAddressInfoResource;
 use TechStudio\Core\app\Http\Resources\UserInfoResource;
@@ -277,7 +278,7 @@ class UserProfileController extends Controller
         ];
     }
 
-    public function editData(UpdateUserRequest $request)
+    public function editData(UpdateProfileRequest $request)
     {
         $userId = auth()->user()->id;
 
