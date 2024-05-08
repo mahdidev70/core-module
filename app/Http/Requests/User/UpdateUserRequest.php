@@ -4,6 +4,7 @@ namespace TechStudio\Core\app\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use TechStudio\Core\app\Rules\NationalCodeRule;
 
 class UpdateUserRequest extends CreateUserRequest
 {
@@ -24,7 +25,8 @@ class UpdateUserRequest extends CreateUserRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'email' => [Rule::unique('user_profiles')->ignore($this->email,'email')],
+            'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
+            'nationalCode' => [new NationalCodeRule],
             // 'phoneNumber' => [Rule::unique('user_profiles,','registration_phone_number')->ignore($this->registration_phone_number)],
         ]);
     }

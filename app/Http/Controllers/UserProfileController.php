@@ -277,7 +277,7 @@ class UserProfileController extends Controller
         ];
     }
 
-    public function editData(Request $request)
+    public function editData(UpdateUserRequest $request)
     {
         $userId = auth()->user()->id;
 
