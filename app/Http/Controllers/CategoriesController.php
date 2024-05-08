@@ -188,7 +188,7 @@ class CategoriesController extends Controller
             }
         }
 
-        $categories = $query->orderBy('id', $sortOrder)->paginate(10);
+        $categories = $query->orderBy('order', $sortOrder)->paginate(10);
 
         $categoriesData = $categories->map(function ($category) {
             return [
