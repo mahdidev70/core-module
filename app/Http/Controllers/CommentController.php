@@ -351,6 +351,7 @@ class CommentController extends Controller
                 'commentable_id' => $request['courseId'],
                 'star' => $request['rate'],
                 'text' => $request['text'],
+                'status' => $request['status']
             ]
         );
 
