@@ -3,7 +3,9 @@
 namespace TechStudio\Core\app\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use TechStudio\Core\app\Repositories\BannerRepository;
 use TechStudio\Core\app\Repositories\FollowRepository;
+use TechStudio\Core\app\Repositories\Interfaces\BannerRepositoryInterface;
 use TechStudio\Core\app\Repositories\Interfaces\FollowRepositoryInterface;
 
 class CoreRepositoryServiceProvider extends ServiceProvider
@@ -14,7 +16,7 @@ class CoreRepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(FollowRepositoryInterface::class, FollowRepository::class);
-
+        $this->app->bind(BannerRepositoryInterface::class, BannerRepository::class);
     }
 
     /**
