@@ -7,6 +7,7 @@ use TechStudio\Core\app\Http\Controllers\VideoController;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
 use TechStudio\Community\app\Http\Controllers\QuestionController;
+use TechStudio\Core\app\Http\Controllers\BannerController;
 use TechStudio\Core\app\Http\Controllers\CategoriesController;
 // use TechStudio\Community\app\Http\Controllers\SearchController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
@@ -112,6 +113,12 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::get('list', [StaticController::class, 'list']);
             Route::put('edit-data', [StaticController::class, 'createUpdate']);
             Route::delete('delete/{id}', [StaticController::class, 'delete']);
+        });
+
+        Route::prefix('banner')->group(function () {
+            Route::get('list', [BannerController::class, 'list']);
+            Route::put('edit-data', [BannerController::class, 'createUpdate']);
+            Route::put('set-status', [BannerController::class, 'setStatus']);
         });
     });
     // ========== PANEL USERS ===============
