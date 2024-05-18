@@ -28,6 +28,7 @@ class UpdateProfileRequest extends FormRequest
             'lastName' => ['required'],
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
             'nationalCode' => [new NationalCodeRule],
+            'shopLink' => ['nullable', 'url:http,https']
         ];
     }
 }
