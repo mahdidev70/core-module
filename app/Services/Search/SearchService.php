@@ -15,28 +15,29 @@ class SearchService
     public static function search($type, $keyword)
     {
         $data = [];
+        $keyword = '%' . $keyword . '%';
         if ($type == 'article') {
-            $data = Article::where('title', 'like', '%' . $keyword . '%')
-                ->orWhere('summary', 'like', '%' . $keyword . '%')
-                ->orWhere('content', 'like', '%' . $keyword . '%')
+            $data = Article::where('title', 'like', $keyword)
+                ->orWhere('summary', 'like', $keyword)
+                ->orWhere('content', 'like', $keyword)
                 ->paginate();
-                return new ArticlesResource($data);
+            return new ArticlesResource($data);
         }
         if ($type == 'user') {
-            $data = UserProfile::where('first_name', 'like', '%' . $keyword . '%')
-            ->orWhere('last_name', 'like', '%' . $keyword . '%')
-            ->paginate();
+            $data = UserProfile::where('first_name', 'like', $keyword)
+                ->orWhere('last_name', 'like', $keyword)
+                ->paginate();
             return AthorResource::collection($data);
         }
         if ($type == 'tag') {
-            $data = Tag::where('title', 'like', '%' . $keyword . '%')
-            ->where('status','active')
-            ->paginate();
+            $data = Tag::where('title', 'like', $keyword)
+                ->where('status', 'active')
+                ->paginate();
         }
         if ($type == 'category') {
-            $data = Category::where('title', 'like', '%' . $keyword . '%')
-            ->where('status', 'active')
-            ->paginate();
+            $data = Category::where('title', 'like', $keyword)
+                ->where('status', 'active')
+                ->paginate();
             return new CategoriesResource($data);
         }
         return $data;
