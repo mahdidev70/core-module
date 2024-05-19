@@ -8,6 +8,7 @@ use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\UserProfile;
 use TechStudio\Core\app\Services\Search\SearchService;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
+use TechStudio\Core\app\Http\Resources\ArticlesResource;
 
 class SearchController extends Controller
 {
@@ -60,7 +61,19 @@ class SearchController extends Controller
 
     public function generalSearch()
     {
-        return request()->keyword;
-        return 'ok';
+        $keyword = '%' . request()->keyword . '%';
+        $type = request()->type;
+
+        $blogModule = 'TechStudio\Blog\app\Models';
+        $lmsModule = 'TechStudio\Blog\app\Models\Article';
+        $commiunityModule = 'TechStudio\Blog\app\Models\Article';
+
+        if ($type == 'blog' && class_exists($blogModule . '\Article')) {
+            $data = Article::where('title', 'like', $keyword)
+                ->orWhere('summary', 'like', $keyword)
+                ->orWhere('content', 'like', $keyword)
+                ->paginate();
+            return new ArticlesResource($data);
+        }
     }
 }
