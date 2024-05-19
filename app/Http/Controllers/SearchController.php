@@ -61,6 +61,6 @@ class SearchController extends Controller
     public function generalSearch()
     {
         return request()->keyword;
-        return 'ok'
+        return 'ok';
     }
 }
