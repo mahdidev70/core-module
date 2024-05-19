@@ -4,11 +4,17 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use TechStudio\Lms\app\Models\Course;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\UserProfile;
+use TechStudio\Community\app\Models\ChatRoom;
+use TechStudio\Community\app\Models\Question;
 use TechStudio\Core\app\Services\Search\SearchService;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Core\app\Http\Resources\ArticlesResource;
+use TechStudio\Lms\app\Http\Resources\CoursePreviewResource;
+use TechStudio\Community\app\Http\Resources\QuestionResource;
+use TechStudio\Community\app\Http\Resources\ChatRoomResource;
 
 class SearchController extends Controller
 {
@@ -62,7 +68,7 @@ class SearchController extends Controller
     /**
      * @LRDparam keyword string|required|max:32
      * // either space or pipe
-     * @LRDparam type Enum|required|blog,course
+     * @LRDparam type Enum|required|blogs,courses,rooms,questions
      */
     public function generalSearch()
     {
@@ -70,15 +76,36 @@ class SearchController extends Controller
         $type = request()->type;
 
         $blogModule = 'TechStudio\Blog\app\Models';
-        $lmsModule = 'TechStudio\Blog\app\Models\Article';
+        $lmsModule = 'TechStudio\Lms\app\Models\Article';
         $commiunityModule = 'TechStudio\Blog\app\Models\Article';
 
-        if ($type == 'blog' && class_exists($blogModule . '\Article')) {
+        if ($type == 'blogs' && class_exists($blogModule . '\Article')) {
             $data = Article::withoutGlobalScopes()->where('title', 'like', $keyword)
                 ->orWhere('summary', 'like', $keyword)
                 ->orWhere('content', 'like', $keyword)
                 ->where('status', 'published')->paginate();
             return new ArticlesResource($data);
+        }
+
+        if ($type == 'courses' && class_exists($lmsModule . '\Course')) {
+            $data = Course::withoutGlobalScopes()->where('title', 'like', $keyword)
+                ->orWhere('description', 'like', $keyword)
+                ->orWhere('faq', 'like', $keyword)
+                ->where('status', 'published')->paginate();
+            return new CoursePreviewResource($data);
+        }
+        
+        if ($type == 'rooms' && class_exists($commiunityModule . '\ChatRoom')) {
+            $data = ChatRoom::withoutGlobalScopes()->where('title', 'like', $keyword)
+                ->orWhere('description', 'like', $keyword)
+                ->where('status', 'active')->paginate();
+            return new ChatRoomResource($data);
+        }
+
+        if ($type == 'questions' && class_exists($commiunityModule . '\Question')) {
+            $data = Question::withoutGlobalScopes()->where('text', 'like', $keyword)
+                ->where('status', 'approved')->paginate();
+            return new QuestionResource($data);
         }
     }
 }
