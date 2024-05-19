@@ -76,8 +76,8 @@ class SearchController extends Controller
         $type = request()->type;
 
         $blogModule = 'TechStudio\Blog\app\Models';
-        $lmsModule = 'TechStudio\Lms\app\Models\Article';
-        $commiunityModule = 'TechStudio\Blog\app\Models\Article';
+        $lmsModule = 'TechStudio\Lms\app\Models';
+        $commiunityModule = 'TechStudio\Blog\app\Models';
 
         if ($type == 'blogs' && class_exists($blogModule . '\Article')) {
             $data = Article::withoutGlobalScopes()->where('title', 'like', $keyword)
