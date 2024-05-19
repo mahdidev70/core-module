@@ -59,6 +59,11 @@ class SearchController extends Controller
         return $data;
     }
 
+    /**
+     * @LRDparam keyword string|required|max:32
+     * // either space or pipe
+     * @LRDparam nickaname type|required|blog,course
+     */
     public function generalSearch()
     {
         $keyword = '%' . request()->keyword . '%';
