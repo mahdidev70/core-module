@@ -92,20 +92,20 @@ class SearchController extends Controller
                 ->orWhere('description', 'like', $keyword)
                 ->orWhere('faq', 'like', $keyword)
                 ->where('status', 'published')->paginate();
-            return new CoursePreviewResource($data);
+            return CoursePreviewResource::collection($data);
         }
-        
+
         if ($type == 'rooms' && class_exists($commiunityModule . '\ChatRoom')) {
             $data = ChatRoom::withoutGlobalScopes()->where('title', 'like', $keyword)
                 ->orWhere('description', 'like', $keyword)
                 ->where('status', 'active')->paginate();
-            return new ChatRoomResource($data);
+            return ChatRoomResource::collection($data);
         }
 
         if ($type == 'questions' && class_exists($commiunityModule . '\Question')) {
             $data = Question::withoutGlobalScopes()->where('text', 'like', $keyword)
                 ->where('status', 'approved')->paginate();
-            return new QuestionResource($data);
+            return QuestionResource::collection($data);
         }
     }
 }
