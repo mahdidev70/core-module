@@ -57,4 +57,10 @@ class SearchController extends Controller
         $data = SearchService::search(request()->type, request()->keyword);
         return $data;
     }
+
+    public function generalSearch()
+    {
+        return request()->keyword;
+        return 'ok'
+    }
 }

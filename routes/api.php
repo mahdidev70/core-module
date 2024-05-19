@@ -124,4 +124,5 @@ Route::middleware("auth:sanctum")->group(function () {
     // ========== PANEL USERS ===============
 
     Route::get('/users/search', [SearchController::class, 'searchUser']);
+    Route::get('/general/search', [SearchController::class, 'generalSearch']);
 });
