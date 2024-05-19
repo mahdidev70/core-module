@@ -202,7 +202,6 @@ class UserProfileController extends Controller
         ]);
 
         $data = $user->toArray();
-
         return [
             'id' => $data['id'],
             'firstName' => $data['first_name'],
