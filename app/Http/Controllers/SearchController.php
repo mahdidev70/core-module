@@ -77,7 +77,7 @@ class SearchController extends Controller
             $data = Article::where('title', 'like', $keyword)
                 ->orWhere('summary', 'like', $keyword)
                 ->orWhere('content', 'like', $keyword)
-                ->where('status', 'published')->get();
+                ->where('status', 'published')->paginate();
             return new ArticlesResource($data);
         }
     }
