@@ -74,7 +74,7 @@ class SearchController extends Controller
         $commiunityModule = 'TechStudio\Blog\app\Models\Article';
 
         if ($type == 'blog' && class_exists($blogModule . '\Article')) {
-            $data = Article::where('title', 'like', $keyword)
+            $data = Article::withoutGlobalScopes()->where('title', 'like', $keyword)
                 ->orWhere('summary', 'like', $keyword)
                 ->orWhere('content', 'like', $keyword)
                 ->where('status', 'published')->paginate();
