@@ -54,7 +54,7 @@ Route::prefix('kns/user')->group(function () {
     Route::get('following/list', [FollowController::class, 'followingList']);
 });
 Route::get('kns/search/{type}/{keyword}', [SearchController::class, 'searchData']);
-
+Route::get('/general/search', [SearchController::class, 'generalSearch']);
 // ===================== PANEL ====================
 Route::middleware("auth:sanctum")->group(function () {
 
@@ -124,5 +124,4 @@ Route::middleware("auth:sanctum")->group(function () {
     // ========== PANEL USERS ===============
 
     Route::get('/users/search', [SearchController::class, 'searchUser']);
-    Route::get('/general/search', [SearchController::class, 'generalSearch']);
 });
