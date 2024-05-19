@@ -62,7 +62,7 @@ class SearchController extends Controller
     /**
      * @LRDparam keyword string|required|max:32
      * // either space or pipe
-     * @LRDparam type enum|required|blog,course
+     * @LRDparam type Enum|required|blog,course
      */
     public function generalSearch()
     {
