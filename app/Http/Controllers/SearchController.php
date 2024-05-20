@@ -84,7 +84,7 @@ class SearchController extends Controller
                 ->orWhere('summary', 'like', $keyword)
                 ->orWhere('content', 'like', $keyword)
                 ->where('status', 'published')->paginate();
-            return new ArticlesResource($data);
+            return ArticleResource::collection($data);
         }
 
         if ($type == 'courses' && class_exists($lmsModule . '\Course')) {
