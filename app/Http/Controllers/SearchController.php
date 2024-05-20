@@ -12,9 +12,9 @@ use TechStudio\Community\app\Models\Question;
 use TechStudio\Core\app\Services\Search\SearchService;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Core\app\Http\Resources\ArticlesResource;
-use TechStudio\Lms\app\Http\Resources\CoursePreviewResource;
-use TechStudio\Community\app\Http\Resources\QuestionResource;
-use TechStudio\Community\app\Http\Resources\ChatRoomResource;
+use TechStudio\Lms\app\Http\Resources\CoursesResource;
+use TechStudio\Community\app\Http\Resources\QuestionsResource;
+use TechStudio\Community\app\Http\Resources\ChatRoomsResource;
 
 class SearchController extends Controller
 {
@@ -84,7 +84,7 @@ class SearchController extends Controller
                 ->orWhere('summary', 'like', $keyword)
                 ->orWhere('content', 'like', $keyword)
                 ->where('status', 'published')->paginate();
-            return ArticleResource::collection($data);
+            return new ArticlesResource($data);
         }
 
         if ($type == 'courses' && class_exists($lmsModule . '\Course')) {
@@ -92,20 +92,20 @@ class SearchController extends Controller
                 ->orWhere('description', 'like', $keyword)
                 ->orWhere('faq', 'like', $keyword)
                 ->where('status', 'published')->paginate();
-            return CoursePreviewResource::collection($data);
+            return new CoursesResource($data);
         }
 
         if ($type == 'rooms' && class_exists($commiunityModule . '\ChatRoom')) {
             $data = ChatRoom::withoutGlobalScopes()->where('title', 'like', $keyword)
                 ->orWhere('description', 'like', $keyword)
                 ->where('status', 'active')->paginate();
-            return ChatRoomResource::collection($data);
+            return new ChatRoomsResource($data);
         }
 
         if ($type == 'questions' && class_exists($commiunityModule . '\Question')) {
             $data = Question::withoutGlobalScopes()->where('text', 'like', $keyword)
                 ->where('status', 'approved')->paginate();
-            return QuestionResource::collection($data);
+            return new QuestionsResource($data);
         }
     }
 }
