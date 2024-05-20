@@ -13,7 +13,7 @@ use TechStudio\Core\app\Services\Search\SearchService;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Core\app\Http\Resources\ArticlesResource;
 use TechStudio\Lms\app\Http\Resources\CoursesResource;
-use TechStudio\Community\app\Http\Resources\QuestionsResource;
+use TechStudio\Community\app\Http\Resources\QuestionsOldResource;
 use TechStudio\Community\app\Http\Resources\ChatRoomsResource;
 
 class SearchController extends Controller
@@ -105,7 +105,7 @@ class SearchController extends Controller
         if ($type == 'questions' && class_exists($commiunityModule . '\Question')) {
             $data = Question::withoutGlobalScopes()->where('text', 'like', $keyword)
                 ->where('status', 'approved')->paginate();
-            return new QuestionsResource($data);
+            return new QuestionsOldResource($data);
         }
     }
 }
