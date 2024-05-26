@@ -12,7 +12,6 @@ use TechStudio\Core\app\Repositories\Interfaces\BannerRepositoryInterface;
 class BannerController extends Controller
 {
     private BannerRepositoryInterface $repository;
-
     public function __construct(BannerRepositoryInterface $repository)
     {
         $this->repository = $repository;
