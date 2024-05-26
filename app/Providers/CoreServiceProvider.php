@@ -3,6 +3,8 @@
 namespace TechStudio\Core\app\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -38,7 +40,18 @@ class CoreServiceProvider extends ServiceProvider
         //     'login_required',
         //     \TechStudio\Core\app\Http\Middleware\LoginRequired::class
         // );
+
+        $this->morphMap();
+
     }
+
+    public function morphMap(): void
+    {
+        Relation::morphMap([
+            'course' => 'TechStudio/Lms/app/Models/Course',
+        ]);
+    }
+
 
     public function register()
     {

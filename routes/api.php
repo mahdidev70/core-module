@@ -120,6 +120,10 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::put('edit-data', [BannerController::class, 'createUpdate']);
             Route::put('set-status', [BannerController::class, 'setStatus']);
         });
+
+        Route::prefix('troubleshooting-report')->group(function () {
+            Route::post('/', [\TechStudio\Core\app\Http\Controllers\TroubleShootingReportController::class, 'store']);
+        });
     });
     // ========== PANEL USERS ===============
 
