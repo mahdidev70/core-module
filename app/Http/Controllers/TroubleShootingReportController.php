@@ -21,7 +21,10 @@ class TroubleShootingReportController extends Controller
     {
         $this->troubleshootingReportRepository->store($request->validated());
 
-        return response()->json();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'عملیات با موفقیت انجام شد.'
+        ], 200);
     }
 
 }

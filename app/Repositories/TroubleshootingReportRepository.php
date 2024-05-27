@@ -2,7 +2,7 @@
 
 namespace TechStudio\Core\app\Repositories;
 
-use App\Models\TroubleshootingReport;
+use TechStudio\Core\app\Models\TroubleshootingReport;
 use Illuminate\Support\Facades\Auth;
 use TechStudio\Core\app\Repositories\Interfaces\TroubleshootingReportRepositoryInterface;
 
