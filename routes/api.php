@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use TechStudio\Core\app\Http\Controllers\TroubleShootingReportController;
 use TechStudio\Core\app\Http\Controllers\VideoController;
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
 use TechStudio\Community\app\Http\Controllers\ChatRoomController;
@@ -124,7 +125,7 @@ Route::middleware("auth:sanctum")->group(function () {
     // ========== PANEL USERS ===============
 
     Route::prefix('troubleshooting-report')->group(function () {
-        Route::post('/', [\TechStudio\Core\app\Http\Controllers\TroubleShootingReportController::class, 'store']);
+        Route::post('/', [TroubleShootingReportController::class, 'store']);
     });
 
     Route::get('/users/search', [SearchController::class, 'searchUser']);
