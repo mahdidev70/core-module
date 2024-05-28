@@ -19,7 +19,7 @@ class TroubleShootingReportController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $this->troubleshootingReportRepository->store($request->validated());
+        $this->troubleshootingReportRepository->store($request->only('report', 'reportableId', 'reportableType', 'user_id'));
 
         return response()->json([
             'status' => 'success',

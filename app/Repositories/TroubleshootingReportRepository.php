@@ -17,6 +17,11 @@ class TroubleshootingReportRepository implements TroubleshootingReportRepository
 
     public function store(array $parameters): void
     {
-        $this->troubleshootingReport->query()->create($parameters);
+        $this->troubleshootingReport->query()->create([
+            'user_id' => $parameters['user_id'],
+            'report' => $parameters['report'],
+            'reportableId' => $parameters['reportableId'],
+            'reportableType' => $parameters['reportableType'],
+        ]);
     }
 }
