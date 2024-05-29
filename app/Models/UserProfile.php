@@ -25,6 +25,10 @@ class UserProfile extends Model implements Authenticatable
 
     protected $with = ['roles_unresolved'];
 
+    protected $hidden = [
+        'password',
+    ];
+
     public function getDisplayName()
     {
         return trim($this->first_name . ' ' . $this->last_name);
