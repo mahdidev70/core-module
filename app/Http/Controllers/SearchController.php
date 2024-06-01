@@ -6,15 +6,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use TechStudio\Lms\app\Models\Course;
 use TechStudio\Blog\app\Models\Article;
+use Illuminate\Database\Eloquent\Builder;
 use TechStudio\Core\app\Models\UserProfile;
 use TechStudio\Community\app\Models\ChatRoom;
 use TechStudio\Community\app\Models\Question;
 use TechStudio\Core\app\Services\Search\SearchService;
+use TechStudio\Lms\app\Http\Resources\CoursesResource;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Core\app\Http\Resources\ArticlesResource;
-use TechStudio\Lms\app\Http\Resources\CoursesResource;
-use TechStudio\Community\app\Http\Resources\QuestionsOldResource;
 use TechStudio\Community\app\Http\Resources\ChatRoomsResource;
+use TechStudio\Community\app\Http\Resources\QuestionsOldResource;
 
 class SearchController extends Controller
 {
@@ -80,31 +81,43 @@ class SearchController extends Controller
         $commiunityModule = 'TechStudio\Community\app\Models';
 
         if ($type == 'blogs' && class_exists($blogModule . '\Article')) {
-            $data = Article::withoutGlobalScopes()->where('title', 'like', $keyword)
-                ->orWhere('summary', 'like', $keyword)
-                ->orWhere('content', 'like', $keyword)
-                ->where('status', 'published')->paginate();
+            $data = Article::withoutGlobalScopes()
+                ->where('status', 'published')
+                ->where(function (Builder $query) use ($keyword) {
+                    $query->where('title', 'like', $keyword)
+                        ->orWhere('content', 'like', $keyword);
+                })->latest()->paginate();
             return new ArticlesResource($data);
         }
 
         if ($type == 'courses' && class_exists($lmsModule . '\Course')) {
-            $data = Course::withoutGlobalScopes()->where('title', 'like', $keyword)
-                ->orWhere('description', 'like', $keyword)
-                ->orWhere('faq', 'like', $keyword)
-                ->where('status', 'published')->paginate();
+            $data = Course::withoutGlobalScopes()
+                ->where('status', 'published')
+                ->where(function (Builder $query) use ($keyword) {
+                    $query->where('title', 'like', $keyword)
+                        ->orWhere('description', 'like', $keyword)
+                        ->orWhere('faq', 'like', $keyword);
+                })->latest()->paginate();
             return new CoursesResource($data);
         }
 
         if ($type == 'rooms' && class_exists($commiunityModule . '\ChatRoom')) {
-            $data = ChatRoom::withoutGlobalScopes()->where('title', 'like', $keyword)
-                ->orWhere('description', 'like', $keyword)
-                ->where('status', 'active')->paginate();
+            $data = ChatRoom::withoutGlobalScopes()
+                ->where('status', 'active')
+                ->where(function (Builder $query) use ($keyword) {
+                    $query->where('title', 'like', $keyword)
+                        ->orWhere('description', 'like', $keyword)
+                        ->where('status', 'active');
+                })->latest()->paginate();
             return new ChatRoomsResource($data);
         }
 
         if ($type == 'questions' && class_exists($commiunityModule . '\Question')) {
-            $data = Question::withoutGlobalScopes()->where('text', 'like', $keyword)
-                ->where('status', 'approved')->paginate();
+            $data = Question::withoutGlobalScopes()
+            ->where('status', 'approved')
+                ->where(function (Builder $query) use ($keyword) {
+                    $query->where('text', 'like', $keyword);
+                })->latest()->paginate();
             return new QuestionsOldResource($data);
         }
     }
