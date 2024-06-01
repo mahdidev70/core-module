@@ -20,8 +20,8 @@ class TroubleshootingReportRepository implements TroubleshootingReportRepository
         $this->troubleshootingReport->query()->create([
             'user_id' => $parameters['user_id'],
             'report' => $parameters['report'],
-            'reportableId' => $parameters['reportableId'],
-            'reportableType' => $parameters['reportableType'],
+            'reportable_id' => $parameters['reportableId'],
+            'reportable_type' => $parameters['reportableType'],
         ]);
     }
 }
