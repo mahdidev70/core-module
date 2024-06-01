@@ -17,7 +17,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'report' => ['required', 'string'],
-            'reportableId' => ['required', 'string'],
+            'reportableId' => ['required'],
             'reportableType' => ['required', 'in:course']
         ];
     }
