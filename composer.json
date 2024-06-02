@@ -10,6 +10,11 @@
             "name": "Mahdi Samian"
         }
     ],
+    "require": {
+        "php": "^8.0.2",
+        "laravel/framework": "^9.0|^10.0|^11.0",
+        "kavenegar/laravel": "^1.3"
+    },
     "extra": {
         "laravel": {
             "providers": [
