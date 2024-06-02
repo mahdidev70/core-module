@@ -29,6 +29,11 @@ class CoreServiceProvider extends ServiceProvider
             'flags'
         );
 
+        $this->mergeConfigFrom(
+            __DIR__ . '/../../config/sms.php',
+            'sms'
+        );
+
         // $path = $this->publishes([
         //     $configPathTerminy => config_path('flags.php'),
         // ], 'config');
