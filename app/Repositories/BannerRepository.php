@@ -38,7 +38,7 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function getBannerForHomPage()
     {
-        return Banner::select('title','link_url as linkUrl','image_url as imageUrl')->get();
+        return Banner::where('type', 'banner')->select('title','link_url as linkUrl','image_url as imageUrl')->get();
     }
 
     public function event() 
