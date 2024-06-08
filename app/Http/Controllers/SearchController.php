@@ -4,6 +4,11 @@ namespace TechStudio\Core\app\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Main\StartupResource;
+use App\Http\Resources\Main\StartupsResource;
+use App\Http\Resources\Product\ProductsResource;
+use App\Models\Product;
+use App\Models\Startup;
 use TechStudio\Lms\app\Models\Course;
 use TechStudio\Blog\app\Models\Article;
 use Illuminate\Database\Eloquent\Builder;
@@ -119,6 +124,26 @@ class SearchController extends Controller
                     $query->where('text', 'like', $keyword);
                 })->latest()->paginate();
             return new QuestionsOldResource($data);
+        }
+
+        if ($type == 'product' && class_exists('App\Models\Product')) {
+            $data = Product::withoutGlobalScopes()
+            ->where('status', 'published')
+            ->where(function (Builder $query) use ($keyword) {
+                $query->where('title', 'like', $keyword);
+            })->latest()->paginate(10);
+
+            return new ProductsResource($data);
+        }
+
+        if ($type == 'startup' && class_exists('App\Models\Startup')) {
+            $data = Startup::withoutGlobalScopes()
+            ->where('status', 'active')
+            ->where(function (Builder $query) use ($keyword) {
+                $query->where('title', 'like', $keyword);
+            })->latest()->paginate(10);
+
+            return new StartupsResource($data);
         }
     }
 }
