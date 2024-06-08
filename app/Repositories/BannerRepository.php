@@ -9,10 +9,14 @@ use TechStudio\Core\app\Repositories\Interfaces\BannerRepositoryInterface;
 
 class BannerRepository implements BannerRepositoryInterface
 {
-    public function list() 
+    public function list($request) 
     {
-        $data = Banner::orderBy('id', 'DESC')->paginate(10);
-        return $data;
+        $query = Banner::where('type', $request->input('type'))
+            ->orderBy('id', 'DESC')    
+            ->paginate(10);
+
+        $banner = $query;
+        return $banner;
     }
 
     public function createUpdate($request)
@@ -33,7 +37,13 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function setStatus($request) 
     {
-        
+        Banner::whereIn('id', $request['ids'])
+        ->update(
+            ['status' => $request['status']]
+        );
+
+        $banner = Banner::whereIn('id', $request['ids'])->get();
+        return $banner;
     }
 
     public function getBannerForHomPage()

@@ -3,7 +3,7 @@
 namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use TechStudio\Core\app\Http\Requests\CreateUpdateBannerRequest;
 use TechStudio\Core\app\Http\Resources\BannerResource;
 use TechStudio\Core\app\Http\Resources\BannersResource;
@@ -23,15 +23,16 @@ class BannerController extends Controller
         return new BannerResource($data);
     }
 
-    public function list() 
+    public function list(Request $request) 
     {
-        $data = $this->repository->list();
+        $data = $this->repository->list($request);
         return new BannersResource($data);
     }
 
     public function setStatus(Request $request) 
     {
-
+        $data = $this->repository->setStatus($request);
+        return BannerResource::collection($data);
     }
 
 }
