@@ -269,7 +269,7 @@ class UserProfileController extends Controller
 
     public function getUserData()
     {
-        return $user = Auth::user();
+        $user = Auth::user();
 
         return [
             'personalInfo' => new UserInfoResource($user),
