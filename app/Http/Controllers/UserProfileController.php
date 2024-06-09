@@ -359,7 +359,6 @@ class UserProfileController extends Controller
             'street',
             'block',
             'unit',
-            'postal_code',
             'natioanl_code',
         ),
             $keyRequest
