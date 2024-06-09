@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Http\Requests\User\RolesRequest;
 use TechStudio\Core\app\Http\Requests\User\StatusRequest;
@@ -279,6 +280,7 @@ class UserProfileController extends Controller
 
     public function editData(UpdateProfileRequest $request)
     {
+        Log::error(1);
         $userId = Auth()->gaurd('api')->user()->id;
 
         $keyRequest = [];
@@ -364,6 +366,7 @@ class UserProfileController extends Controller
             $keyRequest
         ));
 
+        Log::error(2);
         if (class_exists(Profile::class)) {
             Profile::where('user_id', $userId)->update(
                 [
@@ -380,7 +383,8 @@ class UserProfileController extends Controller
 
         $user = UserProfile::where('user_id', $userId)->firstOrFail();
 
-        return $user;
+        Log::error(3);
+        return response()->json([]);
     }
 
     public function knsUserData(Request $request)
