@@ -269,7 +269,7 @@ class UserProfileController extends Controller
 
     public function getUserData()
     {
-        $user = Auth::user();
+        $user = Auth()->gaurd('api')->user();
 
         return [
             'personalInfo' => new UserInfoResource($user),
