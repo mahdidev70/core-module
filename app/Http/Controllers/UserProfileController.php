@@ -278,6 +278,11 @@ class UserProfileController extends Controller
         ];
     }
 
+    public function editData2(Request $request)
+    {
+        dd(1);
+    }
+
     public function editData(UpdateProfileRequest $request)
     {
         Log::error(1);

@@ -84,6 +84,7 @@ Route::middleware("auth:sanctum")->group(function () {
 
             Route::get('/data', [UserProfileController::class, 'getUserData']);
             Route::put('edit-data', [UserProfileController::class, 'editData']);
+            Route::put('edit-data2', [UserProfileController::class, 'editData2']);
             Route::get('/comments/list', [CommentController::class, 'getUserComment']);
             Route::get('/posts/list', [ArticleController::class, 'getUserArticle']);
             Route::get('/courses/list', [CourseController::class, 'getUserCourse']);
