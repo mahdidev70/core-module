@@ -40,39 +40,39 @@ class UserProfileController extends Controller
     public function createUser($locale, CreateUserRequest $request)
     {
         $user = UserProfile::create([
-            'first_name'=> $request->firstName,
-            'last_name'=>$request->lastName,
-            'email'=> $request->email??null,
-            'avatarUrl' => $request['avatarUrl'],
-            'registration_phone_number'=> $request->phoneNumber??null,
-            'password'=>Hash::make($request->password),
-            'email_verified'=> Carbon::now(),
-            ]);
+                                        'first_name'                => $request->firstName,
+                                        'last_name'                 => $request->lastName,
+                                        'email'                     => $request->email ?? null,
+                                        'avatarUrl'                 => $request['avatarUrl'],
+                                        'registration_phone_number' => $request->phoneNumber ?? null,
+                                        'password'                  => Hash::make($request->password),
+                                        'email_verified'            => Carbon::now(),
+                                    ]);
 
-        if (!is_null($request['role'])){
+        if (!is_null($request['role'])) {
             $user->giveRolesTo($request['role']);
         }
-        $role =$user->roles->map(fn($role)=>[
-            "key"=> $role['key'],
-            "name"=> $role['name'],
-            "id"=> $role['id'],
-            "permissions" => $role->permissions->map(fn($permission)=>[
-                "key"=> $permission['key'],
-                "name"=> $permission['name'],
-                "id"=> $permission['id'],
+        $role = $user->roles->map(fn($role) => [
+            "key"         => $role['key'],
+            "name"        => $role['name'],
+            "id"          => $role['id'],
+            "permissions" => $role->permissions->map(fn($permission) => [
+                "key"  => $permission['key'],
+                "name" => $permission['name'],
+                "id"   => $permission['id'],
             ])
         ]);
-        $data=  [
-            'id' => $user['id'],
-            'firstName' => $user['first_name'],
-            'lastName' => $user['last_name'],
+        $data = [
+            'id'          => $user['id'],
+            'firstName'   => $user['first_name'],
+            'lastName'    => $user['last_name'],
             'displayName' => $user->getDisplayName(),
-            'phoneNumber'=> $user['registration_phone_number'],
-            'email' => $user['email'],
-            'role' =>sizeof($role)?$role[0]:null,
-            'avatarUrl' => $user->avatarUrl,
-            'ip' => $user->ip,
-            'status' => $user->status,
+            'phoneNumber' => $user['registration_phone_number'],
+            'email'       => $user['email'],
+            'role'        => sizeof($role) ? $role[0] : null,
+            'avatarUrl'   => $user->avatarUrl,
+            'ip'          => $user->ip,
+            'status'      => $user->status,
         ];
         return response()->json($data, 200);
     }
@@ -81,16 +81,16 @@ class UserProfileController extends Controller
     {
         $password = random_int(10000000, 99999999);
         return response()->json([
-            'password'=> $password
-        ], 200);
+                                    'password' => $password
+                                ], 200);
     }
 
     public function getUsersListData($locale, Request $request)
     {
-        $users = UserProfile::where('status','active')->with('roles');
+        $users = UserProfile::where('status', 'active')->with('roles');
         if ($request->filled('role')) {
             $txt = $request->get('role');
-            $users = $users->whereHas('roles', function ($query) use($txt){
+            $users = $users->whereHas('roles', function ($query) use ($txt) {
                 $query->where('key', $txt);
             });
         }
@@ -99,63 +99,63 @@ class UserProfileController extends Controller
             $users = $users->where('first_name', 'like', '%' . $txt . '%')
                 ->orWhere('last_name', 'LIKE', '%' . $txt . '%');
         }
-        $users = $users ->latest()->paginate(10);
-        $data = $users->map(fn ($user) => [
-            'id' => $user->id,
-            'firstName' => $user->first_name,
-            'lastName' => $user->last_name,
+        $users = $users->latest()->paginate(10);
+        $data = $users->map(fn($user) => [
+            'id'          => $user->id,
+            'firstName'   => $user->first_name,
+            'lastName'    => $user->last_name,
             'displayName' => $user->getDisplayName(),
-            'phoneNumber'=> $user->registration_phone_number,
-            'email' => $user->email,
+            'phoneNumber' => $user->registration_phone_number,
+            'email'       => $user->email,
             /*'roles' => [
                 "name"=> $user->roles?$user->roles[0]['key']:null,
                 "displayName"=> $user->roles[0]?$user->roles[0]['name']:null,
                 "id"=> $user->roles[0]?$user->roles[0]['id']:null,
                 ],*/
-            'roles' => sizeof($user->roles)>0 ?[
-                'key' => $user->roles[0]['key'],
+            'roles'       => sizeof($user->roles) > 0 ? [
+                'key'  => $user->roles[0]['key'],
                 'name' => $user->roles[0]['name'],
-                'id' =>$user->roles[0]['id'],
-            ]:null,
+                'id'   => $user->roles[0]['id'],
+            ] : null,
 
             'avatarUrl' => $user->avatarUrl,
-            'ip' => $user->ip,
-            'status' => $user->status
+            'ip'        => $user->ip,
+            'status'    => $user->status
         ]);
 
         return [
-            'total' => $users->total(),
+            'total'        => $users->total(),
             'current_page' => $users->currentPage(),
-            'per_page' => $users->perPage(),
-            'last_page' => $users->lastPage(),
-            'data' => $data
+            'per_page'     => $users->perPage(),
+            'last_page'    => $users->lastPage(),
+            'data'         => $data
         ];
     }
 
     public function getUsersListCommon()
     {
-        $activeUser= UserProfile::where('status','active')->count();
-        $roles = Role::all()->map(fn ($role) => [
-            'key' => $role->key,
+        $activeUser = UserProfile::where('status', 'active')->count();
+        $roles = Role::all()->map(fn($role) => [
+            'key'  => $role->key,
             'name' => $role->name,
-            'id' => $role->id,
+            'id'   => $role->id,
         ]);
-         return response()->json([
-             'counts' => [ 'totalUsers' => $activeUser,],
-             'roles' => $roles
-             ], 200);
+        return response()->json([
+                                    'counts' => ['totalUsers' => $activeUser,],
+                                    'roles'  => $roles
+                                ], 200);
     }
 
     public function createUserCommon()
     {
-        $roles = Role::all()->map(fn ($role) => [
-            'key' => $role->key,
+        $roles = Role::all()->map(fn($role) => [
+            'key'  => $role->key,
             'name' => $role->name,
-            'id' => $role->id,
+            'id'   => $role->id,
         ]);
         return response()->json([
-            'roles' => $roles,
-        ], 200);
+                                    'roles' => $roles,
+                                ], 200);
     }
 
     public function setRoles($locale, RolesRequest $request)
@@ -164,107 +164,107 @@ class UserProfileController extends Controller
             $user = UserProfile::find($userId);
 
             if ($user) {
-              foreach ($request['roles'] as $role){
-                  $user->refreshRoles($role);
+                foreach ($request['roles'] as $role) {
+                    $user->refreshRoles($role);
                 }
             }
         }
         return response()->json([
-            'userIds'=> $request['userIds']
-        ], 200);
+                                    'userIds' => $request['userIds']
+                                ], 200);
     }
 
     public function setStatus($locale, StatusRequest $request)
     {
         UserProfile::whereIn('user_id', $request['ids'])
-            ->update(['status'=>$request['status']]);
+            ->update(['status' => $request['status']]);
 
         User::whereIn('id', $request['ids'])
-            ->update(['status'=>$request['status']]);
+            ->update(['status' => $request['status']]);
 
         return response()->json([
-            'userIds'=> $request['ids'],
-            'status' => $request['status']
-        ], 200);
+                                    'userIds' => $request['ids'],
+                                    'status'  => $request['status']
+                                ], 200);
     }
 
     public function editUser($locale, UserProfile $user)
     {
         //$user->load('roles');
-        $role =$user->roles->map(fn($role)=>[
-            "key"=> $role['key'],
-            "name"=> $role['name'],
-            "id"=> $role['id'],
-            "permissions" => $role->permissions->map(fn($permission)=>[
-                "key"=> $permission['key'],
-                "name"=> $permission['name'],
-                "id"=> $permission['id'],
+        $role = $user->roles->map(fn($role) => [
+            "key"         => $role['key'],
+            "name"        => $role['name'],
+            "id"          => $role['id'],
+            "permissions" => $role->permissions->map(fn($permission) => [
+                "key"  => $permission['key'],
+                "name" => $permission['name'],
+                "id"   => $permission['id'],
             ])
         ]);
 
         $data = $user->toArray();
         return [
-            'id' => $data['id'],
-            'firstName' => $data['first_name'],
-            'lastName' => $data['last_name'],
+            'id'          => $data['id'],
+            'firstName'   => $data['first_name'],
+            'lastName'    => $data['last_name'],
             'displayName' => $user->getDisplayName(),
-            'phoneNumber'=> $data['registration_phone_number'],
-            'email' => $data['email'],
-            'role' =>sizeof($role)?$role[0]:null,
-            'avatarUrl' => $user->avatarUrl,
-            'ip' => $user->ip,
-            'status' => $user->status,
+            'phoneNumber' => $data['registration_phone_number'],
+            'email'       => $data['email'],
+            'role'        => sizeof($role) ? $role[0] : null,
+            'avatarUrl'   => $user->avatarUrl,
+            'ip'          => $user->ip,
+            'status'      => $user->status,
         ];
     }
 
-    public function updateUser($locale, UserProfile $user,UpdateUserRequest $request)
+    public function updateUser($locale, UserProfile $user, UpdateUserRequest $request)
     {
-        $userUnique =  UserProfile::where(function ($q) use($request){
-                $q->orWhere('registration_phone_number',$request['phoneNumber'])
-                    ->orWhere('email','like',"%".$request['email']."%");
-            })->where('id','!=',96)->first();
+        $userUnique = UserProfile::where(function ($q) use ($request) {
+            $q->orWhere('registration_phone_number', $request['phoneNumber'])
+                ->orWhere('email', 'like', "%" . $request['email'] . "%");
+        })->where('id', '!=', 96)->first();
 
-        if ($request->filled('phoneNumber')){
-            if ($userUnique){
+        if ($request->filled('phoneNumber')) {
+            if ($userUnique) {
                 return response()->json([
-                    'message' => __('Error PhoneNumber/Email'),
-                ], 422);
+                                            'message' => __('Error PhoneNumber/Email'),
+                                        ], 422);
             }
         }
         $user->update([
-            'first_name' => $request['firstName'],
-            'last_name' => $request['lastName'],
-            'national_code' => $request['nationalCode'],
-            'registration_phone_number'=> $request['phoneNumber'],
-            'email' => $request['email'],
-            'avatarUrl' => $request['avatarUrl'],
-            'status' => $request['status'],
-        ]);
+                          'first_name'                => $request['firstName'],
+                          'last_name'                 => $request['lastName'],
+                          'national_code'             => $request['nationalCode'],
+                          'registration_phone_number' => $request['phoneNumber'],
+                          'email'                     => $request['email'],
+                          'avatarUrl'                 => $request['avatarUrl'],
+                          'status'                    => $request['status'],
+                      ]);
 
-        if (is_null($request['role'])){
+        if (is_null($request['role'])) {
             $user->withdrawRoles($user->roles->pluck('id'));
-        }else{
+        } else {
             $user->refreshRoles($request->role);
             $user->load('roles');
-            $role = collect($user->roles)->map(fn($role)=>[
-                "name"=> $role['key'],
-                "displayName"=> $role['name'],
-                "id"=> $role['id'],
+            $role = collect($user->roles)->map(fn($role) => [
+                "name"        => $role['key'],
+                "displayName" => $role['name'],
+                "id"          => $role['id'],
             ])->collect();
         }
 
         $data = $user->toArray();
         return [
-            'id' => $data['id'],
-            'firstName' => $data['first_name'],
-            'lastName' => $data['last_name'],
-            'displayName' => $user->getDisplayName(),
-            'registration_phone_number'=> $data['registration_phone_number'],
-            'email' => $data['email'],
-            'roles' =>$role??null,
-            'avatarUrl' => $user->avatarUrl,
-            'ip' => $user->ip,
-            'status' => $user->status
+            'id'                        => $data['id'],
+            'firstName'                 => $data['first_name'],
+            'lastName'                  => $data['last_name'],
+            'displayName'               => $user->getDisplayName(),
+            'registration_phone_number' => $data['registration_phone_number'],
+            'email'                     => $data['email'],
+            'roles'                     => $role ?? null,
+            'avatarUrl'                 => $user->avatarUrl,
+            'ip'                        => $user->ip,
+            'status'                    => $user->status
         ];
     }
 
@@ -274,13 +274,47 @@ class UserProfileController extends Controller
 
         return [
             'personalInfo' => new UserInfoResource($user),
-            'addressInfo' => new UserAddressInfoResource($user),
+            'addressInfo'  => new UserAddressInfoResource($user),
         ];
     }
 
-    public function editData2(Request $request)
+    public function editData2(Request $request): UserInfoResource
     {
-        dd(1);
+        /** @var User $user */
+        $user = auth()->user();
+
+        // todo need to map columns
+
+        $parameters = [];
+
+        $parameters['first_name'] = $request['firstName'] ?? $user->first_name;
+        $parameters['last_name'] = $request['lastName'] ?? $user->last_name;
+        $parameters['avatar_url'] = $request['avatarUrl'] ?? $user->avatar_url;
+        $parameters['birthday'] = $request['birthday'] ?? $user->birthday;
+        $parameters['job'] = $request['job'] ?? $user->job;
+        $parameters['national_code'] = $request['nationalCode'] ?? $user->national_code;
+
+        User::query()->where('id', $user->id)->update($parameters);
+
+        if ($request['phone']) {
+            $parameters['registration_phone_number'] = $request['phone'];
+        }
+        if ($request['shopLink']) {
+            $parameters['shop_website'] = $request['shopLink'];
+        }
+        if ($request['postalCode']) {
+            $parameters['postal_code'] = $request['postalCode'];
+        }
+
+        if ($request['email']) {
+            $parameters['email'] = $request['email'];
+        }
+
+        UserProfile::query()
+            ->where('user_id', $user->id)
+            ->update($parameters);
+
+        return new UserInfoResource($user);
     }
 
     public function editData(UpdateProfileRequest $request)
@@ -329,15 +363,15 @@ class UserProfileController extends Controller
         }
 
         $mainUser = new User();
-        if ($mainUser){
-           /*if ($mainUser->where('username', $request['phone'])->first()){
-               //age seller bod natone taghir bde
+        if ($mainUser) {
+            /*if ($mainUser->where('username', $request['phone'])->first()){
+                //age seller bod natone taghir bde
 
-               //age seller nabod natone taghir bde
-               return response()->json([
-                   'message' => 'این شماره موبایل قبلا ثبت شده است.',
-               ], 400);
-           }*/
+                //age seller nabod natone taghir bde
+                return response()->json([
+                    'message' => 'این شماره موبایل قبلا ثبت شده است.',
+                ], 400);
+            }*/
             /*$sss = $mainUser->where('id', $userId)->update([
                 'first_name' => $request['firstName'],
                 'last_name' => $request['lastName'],
@@ -347,40 +381,47 @@ class UserProfileController extends Controller
                 'avatar_url' => $request['avatarUrl'],
 
             ]);*/
-             $mainUser->where('id', $userId)->update(array_merge($request->only(
-                 'first_name',
-                 'last_name',
-                 'national_code',
-                 'birthday',
-                 'job',
-                 'avatar_url'
-             ),$keyMain));
+            $mainUser->where('id', $userId)->update(
+                array_merge(
+                    $request->only(
+                        'first_name',
+                        'last_name',
+                        'national_code',
+                        'birthday',
+                        'job',
+                        'avatar_url'
+                    ), $keyMain
+                )
+            );
         }
-        $user = UserProfile::where('user_id', $userId)->update(array_merge($request->only(
-            'description',
-            'email',
-            'birthday',
-            'job',
-            'state',
-            'city',
-            'street',
-            'block',
-            'unit',
-            'natioanl_code',
-        ),
-            $keyRequest
-        ));
+        $user = UserProfile::where('user_id', $userId)->update(
+            array_merge(
+                $request->only(
+                    'description',
+                    'email',
+                    'birthday',
+                    'job',
+                    'state',
+                    'city',
+                    'street',
+                    'block',
+                    'unit',
+                    'natioanl_code',
+                ),
+                $keyRequest
+            )
+        );
 
         Log::error(2);
         if (class_exists(Profile::class)) {
             Profile::where('user_id', $userId)->update(
                 [
-                    'first_name' => $request['firstName'],
-                    'last_name' => $request['lastName'],
-                    'avatar_url' => $request['avatarUrl'],
-                    'job_title' => $request['job'],
-                    'email' => $request['email'],
-                    'description' => $request['description'],
+                    'first_name'    => $request['firstName'],
+                    'last_name'     => $request['lastName'],
+                    'avatar_url'    => $request['avatarUrl'],
+                    'job_title'     => $request['job'],
+                    'email'         => $request['email'],
+                    'description'   => $request['description'],
                     'national_code' => $request['nationalCode'],
                 ]
             );
@@ -396,20 +437,20 @@ class UserProfileController extends Controller
     {
         $user = UserProfile::with(['following', 'follower'])->where('user_id', $request->userId)->firstOrFail();
 
-        $following = UserProfile::whereHas('following', function($query) use($request) {
-            $query->where('follower_id','=', $request->userId);
+        $following = UserProfile::whereHas('following', function ($query) use ($request) {
+            $query->where('follower_id', '=', $request->userId);
         })->orderby('id', 'DESC')->get();
-            
+
         return [
             'data' => [
-                'info' => new UserResource($user),
+                'info'      => new UserResource($user),
                 'following' => FollowResource::collection($following)
             ]
         ];
     }
 
-    public function getPaymentData() 
-    {   
+    public function getPaymentData()
+    {
         $user = auth()->user();
         if (class_exists(Payment::class)) {
 
@@ -432,8 +473,8 @@ class UserProfileController extends Controller
                 ->paginate(10);
 
             return new ProductInstallmentsResource($productData);
-            
+
         }
     }
-    
+
 }
