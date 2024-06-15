@@ -126,7 +126,7 @@ class SearchController extends Controller
             return new QuestionsOldResource($data);
         }
 
-        if ($type == 'product' && class_exists('App\Models\Product')) {
+        if ($type == 'products' && class_exists('App\Models\Product')) {
             $data = Product::withoutGlobalScopes()
             ->where('status', 'published')
             ->where(function (Builder $query) use ($keyword) {
@@ -136,7 +136,7 @@ class SearchController extends Controller
             return new ProductsResource($data);
         }
 
-        if ($type == 'startup' && class_exists('App\Models\Startup')) {
+        if ($type == 'startups' && class_exists('App\Models\Startup')) {
             $data = Startup::withoutGlobalScopes()
             ->where('status', 'active')
             ->where(function (Builder $query) use ($keyword) {
