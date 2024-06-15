@@ -320,7 +320,7 @@ class UserProfileController extends Controller
     public function editData(UpdateProfileRequest $request)
     {
         Log::info('at the first of editData method');
-        $userId = auth()->id;
+        $userId = auth()->user()->id;
 
         $keyRequest = [];
         $keyMain = [];
