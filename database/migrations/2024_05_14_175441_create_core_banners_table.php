@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('link_url')->nullable();
             $table->string('image_url');
             $table->enum('type', ['evant', 'banner'])->nullable();
-            $table->enum('status', ['published', 'draft', 'delete'])->default('draft');
+            $table->enum('status', ['published', 'draft', 'deleted'])->default('draft');
             $table->timestamps();
         });
     }
