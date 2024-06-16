@@ -35,4 +35,9 @@ class BannerController extends Controller
         return BannerResource::collection($data);
     }
 
+    public function common() 
+    {
+        $data = $this->repository->common();
+        return $data;    
+    }
 }

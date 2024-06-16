@@ -8,5 +8,6 @@ interface BannerRepositoryInterface
     public function list($request);
     public function createUpdate($request);
     public function setStatus($request);
+    public function common();
     public function event();
 }

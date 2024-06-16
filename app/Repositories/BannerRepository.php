@@ -59,6 +59,22 @@ class BannerRepository implements BannerRepositoryInterface
         return $banner;
     }
 
+    public function common()
+    {
+        $status = ['published', 'draft', 'delete'];
+        $counts = [
+            "all" => Banner::all()->count(),
+            "published" => Banner::where('status', 'published')->count(),
+            "draft" => Banner::where('status', 'draft')->count(),
+            "delete" => Banner::where('status', 'delete')->count(),
+        ];
+
+        return [
+            'status' => $status,
+            'counts' => $counts,
+        ];
+    }
+
     public function getBannerForHomPage()
     {
         return Banner::where('type', 'banner')->select('title','link_url as linkUrl','image_url as imageUrl')->get();
