@@ -20,6 +20,8 @@ class BannerResource extends JsonResource
             'description' => $this->description,
             'imageUrl' => $this->image_url,
             'linkUrl' => $this->link_url,
+            'price' => $this->price,
+            'dateOfHolding' => $this->date,
             'type' => $this->type,
             'status' => $this->status,
             'creationDate' => $this->created_at,

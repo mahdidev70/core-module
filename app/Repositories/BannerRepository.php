@@ -41,7 +41,7 @@ class BannerRepository implements BannerRepositoryInterface
                 'description' => $request['description'],
                 'link_url' => $request['linkUrl'],
                 'image_url' => $request['imageUrl'],
-                'date' => $request['date'],
+                'date' => $request['dateOfHolding'],
                 'price' => $request['price'],
                 'type' => $request['type'],
                 'status' => 'draft',
@@ -63,12 +63,12 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function common()
     {
-        $status = ['published', 'draft', 'delete'];
+        $status = ['published', 'draft', 'deleted'];
         $counts = [
             "all" => Banner::all()->count(),
             "published" => Banner::where('status', 'published')->count(),
             "draft" => Banner::where('status', 'draft')->count(),
-            "delete" => Banner::where('status', 'delete')->count(),
+            "deleted" => Banner::where('status', 'deleted')->count(),
         ];
 
         return [
