@@ -41,6 +41,8 @@ class BannerRepository implements BannerRepositoryInterface
                 'description' => $request['description'],
                 'link_url' => $request['linkUrl'],
                 'image_url' => $request['imageUrl'],
+                'date' => $request['date'],
+                'price' => $request['price'],
                 'type' => $request['type'],
                 'status' => 'draft',
             ]
