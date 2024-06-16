@@ -24,8 +24,8 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstName' => ['required'],
-            'lastName' => ['required'],
+            'firstName' => ['string'],
+            'lastName' => ['string'],
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
             'nationalCode' => [new NationalCodeRule],
             'shopLink' => ['nullable', 'url:http,https']
