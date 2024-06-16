@@ -11,11 +11,24 @@ class BannerRepository implements BannerRepositoryInterface
 {
     public function list($request) 
     {
-        $query = Banner::where('type', $request->input('type'))
-            ->orderBy('id', 'DESC')    
-            ->paginate(10);
+        $query = Banner::where('type', $request->input('type'));
+        
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
+            $query->where(function ($q) use ($txt) {
+                $q->where('title', 'like', '%' . $txt . '%');
+            });
+        }
 
-        $banner = $query;
+        if (isset($request->creationDateMax) && $request->creationDateMax != null) {
+            $query->whereDate('created_at', '<=', $request->input('creationDateMax'));
+        }
+
+        if (isset($request->creationDateMin) && $request->creationDateMin != null) {
+            $query->whereDate('created_at', '>=', $request->input('creationDateMin'));
+        }
+
+        $banner = $query->orderBy('id', 'DESC')->paginate(10);
         return $banner;
     }
 
