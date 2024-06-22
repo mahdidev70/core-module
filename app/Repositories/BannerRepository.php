@@ -44,7 +44,7 @@ class BannerRepository implements BannerRepositoryInterface
                 'date' => $request['dateOfHolding'],
                 'price' => $request['price'],
                 'type' => $request['type'],
-                'status' => 'draft',
+                'status' => 'published',
             ]
         );
         return $banner;
