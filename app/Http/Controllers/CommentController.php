@@ -81,11 +81,16 @@ class CommentController extends Controller
                 ];
             });
         $userComments = null;
-        
+
         if (Auth('sanctum')->user()) {
             $userComments = Comment::where('commentable_id', $slug->id)
-                ->where('user_id', Auth('sanctum')->user()->id)
-                ->whereIn('status', ['approved', 'waiting_for_approval'])
+                ->where(function ($query) {
+                    $query->where('status', 'approved')
+                        ->orWhere(function ($query) {
+                            $query->where('status', 'waiting_for_approval')
+                                ->where('user_id', Auth('sanctum')->id());
+                        });
+                })
                 ->with('replies')
                 ->orderBy('id', 'DESC')
                 ->paginate(10)
