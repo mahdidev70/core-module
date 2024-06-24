@@ -26,6 +26,8 @@ class CreateUpdateBannerRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'linkUrl' => ['nullable', 'string'],
             'imageUrl' => ['required', 'string'],
+            'date' => ['nullable', 'date'],
+            'price' => ['nullable', 'integer'],
             'type' => ['nullable', 'in:event, banner'],
             'status' => ['nullable', 'in:published,draft,delete'],
         ];
