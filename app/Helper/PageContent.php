@@ -19,6 +19,7 @@ class PageContent {
 
         foreach ($this->blocks as $block) {
             if ($block['type'] == 'html') {
+                $block['content'] = strip_tags($block['content'], "<table>");
                 $t = HtmlContent::minutesToRead(json_encode($block['content']));
                 $this->minutesToRead += $t;
                 $this->estimatedTotalTime += $t;
