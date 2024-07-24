@@ -84,7 +84,7 @@ class BannerRepository implements BannerRepositoryInterface
 
     public function event() 
     {
-        $data = Banner::where('type', 'event')->orderBy('id', 'DESC')->get();
+        $data = Banner::where('type', 'event')->orderBy('date', 'ASC')->get();
         return BannerResource::collection($data);
     }
 }
