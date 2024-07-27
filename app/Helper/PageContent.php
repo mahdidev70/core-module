@@ -19,8 +19,9 @@ class PageContent {
 
         foreach ($this->blocks as $block) {
             if ($block['type'] == 'html') {
-                $block['content'] = strip_tags($block['content'], "<table>");
-                $t = HtmlContent::minutesToRead(json_encode($block['content']));
+                $content = json_encode($block['content']);
+                $content = strip_tags($content, "<table>");
+                $t = HtmlContent::minutesToRead($content);
                 $this->minutesToRead += $t;
                 $this->estimatedTotalTime += $t;
             } else if ($block['type'] == 'video') {
