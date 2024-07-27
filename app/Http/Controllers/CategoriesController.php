@@ -342,19 +342,19 @@ class CategoriesController extends Controller
 
         if ($request['status'] != 'active') {
 
-            if ($category->first()->chatRoom()->where('status', 'active')->exists()) {
+            if ($category->first()->chatRoom()->where('community_chat_rooms.status', 'active')->exists()) {
                 return response()->json([
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های مربوط به چت روم آن را بردارید'
                 ], 409);
             }
 
-            if ($category->first()->questions()->where('status', '!=', 'deleted')->exists()) {
+            if ($category->first()->questions()->where('community_questions.status', '!=', 'deleted')->exists()) {
                 return response()->json([
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های مربوط به سوال های آن را بردارید'
                 ], 409);
             }
 
-            if ($category->first()->faq()->where('status', 'active')->exists()) {
+            if ($category->first()->faq()->where('core_faq.status', 'active')->exists()) {
                 return response()->json([
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های مربوط به پرسش های متداول آن را بردارید'
                 ], 409);
