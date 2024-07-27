@@ -3,6 +3,7 @@
 namespace TechStudio\Core\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use TechStudio\Core\app\Http\Resources\CategoryResource;
 use TechStudio\Core\app\Http\Resources\FaqResource;
@@ -122,5 +123,16 @@ class FaqController extends Controller
             'status' => $status,
             'categories' => CategoryResource::collection($categories),
         ];
+    }
+
+    public function delete($id): JsonResponse
+    {
+        Faq::query()->where('id', $id)->delete();
+
+        return response()->json([
+            'data' => [],
+            'status' => 200,
+            'message' => 'با موفقیت انجام شد'
+        ], 200);
     }
 }
