@@ -125,7 +125,7 @@ class FaqController extends Controller
         ];
     }
 
-    public function delete($id): JsonResponse
+    public function delete($locale, $id): JsonResponse
     {
         Faq::query()->where('id', $id)->delete();
 
