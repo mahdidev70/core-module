@@ -103,7 +103,7 @@ Route::middleware("auth:sanctum")->group(function () {
             Route::put('edit-data', [FaqController::class, 'createUpdate']);
             Route::put('set_status', [FaqController::class, 'setStatus']);
             Route::get('common', [FaqController::class, 'panelCommon']);
-            Route::delete('{id}}', [FaqController::class, 'delete']);
+            Route::delete('{id}', [FaqController::class, 'delete']);
         });
 
         Route::prefix('static')->group(function () {
