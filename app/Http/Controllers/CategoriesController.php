@@ -342,7 +342,7 @@ class CategoriesController extends Controller
 
         if ($request['status'] != 'active') {
 
-            if ($category->first()->chatRoom()->where('community_chat_rooms.status', 'active')->exists()) {
+            if ($category->first()->chatRoom()->exists()) {
                 return response()->json([
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های مربوط به چت روم آن را بردارید'
                 ], 409);
@@ -354,7 +354,7 @@ class CategoriesController extends Controller
                 ], 409);
             }
 
-            if ($category->first()->faq()->where('core_faq.status', 'active')->exists()) {
+            if ($category->first()->faq()->exists()) {
                 return response()->json([
                     'message' => 'برای تغییر وضعیت این دسته بندی ابتدا زیرمجموعه‌های مربوط به پرسش های متداول آن را بردارید'
                 ], 409);
