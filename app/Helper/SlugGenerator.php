@@ -30,4 +30,9 @@ class SlugGenerator {
 
         return $title;
     }
+
+    public function unique($slug): string
+    {
+        return $slug . now()->timestamp;
+    }
 }
