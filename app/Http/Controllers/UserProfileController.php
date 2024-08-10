@@ -232,14 +232,14 @@ class UserProfileController extends Controller
             }
         }
         $user->update([
-                          'first_name'                => $request['firstName'],
-                          'last_name'                 => $request['lastName'],
-                          'national_code'             => $request['nationalCode'],
-                          'registration_phone_number' => $request['phoneNumber'],
-                          'email'                     => $request['email'],
-                          'avatarUrl'                 => $request['avatarUrl'],
-                          'status'                    => $request['status'],
-                      ]);
+            'first_name' => $request['firstName'],
+            'last_name'  => $request['lastName'],
+            'national_code' => $request['nationalCode'],
+            'registration_phone_number' => $request['phoneNumber'],
+            'email' => $request['email'],
+            'avatarUrl' => $request['avatarUrl'],
+            'status' => $request['status'],
+        ]);
 
         if (is_null($request['role'])) {
             $user->withdrawRoles($user->roles->pluck('id'));

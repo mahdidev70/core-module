@@ -27,6 +27,7 @@ class UpdateUserRequest extends CreateUserRequest
         return array_merge(parent::rules(), [
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
             // 'phoneNumber' => [Rule::unique('user_profiles,','registration_phone_number')->ignore($this->registration_phone_number)],
+            'avatarUrl' => ['nullable|url|regex:/\.(jpeg|jpg|png)$/i'],
         ]);
     }
 }

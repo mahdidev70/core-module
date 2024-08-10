@@ -28,7 +28,7 @@ class CreateUserRequest extends FormRequest
             'email' => ['required_if:phoneNumber,null','nullable','email','unique:user_profiles,email'],
             'phoneNumber' => ['required_if:email,null','nullable','numeric'],
             // 'email_or_phoneNumber' => 'required_without_all:email,phoneNumber',
-            'avatarUrl' => ['nullable'],
+            'avatarUrl' => ['nullable|url|regex:/\.(jpeg|jpg|png)$/i'],
             'password' => ['required'],
             'role' => ['nullable','integer','exists:roles,id'],
         ];
