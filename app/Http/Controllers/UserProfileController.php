@@ -319,7 +319,7 @@ class UserProfileController extends Controller
 
     public function editData(UpdateProfileRequest $request)
     {
-        Log::info('at the first of editData method');
+//        Log::info('at the first of editData method');
         $userId = auth()->user()->id;
 
         $keyRequest = [];
@@ -412,7 +412,7 @@ class UserProfileController extends Controller
             )
         );
 
-        Log::error(2);
+//        Log::error(2);
         if (class_exists(Profile::class)) {
             Profile::where('user_id', $userId)->update(
                 [
@@ -429,7 +429,7 @@ class UserProfileController extends Controller
 
         $user = UserProfile::where('user_id', $userId)->firstOrFail();
 
-        Log::error(3);
+//        Log::error(3);
         return response()->json([]);
     }
 
