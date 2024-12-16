@@ -29,7 +29,7 @@ class UpdateProfileRequest extends FormRequest
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
             'nationalCode' => [new NationalCodeRule],
             'shopLink' => ['nullable', 'url:http,https'],
-            'avatarUrl' => ['nullable', 'url', 'regex:/\.(jpeg|jpg|png)$/i'],
+            'avatarUrl' => ['nullable', 'url',],
         ];
     }
 }
