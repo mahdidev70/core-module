@@ -29,7 +29,17 @@ class UpdateProfileRequest extends FormRequest
             'email' => [Rule::unique('core_user_profiles')->ignore($this->email,'email')],
             'nationalCode' => [new NationalCodeRule],
             'shopLink' => ['nullable', 'url:http,https'],
-            'avatarUrl' => ['nullable', 'url',],
+            'avatarUrl' => [
+                'nullable', 
+                'url', 
+                function ($attribute, $value, $fail) {
+                    $allowedDomain = rtrim(env('MINIO_SERVER_URL'), '/');
+                    
+                    if (!str_starts_with($value, $allowedDomain)) {
+                        $fail("The {$attribute} must be a valid URL from the allowed domain: {$allowedDomain}");
+                    }
+                },
+            ],
         ];
     }
 }
